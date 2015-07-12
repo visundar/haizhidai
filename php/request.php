@@ -20,6 +20,16 @@ try {
     mysql_select_db('haizhidai', $con);
 
     switch ($obj->name) {
+        case 'GET_ALL_PRODUCT':
+            $query = "SELECT * FROM `product`";
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            $a = array();
+            while ($o = mysql_fetch_object($result)) {
+                array_push($a, $o);
+            }
+            mysql_free_result($result);
+            $response->content = $a;
+            break;
         case 'GET_PROFILE':
             $query = "SELECT * FROM `member` WHERE `user_serial`=" . $_COOKIE['user_serial'];
             $result = mysql_query($query, $con) or throw_exception(mysql_error());
@@ -33,8 +43,8 @@ try {
                 $names .= "`" . $name . "`, ";
                 $values .= "'" . $value . "', ";
             }
-            $names = substr($names, 0, -2);
-            $values = substr($values, 0, -2);
+            $names .= "`borrower`";
+            $values .= $_COOKIE['user_serial'];
             $query = "INSERT INTO `product` (" . $names . ") VALUES (" . $values . ")";
             mysql_query($query, $con) or throw_exception(mysql_error());
             break;

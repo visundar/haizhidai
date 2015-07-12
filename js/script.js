@@ -5,6 +5,7 @@ var STORES = ['淘宝网', '拍拍网', '阿里巴巴', '京东', '一号店', '
 var FILE_ATTR = ['身份证', '结婚证', '营业执照', '劳动合同', '工牌、名片、工作证', '社保', '工资卡/常用银行流水', '学生证/一卡通', '房产证', '行驶证', '支付宝截图', '个人信用报告', '信用卡对账单', '学历学位证书', '其他所有贷款协议/凭证'];
 var FILE_DESC = ['二代身份证正反面各一张，本人手持身份证合照一张，共3张。', '本人结婚证，包含结婚日期、本人及配偶所有信息。', '营业执照照片或工商网站截图，必须清晰显示法人、成立时间、经营范围、经营时间等关键信息。', '本人当前的有效劳动合同，从封面一页一页拍至最后一页。', '个人工作证或单位工牌、名片均可，必须完整显示单位信息及个人信息。', '社保/公积金网站截图，需完整显示本人姓名、身份证、缴费状态、缴费金额等关键信息。', '本人银行卡正反面照片各一张，以及近3个月完整流水打印单或网银流水截屏。工资卡需显示代发工资项。', '个人学生证信息页照片，需完整显示学校信息及个人信息', '房产证的基本信息页及盖章页各一张，共2张。', '正副本照片，需完整显示车辆登记信息及年检信息。', '支付宝账户基本信息页截图和上一年度个人年度对账单截图。', '仅接受人民银行征信中心网络查询的PDF版。', '用户本人信用卡正面照片及对应的近3 个月信用卡（电子或纸质）对账单。', '本人大专及以上学历或学位证书，接受结业证。', '本人其他金融机构的贷款协议或凭证证明。'];
 var EDUCATION = ['初中及以下', '中专', '高中', '大专', '本科', '研究生及以上'];
+var PRODUCT_ATTR = ['完成度', '瀏覽次數', '上架日期', '金額', '借貸者'];
 var WORK_YEAR = ['1 年已內', '2 年已內', '3 年已內', '4 年(含)以上'];
 var UPLOAD_URL = 'http://localhost/upload/index.php';
 var RATE = [1.99, 3.99, 5.99, 8.99, 11.99, 14.99, 19.99];
@@ -383,6 +384,102 @@ var IMAGE_UPLOAD_MODAL_STR = function () {
 </div>
     */
 }.toString().slice(38, -4);
+var FILTER_MODAL_STR = function () {
+    'use strict';
+    /*
+<div class="modal fade" id="filter-modal" tabindex="-1" role="dialog" aria-labelledby="filter-modal-label">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="filter-modal-label">過濾</h4>
+          </div>
+          <div class="modal-body">
+              <div class="row">
+                  <h4>
+                      <div class="col-md-2 text-right">利率</div>
+                      <div class="col-md-10">
+                          <span class="label label-danger" id="first-lower"></span>
+                          ~
+                          <span class="label label-info" id="first-upper"></span>
+                      </div>
+                  </h4>
+              </div>
+              <div class="row">
+                  <div class="col-md-10 col-md-offset-2">
+                      <div id="first-slider" class="slider" name="rate"></div>
+                  </div>
+              </div>
+              <div class="row">
+                  <h4>
+                      <div class="col-md-2 text-right">等級</div>
+                      <div class="col-md-10">
+                          <span class="label label-danger" id="second-lower"></span>
+                          ~
+                          <span class="label label-info" id="second-upper"></span>
+                      </div>
+                  </h4>
+              </div>
+              <div class="row">
+                  <div class="col-md-10 col-md-offset-2">
+                      <div id="second-slider" class="slider" name="level"></div>
+                  </div>
+              </div>
+              <div class="row">
+                  <h4>
+                      <div class="col-md-2 text-right">期限</div>
+                      <div class="col-md-10">
+                          <span class="label label-danger" id="third-lower"></span>
+                          ~
+                          <span class="label label-info" id="third-upper"></span>
+                      </div>
+                  </h4>
+              </div>
+              <div class="row">
+                  <div class="col-md-10 col-md-offset-2">
+                      <div id="third-slider" class="slider" name="term"></div>
+                  </div>
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="filter()">過濾</button>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+    */
+}.toString().slice(38, -4);
+var RATE_MODAL_STR = function () {
+    'use strict';
+    /*
+<div class="modal fade" id="rate-modal" tabindex="-1" role="dialog" aria-labelledby="rate-modal-label">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="rate-modal-label">利率指標</h4>
+      </div>
+      <div class="modal-body">
+          <table class="table table-bordered table-hover">
+              <tr><th>Prosper Rating</th><th>Estimated Avg. Annual Loss Rate**</th></tr>
+              <tr><th>AA</th><td>0.00~1.99%</td></tr>
+              <tr><th>A</th><td>2.00~3.99%</td></tr>
+              <tr><th>B</th><td>4.00~5.99%</td></tr>
+              <tr><th>C</th><td>6.00~8.99%</td></tr>
+              <tr><th>D</th><td>9.00~11.99%</td></tr>
+              <tr><th>E</th><td>12.00~14.99%</td></tr>
+              <tr><th>HR</th><td>≧15.00%</td></tr>
+          </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">确认</button>
+      </div>
+    </div>
+  </div>
+</div>
+    */
+}.toString().slice(38, -4);
 var FILE_UPLOAD_STR = function () {
     'use strict';
     /*
@@ -425,7 +522,31 @@ var CONFIRM_PAGE_STR = function () {
 </table>
     */
 }.toString().slice(38, -4);
-var member, product;
+var INVEST_PAGE_STR = function () {
+    'use strict';
+    /*
+<ul class="nav nav-tabs">
+  <li role="presentation" class="active"><a href="javascript:void(0)">所有商品</a></li>
+  <form class="form-inline navbar-right">
+      <div class="btn btn-info" data-toggle="modal" data-target="#rate-modal">利率指標</div>
+      <div class="btn btn-warning" data-toggle="modal" data-target="#filter-modal">過濾</div>
+      <input type="text" class="form-control input-sm" placeholder="關鍵字">
+      <button type="button" class="btn btn-default input-sm" onclick="">搜尋</button>
+  </form>
+</ul>
+<table class="table table-bordered table-hover" id="product-list">
+    <tr>
+        <th class="col-md-3">標題</th>
+        <th class="col-md-1">投标</th>
+        <th class="col-md-2" name="descript">描述</th>
+        <th class="col-md-2" name="rate">利率</th>
+        <th class="col-md-2" name="level">等级</th>
+        <th class="col-md-2" name="term">期限</th>
+    </tr>
+</table>
+    */
+}.toString().slice(38, -4);
+var member, product, product_list;
 
 
 (function ($) {
@@ -458,6 +579,66 @@ function clear_all() {
     $('div#content > div').html('');
 }
 
+function filter_slider_init() {
+    'use strict';
+    $("#first-slider").slider({
+        range: true,
+        min: 0,
+        max: 100,
+        values: [0, 100],
+        slide: function (event, ui) {
+            $("#first-lower").html(ui.values[0] + "%");
+            $("#first-upper").html(ui.values[1] + "%");
+        }
+    });
+    $("#first-lower").html($("#first-slider").slider("values", 0) + "%");
+    $("#first-upper").html($("#first-slider").slider("values", 1) + "%");
+    
+    $("#second-slider").slider({
+        range: true,
+        min: 0,
+        max: 6,
+        values: [0, 6],
+        slide: function (event, ui) {
+            $("#second-lower").html(LEVEL[ui.values[0]]);
+            $("#second-upper").html(LEVEL[ui.values[1]]);
+        }
+    });
+    $("#second-lower").html(LEVEL[$("#second-slider").slider("values", 0)]);
+    $("#second-upper").html(LEVEL[$("#second-slider").slider("values", 1)]);
+    
+    $("#third-slider").slider({
+        range: true,
+        min: 0,
+        max: 60,
+        values: [0, 60],
+        slide: function (event, ui) {
+            $("#third-lower").html(ui.values[0] + "天");
+            $("#third-upper").html(ui.values[1] + "天");
+        }
+    });
+    $("#third-lower").html($("#third-slider").slider("values", 0) + "天");
+    $("#third-upper").html($("#third-slider").slider("values", 1) + "天");
+}
+
+function load_product_list() {
+    'use strict';
+    $.ajax('http://localhost/project/php/request.php', {
+        dataType: 'json',
+        async: false,
+        data: (function () {
+            var request = {};
+            request.name = 'GET_ALL_PRODUCT';
+            request.content = {};
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            product_list = obj.content;
+        }
+    });
+}
+
 function load_home_page() {
     'use strict';
     clear_all();
@@ -473,16 +654,47 @@ function load_home_page() {
     }()));
 }
 
+function generate_product_row(para1, para2, para3, para4, para5) {
+    'use strict';
+    var row;
+    row = '<tr class="product-content">';
+    row += '<td><a href="javascript:void(0)">' + para1 + '</a></td>';
+    row += '<td class="text-center"><button type="button" class="btn btn-info btn-xs" onclick="bid()">投標</button>';
+    row += '<button type="button" class="btn btn-success btn-xs" id="btn-concern" onclick="concern()">關注</button></td>';
+    row += '<td>' + para2 + '</td>';
+    row += '<td class="text-center">' + para3 + '</td>';
+    row += '<td class="text-center">' + para4 + '</td>';
+    row += '<td class="text-center">' + para5 + '</td>';
+    row += '</tr>';
+    return row;
+}
+
 function load_invest_page() {
     'use strict';
+    var i;
     clear_all();
+    $('div#navbar-collapse > ul:first > li:nth-child(1)').addClass('active');
+    for (i = 0; i < PRODUCT_ATTR.length; i += 1) {
+        $('div#content > div:nth-child(1)').append('<a class="list-group-item" draggable="true">' + PRODUCT_ATTR[i] + '</a>');
+    }
+    $('div#content > div:nth-child(2)').html(INVEST_PAGE_STR);
+    $('div#modal').append(RATE_MODAL_STR + FILTER_MODAL_STR);
+    filter_slider_init();
+    load_product_list();
+    for (i = 0; i < product_list.length; i += 1) {
+        $('table#product-list').append(generate_product_row(product_list[i].name,
+                                                           product_list[i].descript,
+                                                           product_list[i].rate + '%',
+                                                           LEVEL[Number(product_list[i].level)],
+                                                           product_list[i].term));
+    }
 }
 
 function load_borrow_page() {
     'use strict';
     var i, j;
     clear_all();
-    $('div#navbar-collapse > ul > li:nth-child(2)').addClass('active');
+    $('div#navbar-collapse > ul:first > li:nth-child(2)').addClass('active');
     for (i = 0; i < BORROW_PROGRESS.length; i += 1) {
         $('div#content > div:nth-child(1)').append('<a class="list-group-item">' + BORROW_PROGRESS[i] + '</a>');
     }
@@ -820,6 +1032,39 @@ function edit_profile(obj) {
         $('input, select').attr('disabled', false);
         $('input[name="first_name"], input[name="last_name"], input[name="uid"], input[name="birth"], input[name="cellphone"], input[name="gender"]').attr('disabled', true);
         obj.innerHTML = '完成';
+    }
+}
+
+function filter() {
+    'use strict';
+    var first_lower = $("#first-slider").slider("values", 0),
+        first_upper = $("#first-slider").slider("values", 1),
+        second_lower = $("#second-slider").slider("values", 0),
+        second_upper = $("#second-slider").slider("values", 1),
+        third_lower = $("#third-slider").slider("values", 0),
+        third_upper = $("#third-slider").slider("values", 1),
+        first_name = $('table#product-list > tbody > tr:first > th:nth-child(4)').attr('name'),
+        second_name = $('table#product-list > tbody > tr:first > th:nth-child(5)').attr('name'),
+        third_name = $('table#product-list > tbody > tr:first > th:nth-child(6)').attr('name'),
+        i,
+        a = [];
+    for (i = 0; i < product_list.length; i += 1) {
+        if (Number(product_list[i][first_name]) >= first_lower &&
+                Number(product_list[i][first_name]) <= first_upper &&
+                Number(product_list[i][second_name]) >= second_lower &&
+                Number(product_list[i][second_name]) <= second_upper &&
+                Number(product_list[i][third_name]) >= third_lower &&
+                Number(product_list[i][third_name]) <= third_upper) {
+            a.push(i);
+        }
+    }
+    $('tr').remove('.product-content');
+    for (i = 0; i < a.length; i += 1) {
+        $('table#product-list').append(generate_product_row(product_list[a[i]].name,
+                                                           product_list[a[i]].descript,
+                                                           product_list[a[i]].rate + '%',
+                                                           LEVEL[Number(product_list[a[i]].level)],
+                                                           product_list[a[i]].term));
     }
 }
 
