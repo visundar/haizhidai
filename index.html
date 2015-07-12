@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>海智贷</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="http://localhost/project/css/jquery-ui.min.css">
+    <link rel="stylesheet" href="http://localhost/project/css/theme.css">
+    <link rel="stylesheet" href="http://localhost/project/css/fileinput.min.css">
+    <link rel="stylesheet" href="http://localhost/project/css/style.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="javascript:void(0)">海智贷</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="javascript:void(0)" onclick="load_invest_page()">我要投資</a></li>
+                    <li><a href="javascript:void(0)" onclick="load_borrow_page()">我要借款</a></li>
+                    <li><a href="javascript:void(0)" onclick="load_account_page()">我的帳戶</a></li>
+                </ul>
+                <form class="navbar-form navbar-right" role="form" id="sign-in">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="郵箱" name="email">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control" placeholder="密碼" name="password">
+                    </div>
+                    <button type="button" class="btn btn-default" value="0" onclick="sign_in(this)">借款</button>
+                    <button type="button" class="btn btn-default" value="1" onclick="sign_in(this)">投資</button>
+                </form>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="javascript:void(0)" data-toggle="modal" data-target="#sign-up-modal">沒有帳戶?</a></li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container-fluid -->
+    </nav><div id="navbar-offset">
+    </div>
+    <div class="container-fluid">
+        <div class="row" id="content">
+            <div class="col-md-2"></div>
+            <div class="col-md-8 thumbnail">
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+        <div id="modal">
+            <div class="modal fade" id="sign-up-modal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title">注册</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" id="sign-up">
+                                <div class="form-group">
+                                    <label for="sign-up-email" class="control-label col-md-2">郵箱</label>
+                                    <div class="col-md-10">
+                                        <input type="text" class="form-control" id="sign-up-email" placeholder="郵箱" name="email">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="sign-up-confirm-email" class="control-label col-md-2">確認 郵箱</label>
+                                    <div class="col-md-10">
+                                        <input type="text" class="form-control" id="sign-up-confirm-email" placeholder="重新輸入郵箱">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="sign-up-password" class="control-label col-md-2">密碼</label>
+                                    <div class="col-md-10">
+                                        <input type="password" class="form-control" id="sign-up-password" placeholder="密碼" name="password">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="sign-up-authority" class="control-label col-md-2">用戶身份</label>
+                                    <div class="col-md-10">
+                                        <label class="radio-inline">
+                                            <input type="radio" name="authority" value="0"> 我要借款
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" name="authority" value="1" checked> 我要理财
+                                        </label>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" onclick="sign_up()">注册</button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- /.modal -->
+        </div>
+        <hr>
+        <footer>
+            <p>&copy; Company 2015</p>
+        </footer>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="http://localhost/project/js/jquery-ui.min.js"></script>
+    <script src="http://localhost/project/js/fileinput.min.js"></script>
+    <script src="http://localhost/project/js/fileinput_locale_zh.js"></script>
+    <script src="http://localhost/project/js/jquery.cookie.js"></script>
+    <script src="http://localhost/project/js/script.js"></script>
+</body>
+
+</html>
