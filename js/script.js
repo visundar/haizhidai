@@ -1,10 +1,17 @@
 /*global $, jQuery, alert*/
-/*jslint forin: true*/
+/*jslint forin: true, bitwise: true*/
 var STATES = ['北京', '上海', '天津', '重庆', '河北', '山西', '内蒙古自治区', '辽宁', '吉林', '黑龙江', '江苏', '浙江', '安徽', '福建', '江西', '山东', '河南', '湖北', '湖南', '广东', '广西壮族自治区', '海南', '四川', '贵州', '云南', '西藏自治区', '陕西', '甘肃', '青海', '宁夏回族自治区', '新疆维吾尔自治区', '其他'];
 var STORES = ['淘宝网', '拍拍网', '阿里巴巴', '京东', '一号店', '当当网', '敦煌', '其他'];
 var FILE_ATTR = ['身份证', '结婚证', '营业执照', '劳动合同', '工牌、名片、工作证', '社保', '工资卡/常用银行流水', '学生证/一卡通', '房产证', '行驶证', '支付宝截图', '个人信用报告', '信用卡对账单', '学历学位证书', '其他所有贷款协议/凭证'];
 var FILE_DESC = ['二代身份证正反面各一张，本人手持身份证合照一张，共3张。', '本人结婚证，包含结婚日期、本人及配偶所有信息。', '营业执照照片或工商网站截图，必须清晰显示法人、成立时间、经营范围、经营时间等关键信息。', '本人当前的有效劳动合同，从封面一页一页拍至最后一页。', '个人工作证或单位工牌、名片均可，必须完整显示单位信息及个人信息。', '社保/公积金网站截图，需完整显示本人姓名、身份证、缴费状态、缴费金额等关键信息。', '本人银行卡正反面照片各一张，以及近3个月完整流水打印单或网银流水截屏。工资卡需显示代发工资项。', '个人学生证信息页照片，需完整显示学校信息及个人信息', '房产证的基本信息页及盖章页各一张，共2张。', '正副本照片，需完整显示车辆登记信息及年检信息。', '支付宝账户基本信息页截图和上一年度个人年度对账单截图。', '仅接受人民银行征信中心网络查询的PDF版。', '用户本人信用卡正面照片及对应的近3 个月信用卡（电子或纸质）对账单。', '本人大专及以上学历或学位证书，接受结业证。', '本人其他金融机构的贷款协议或凭证证明。'];
+var EDUCATION = ['初中及以下', '中专', '高中', '大专', '本科', '研究生及以上'];
+var WORK_YEAR = ['1 年已內', '2 年已內', '3 年已內', '4 年(含)以上'];
 var UPLOAD_URL = 'http://localhost/upload/index.php';
+var RATE = [1.99, 3.99, 5.99, 8.99, 11.99, 14.99, 19.99];
+var INCOME = [500000, 250000, 125000, 62500, 31250, 15625, 7812];
+var LEVEL = ['AA', 'A', 'B', 'C', 'D', 'E', 'HR'];
+var TERM = ['7 天', '14 天', '28 天', '半年', '一年'];
+var USAGE = ['還款', '學費', '租金'];
 var PRODUCT = [{
         name: '普通借款标',
         suit: '工薪族',
@@ -30,7 +37,7 @@ var PRODUCT = [{
             '学籍认证',
             '视频认证']
     }];
-var BORROW_PROGRESS = ['產品選擇', '基本資料', '資料上传', '資料确认', '審核狀況'];
+var BORROW_PROGRESS = ['產品選擇', '個人信息', '資料上传', '產品信息', '資料确认', '審核狀況'];
 var PRODUCT_PANEL_STR = function () {
     'use strict';
     /*
@@ -49,8 +56,9 @@ var DETAIL_WORKER_STR = function () {
     <label class="col-md-2 control-label">*月收入</label>
     <div class="col-md-5">
         <div class="input-group">
+            <span class="input-group-addon">&yen;</span>
             <input type="text" class="form-control" name="income">
-              <span class="input-group-addon">万元</span>
+              <span class="input-group-addon">元</span>
         </div>
     </div>
 </div>
@@ -64,10 +72,6 @@ var DETAIL_WORKER_STR = function () {
    <label class="col-md-2 control-label">*工作年限</label>
     <div class="col-md-5">
         <select class="form-control" name="work_years" id="work-years">
-          <option value="0">1 年已內</option>
-          <option value="1">2 年已內</option>
-          <option value="2">3 年已內</option>
-          <option value="3">4 年(含)以上</option>
         </select>
     </div>
 </div>
@@ -167,10 +171,71 @@ var DETAIL_STORE_STR = function () {
 </div>
     */
 }.toString().slice(38, -4);
+var PRODUCT_DETAIL_STR = function () {
+    'use strict';
+    /*
+<form class="form-horizontal" id="product">
+    <div class="form-group">
+        <label for="name" class="col-md-2 control-label">*借款名稱</label>
+        <div class="col-md-6">
+          <input type="text" class="form-control" name="name" placeholder="">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="term" class="col-md-2 control-label">*還款期限</label>
+        <div class="col-md-6">
+            <select class="form-control" name="term" id="term">
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="usage" class="col-md-2 control-label">*借款用途</label>
+        <div class="col-md-6">
+            <select class="form-control" name="usage" id="usage">
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="amount" class="col-md-2 control-label">*借款金額</label>
+        <div class="col-md-6">
+          <div class="input-group">
+              <span class="input-group-addon">&yen;</span>
+              <input type="text" class="form-control" name="amount" placeholder="">
+              <span class="input-group-addon">元</span>
+          </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="source" class="col-md-2 control-label">*還款來源</label>
+        <div class="col-md-6">
+          <input type="text" class="form-control" name="source" placeholder="">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="descript" class="col-md-2 control-label">*借款簡介</label>
+        <div class="col-md-6">
+          <textarea name="descript" class="form-control" rows="3"></textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="ps" class="col-md-2 control-label">其他</label>
+        <div class="col-md-6">
+          <textarea name="ps" class="form-control" rows="3"></textarea>
+        </div>
+    </div>
+    <div class="form-group">
+       <div class="col-md-offset-8">
+           <button type="button" class="btn btn-success" onclick="save_product()">我已认真填写，下一步</button>
+       </div>
+    </div>
+</form>
+    */
+}.toString().slice(38, -4);
 var PROFILE_STR = function () {
     'use strict';
     /*
 <form class="form-horizontal" id="profile">
+    <div class="alert alert-warning" role="alert"><strong>温馨提示</strong>： 请填写真实完善的个人信息，以保证您的借款需求通过审核。海智贷拥有严格的信息及安全加密机制，确保您的信息安全。</div>
     <div class="form-group">
         <label for="name" class="col-md-2 control-label">*姓名</label>
         <div class="col-md-2">
@@ -238,12 +303,6 @@ var PROFILE_STR = function () {
        <label for="education" class="col-md-2 control-label">*学历</label>
         <div class="col-md-5">
             <select class="form-control" id="education" name="education">
-              <option value="0">初中及以下</option>
-              <option value="1">中专</option>
-              <option value="2">高中</option>
-              <option value="3">大专</option>
-              <option value="4">本科</option>
-              <option value="5">研究生及以上</option>
             </select>
         </div>
     </div>
@@ -303,15 +362,36 @@ var PROFILE_STR = function () {
 </form>
     */
 }.toString().slice(38, -4);
+var IMAGE_UPLOAD_MODAL_STR = function () {
+    'use strict';
+    /*
+<div class="modal fade" id="image-upload-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">圖像上傳</h4>
+            </div>
+            <div class="modal-body">
+                <input type="file" class="filestyle" data-input="false" accept="image/\*" name="image">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">完成</button>
+            </div>
+        </div>
+    </div>
+</div>
+    */
+}.toString().slice(38, -4);
 var FILE_UPLOAD_STR = function () {
     'use strict';
     /*
 <table class="table table-bordered table-hover" id="file-list">
     <tr>
         <th class="col-md-2">資料類型</th>
-        <th class="col-md-6">說明</th>
+        <th class="col-md-8">說明</th>
         <th class="col-md-1">圖片<br>數量</th>
-        <th class="col-md-3">操作</th>
+        <th class="col-md-1">操作</th>
     </tr>
 </table>
 <p class="text-right">
@@ -319,6 +399,33 @@ var FILE_UPLOAD_STR = function () {
 </p>
     */
 }.toString().slice(38, -4);
+var CONFIRM_PAGE_STR = function () {
+    'use strict';
+    /*
+<table class="table">
+    <tr><th class="col-md-2">個人信息</th><td class="col-md-8"></td><td class="col-md-2"></td></tr>
+    <tr>
+       <th></th>
+       <td>
+           <ul id="member">
+           </ul>
+        </td>
+        <td><button class="btn btn-info" onclick="load_borrow_detail_page()">編輯</button></td>
+    </tr>
+    <tr><th>產品信息</th><td></td><td></td></tr>
+    <tr>
+       <th></th>
+       <td>
+           <ul id="product">
+           </ul>
+        </td>
+        <td><button class="btn btn-info" onclick="load_product_info_page()">編輯</button></td>
+    </tr>
+    <tr><th></th><td colspan="2" class="text-right"><button class="btn btn-warning" onclick="submit_product_detail()">我已閱讀且同意</button></td></tr>
+</table>
+    */
+}.toString().slice(38, -4);
+var member, product;
 
 
 (function ($) {
@@ -397,15 +504,24 @@ function load_borrow_page() {
 function load_borrow_detail_page(btn) {
     'use strict';
     var i;
-    $('div#content > div:nth-child(1) > a:nth-child(1)').removeClass('active');
+    $('div#content > div:nth-child(1) > a').removeClass('active');
     $('div#content > div:nth-child(1) > a:nth-child(2)').addClass('active');
     $('div#content > div:nth-child(2)').html(PROFILE_STR);
-    if ($(btn).val() === '0') {
+    if ($(btn).val() === '0' || $.cookie('work_status') === '0') {
         $(DETAIL_WORKER_STR).insertBefore('form > div.form-group:has(div.col-md-offset-8)');
-    } else if ($(btn).val() === '1') {
+        $.cookie('work_status', 0, 30, '/');
+    } else if ($(btn).val() === '1' || $.cookie('work_status') === '1') {
         $(DETAIL_STORE_STR).insertBefore('form > div.form-group:has(div.col-md-offset-8)');
-    } else if ($(btn).val() === '2') {
+        $.cookie('work_status', 1, 30, '/');
+    } else if ($(btn).val() === '2' || $.cookie('work_status') === '2') {
         $(DETAIL_STUDENT_STR).insertBefore('form > div.form-group:has(div.col-md-offset-8)');
+        $.cookie('work_status', 2, 30, '/');
+    }
+    for (i = 0; i < WORK_YEAR.length; i += 1) {
+        $('select[name="work_years"]').append('<option value="' + i + '">' + WORK_YEAR[i] + '</option>');
+    }
+    for (i = 0; i < EDUCATION.length; i += 1) {
+        $('select[name="education"]').append('<option value="' + i + '">' + EDUCATION[i] + '</option>');
     }
     for (i = 0; i < STATES.length; i += 1) {
         $('select[name="work_state"]').append('<option value="' + i + '">' + STATES[i] + '</option>');
@@ -462,7 +578,12 @@ function submit_borrow_detail() {
         data: (function () {
             var request = {};
             request.name = 'SUBMIT_PROFILE';
+            $('input, select').attr('disabled', false);
+            $('input[name="first_name"], input[name="last_name"], input[name="uid"], input[name="birth"], input[name="cellphone"], input[name="gender"]').attr('disabled', true);
             request.content = $('form#profile').serializeObject();
+            request.content.work_status = $.cookie('work_status');
+            $.cookie('income', request.content.income, 30, '/');
+            member = request.content;
             return 'request=' + JSON.stringify(request);
         }()),
         type: 'POST',
@@ -472,28 +593,163 @@ function submit_borrow_detail() {
             $('div#content > div:nth-child(2)').html(FILE_UPLOAD_STR);
             for (i = 0; i < FILE_ATTR.length; i += 1) {
                 $('table#file-list').append('<tr><th>' + FILE_ATTR[i] + '</th><td>' + FILE_DESC[i] +
-                                            '<a href="">示例圖片</a></td><td>0</td><td>' +
-                                            '<input type="file" class="filestyle" data-input="false" accept="image/*" name="image"></td></tr>');
+                                            '<a href="">示例圖片</a></td><td>0</td><td><button class="btn btn-info" data-toggle="modal" data-target="#image-upload-modal">上傳</button></td></tr>');
             }
+            $('div#modal').html(IMAGE_UPLOAD_MODAL_STR);
             $(".filestyle").fileinput({
                 uploadUrl: UPLOAD_URL,
                 language: 'zh',
-                maxFilesNum: 1,
-                dropZoneEnabled: false
+                maxFilesNum: 1
             });
+            /*
             $(".filestyle").on('fileuploaded', function () {
                 $(this).fileinput('clear');
                 i = Number($(this).parents('td').prev().text()) + 1;
                 $(this).parents('td').prev().text(i);
-            });
+            });*/
         }
     });
+}
+
+function load_product_info_page() {
+    'use strict';
+    var i, name;
+    $('div#content > div:nth-child(1) > a').removeClass('active');
+    $('div#content > div:nth-child(1) > a:nth-child(4)').addClass('active');
+    $('div#modal').html('');
+    $('div#content > div:nth-child(2)').html(PRODUCT_DETAIL_STR);
+    for (i = 0; i < TERM.length; i += 1) {
+        $('select[name="term"]').append('<option value="' + i + '">' + TERM[i] + '</option>');
+    }
+    for (i = 0; i < USAGE.length; i += 1) {
+        $('select[name="usage"]').append('<option value="' + i + '">' + USAGE[i] + '</option>');
+    }
+    if (product !== null) {
+        for (name in product) {
+            if (name === 'term' || name === 'usage') {
+                $('select#' + name.replace('_', '-')).val(product[name]);
+            } else if (name === 'descript' || name === 'ps') {
+                $('textarea[name="' + name + '"]').val(product[name]);
+            } else {
+                $('input[name="' + name + '"]').val(product[name]);
+            }
+        }
+    }
+}
+
+function submit_file_upload() {
+    'use strict';
+    load_product_info_page();
+}
+
+function submit_product_detail() {
+    'use strict';
+    $.ajax('http://localhost/project/php/request.php', {
+        dataType: 'json',
+        data: (function () {
+            var request = {};
+            request.name = 'SUBMIT_PRODUCT_DETAIL';
+            request.content = product;
+            product = null;
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            $('div#content > div:nth-child(1) > a:nth-child(5)').removeClass('active');
+            $('div#content > div:nth-child(1) > a:nth-child(6)').addClass('active');
+            $('div#content > div:nth-child(2)').html('<div class="alert alert-success" role="alert">已送交審核，謝謝您！</div>');
+        }
+    });
+}
+
+function save_product() {
+    'use strict';
+    var i, income, name, tmp;
+    product = $('form#product').serializeObject();
+    income = Number($.cookie('income'));
+    for (i = 0; i < INCOME.length; i += 1) {
+        if (income > INCOME[i]) {
+            break;
+        }
+    }
+    product.level = i;
+    product.rate = RATE[i];
+    $('div#content > div:nth-child(1) > a:nth-child(4)').removeClass('active');
+    $('div#content > div:nth-child(1) > a:nth-child(5)').addClass('active');
+    $('div#content > div:nth-child(2)').html(CONFIRM_PAGE_STR);
+    for (name in member) {
+        if (member[name] !== null) {
+            if (name === 'marriage') {
+                if (member[name] === '0') {
+                    tmp = '未婚';
+                } else if (member[name] === '1') {
+                    tmp = '已婚';
+                } else {
+                    tmp = '离异';
+                }
+                $('ul#member').append('<li>婚姻状况:' + tmp + '</li>');
+            } else if (name === 'insurance') {
+                $('ul#member').append('<li>保險:' + (member[name] === '0' ? '无' : '有') + '</li>');
+            } else if (name === 'education') {
+                $('ul#member').append('<li>学历:' + EDUCATION[Number(member[name])] + '</li>');
+            } else if (name === 'child') {
+                $('ul#member').append('<li>子女:' + (member[name] === '0' ? '无' : '有') + '</li>');
+            } else if (name === 'home_phone') {
+                $('ul#member').append('<li>住宅电话:' + member[name] + '</li>');
+            } else if (name === 'home_state') {
+                $('ul#member').append('<li>住宅省份:' + STATES[Number(member[name])] + '</li>');
+            } else if (name === 'home_address') {
+                $('ul#member').append('<li>住宅地址:' + member[name] + '</li>');
+            } else if (name === 'income') {
+                $('ul#member').append('<li>月收入:' + member[name] + '</li>');
+            } else if (name === 'work_name') {
+                $('ul#member').append('<li>公司名稱:' + member[name] + '</li>');
+            } else if (name === 'work_years') {
+                $('ul#member').append('<li>公作年限:' + WORK_YEAR[Number(member[name])] + '</li>');
+            } else if (name === 'work_state') {
+                $('ul#member').append('<li>单位省份:' + STATES[Number(member[name])] + '</li>');
+            } else if (name === 'work_address') {
+                $('ul#member').append('<li>单位地址:' + member[name] + '</li>');
+            } else if (name === 'work_phone') {
+                $('ul#member').append('<li>单位电话:' + member[name] + '</li>');
+            } else if (name === 'work_department') {
+                $('ul#member').append('<li>任职部门:' + member[name] + '</li>');
+            } else if (name === 'work_title') {
+                $('ul#member').append('<li>任职职位:' + member[name] + '</li>');
+            }
+        }
+    }
+    for (name in product) {
+        if (product[name] !== null) {
+            if (name === 'name') {
+                $('ul#product').append('<li>借款名稱:' + product[name] + '</li>');
+            } else if (name === 'term') {
+                $('ul#product').append('<li>還款期限:' + TERM[Number(product[name])] + '</li>');
+            } else if (name === 'usage') {
+                $('ul#product').append('<li>借款用途:' + USAGE[Number(product[name])] + '</li>');
+            } else if (name === 'amount') {
+                $('ul#product').append('<li>借款金額:' + product[name] + '</li>');
+            } else if (name === 'source') {
+                $('ul#product').append('<li>還款來源:' + product[name] + '</li>');
+            } else if (name === 'descript') {
+                $('ul#product').append('<li>借款簡介:' + product[name] + '</li>');
+            } else if (name === 'ps') {
+                $('ul#product').append('<li>附註:' + product[name] + '</li>');
+            } else if (name === 'level') {
+                $('ul#product').append('<li>借款等級:' + LEVEL[Number(product[name])] + '</li>');
+            } else if (name === 'rate') {
+                $('ul#product').append('<li>借款利率:' + product[name] + '</li>');
+            }
+        }
+    }
 }
 
 function sign_out() {
     'use strict';
     $.removeCookie('user_serial');
     $.removeCookie('first_name');
+    $.removeCookie('work_status');
+    $.removeCookie('income');
     location.reload();
 }
 
@@ -523,7 +779,7 @@ function sign_up() {
                 alert('此帳戶已被使用');
                 return;
             }
-            $.cookie('user_serial', obj.content.user_serial, null, '/');
+            $.cookie('user_serial', obj.content.user_serial, 30, '/');
             location.reload();
         }
     });
@@ -546,9 +802,9 @@ function sign_in(btn) {
                 alert('郵箱 或 密碼錯誤, 請重新輸入');
                 return;
             }
-            $.cookie('user_serial', obj.content.user_serial, null, '/');
+            $.cookie('user_serial', obj.content.user_serial, 30, '/');
             if (obj.content.first_name !== null) {
-                $.cookie('first_name', obj.content.first_name, null, '/');
+                $.cookie('first_name', obj.content.first_name, 30, '/');
             }
             location.reload();
         }

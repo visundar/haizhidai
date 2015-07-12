@@ -26,6 +26,18 @@ try {
             $response->content = mysql_fetch_object($result);
             mysql_free_result($result);
             break;
+        case 'SUBMIT_PRODUCT_DETAIL':
+            $names = "";
+            $values = "";
+            foreach ($obj->content as $name => $value) {
+                $names .= "`" . $name . "`, ";
+                $values .= "'" . $value . "', ";
+            }
+            $names = substr($names, 0, -2);
+            $values = substr($values, 0, -2);
+            $query = "INSERT INTO `product` (" . $names . ") VALUES (" . $values . ")";
+            mysql_query($query, $con) or throw_exception(mysql_error());
+            break;
         case 'SUBMIT_PROFILE':
             $query = "UPDATE `member` SET ";
             foreach ($obj->content as $name => $value) {
