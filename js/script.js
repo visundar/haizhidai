@@ -835,6 +835,23 @@ function clear_all() {
     $('div#content > div').html('');
 }
 
+function get_member() {
+    'use strict';
+    $.ajax('http://localhost/project/php/request.php', {
+        dataType: 'json',
+        async: false,
+        data: (function () {
+            var request = {};
+            request.name = 'GET_MEMBER';
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            member = obj.content;
+        }
+    });
+}
+
 function filter_slider_init() {
     'use strict';
     $("#complete-slider").slider({
@@ -1048,6 +1065,7 @@ function load_invest_page() {
     $('div#modal').append(CHARGE_MODAL_STR + AUTHEN_MODAL_STR + INVEST_MODAL_STR);
     filter_slider_init();
     load_product_list();
+    get_member();
     for (i = 0; i < product_list.length; i += 1) {
         a.push(i);
     }
@@ -1176,10 +1194,9 @@ function submit_borrow_detail() {
             request.content = $('form#profile').serializeObject();
             request.content.work_status = $.cookie('work_status');
             if (request.content.income === undefined) {
-                $.cookie('income', 0, 30, '/');
-            } else {
-                $.cookie('income', request.content.income, 30, '/');
+                request.content.income = INCOME[2];
             }
+            $.cookie('income', request.content.income, 30, '/');
             $.cookie('first_name', request.content.first_name, 30, '/');
             member = request.content;
             return 'request=' + JSON.stringify(request);
@@ -1346,7 +1363,7 @@ function save_product() {
     product = $('form#product').serializeObject();
     income = Number($.cookie('income'));
     for (i = 0; i < INCOME.length - 1; i += 1) {
-        if (income > INCOME[i]) {
+        if (income >= INCOME[i]) {
             break;
         }
     }
