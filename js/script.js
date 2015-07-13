@@ -36,7 +36,7 @@ var PRODUCT = [{
             '学籍认证',
             '视频认证']
     }];
-var BORROW_PROGRESS = ['产品选择', '个人信息', '资料上传', '产品信息', '资料确认', '审核状况'];
+var BORROW_PROGRESS = ['产品选择', '个人信息', '产品信息', '资料上传', '资料确认', '审核状况'];
 var NAVBAR_STR = function () {
     'use strict';
     /*
@@ -1169,130 +1169,11 @@ function load_account_page() {
     clear_all();
 }
 
-function submit_borrow_detail() {
-    'use strict';
-    var i;
-    if ($('input[name="first_name"]').val() === '' || $('input[name="last_name"]').val() === '') {
-        alert('请填写姓名');
-        return;
-    } else if ($('input[name="uid"]').val() === '') {
-        alert('请填写身份证');
-        return;
-    } else if ($('input[name="cellphone"]').val() === '') {
-        alert('请填写手机号');
-        return;
-    } else if ($('input[name="birth"]').val() === '') {
-        alert('请填写生日');
-        return;
-    }
-    $.ajax('http://localhost/project/php/request.php', {
-        dataType: 'json',
-        data: (function () {
-            var request = {};
-            request.name = 'SUBMIT_PROFILE';
-            $('input, select').attr('disabled', false);
-            request.content = $('form#profile').serializeObject();
-            request.content.work_status = $.cookie('work_status');
-            if (request.content.income === undefined) {
-                request.content.income = INCOME[2];
-            }
-            $.cookie('income', request.content.income, 30, '/');
-            $.cookie('first_name', request.content.first_name, 30, '/');
-            member = request.content;
-            return 'request=' + JSON.stringify(request);
-        }()),
-        type: 'POST',
-        success: function (obj) {
-            $('div#content > div:nth-child(1) > a:nth-child(2)').removeClass('active');
-            $('div#content > div:nth-child(1) > a:nth-child(3)').addClass('active');
-            $('div#content > div:nth-child(2)').html(FILE_UPLOAD_STR);
-            for (i = 0; i < FILE_ATTR.length; i += 1) {
-                $('table#file-list').append('<tr><th>' + FILE_ATTR[i] + '</th><td>' + FILE_DESC[i] +
-                                            '<a href="">示例圖片</a></td><td>0</td><td><button class="btn btn-info" data-toggle="modal" data-target="#image-upload-modal">上傳</button></td></tr>');
-            }
-            $('div#modal').html(IMAGE_UPLOAD_MODAL_STR);
-            $(".filestyle").fileinput({
-                uploadUrl: UPLOAD_URL,
-                language: 'zh',
-                maxFilesNum: 1
-            });
-            /*
-            $(".filestyle").on('fileuploaded', function () {
-                $(this).fileinput('clear');
-                i = Number($(this).parents('td').prev().text()) + 1;
-                $(this).parents('td').prev().text(i);
-            });*/
-        }
-    });
-}
-
-function submit_authen() {
-    'use strict';
-    if ($('input[name="first_name"]').val() === '' || $('input[name="last_name"]').val() === '') {
-        alert('请填写姓名');
-        return;
-    } else if ($('input[name="uid"]').val() === '') {
-        alert('请填写身份证');
-        return;
-    } else if ($('input[name="cellphone"]').val() === '') {
-        alert('请填写手机号');
-        return;
-    }
-    $.ajax('http://localhost/project/php/request.php', {
-        dataType: 'json',
-        async: false,
-        data: (function () {
-            var request = {};
-            request.name = 'SET_MEMBER';
-            request.content = $('form#authen').serializeObject();
-            return 'request=' + JSON.stringify(request);
-        }()),
-        type: 'POST',
-        success: function (obj) {
-            member = obj.content;
-            $('#authen-modal').modal('hide');
-            $('#charge-modal').modal('show');
-        }
-    });
-}
-
-function submit_charge() {
-    'use strict';
-    if ($('input#name').val() === '') {
-        alert('请填写姓名');
-        return;
-    } else if ($('input#card-number').val() === '') {
-        alert('请填写银行卡号');
-        return;
-    } else if ($('input#cellphone').val() === '') {
-        alert('请填写手机号');
-        return;
-    } else if ($('input[name="remain"]').val() === '') {
-        alert('请填写充值金额');
-        return;
-    }
-    $.ajax('http://localhost/project/php/request.php', {
-        dataType: 'json',
-        async: false,
-        data: (function () {
-            var request = {};
-            request.name = 'CHARGE';
-            request.content = $('form#charge').serializeObject();
-            return 'request=' + JSON.stringify(request);
-        }()),
-        type: 'POST',
-        success: function (obj) {
-            member = obj.content;
-            $('#charge-modal').modal('hide');
-        }
-    });
-}
-
 function load_product_info_page() {
     'use strict';
     var i, name;
     $('div#content > div:nth-child(1) > a').removeClass('active');
-    $('div#content > div:nth-child(1) > a:nth-child(4)').addClass('active');
+    $('div#content > div:nth-child(1) > a:nth-child(3)').addClass('active');
     $('div#modal').html('');
     $('div#content > div:nth-child(2)').html(PRODUCT_DETAIL_STR);
     for (i = 0; i < USAGE.length; i += 1) {
@@ -1311,64 +1192,9 @@ function load_product_info_page() {
     }
 }
 
-function submit_file_upload() {
+function load_product_confirm_page() {
     'use strict';
-    load_product_info_page();
-}
-
-function submit_product_detail() {
-    'use strict';
-    $.ajax('http://localhost/project/php/request.php', {
-        dataType: 'json',
-        data: (function () {
-            var request = {};
-            request.name = 'SUBMIT_PRODUCT_DETAIL';
-            request.content = product;
-            product = null;
-            return 'request=' + JSON.stringify(request);
-        }()),
-        type: 'POST',
-        success: function (obj) {
-            $('div#content > div:nth-child(1) > a:nth-child(5)').removeClass('active');
-            $('div#content > div:nth-child(1) > a:nth-child(6)').addClass('active');
-            $('div#content > div:nth-child(2)').html('<div class="alert alert-success" role="alert">已送交审核，谢谢您！</div>');
-        }
-    });
-}
-
-function submit_invest() {
-    'use strict';
-    $.ajax('http://localhost/project/php/request.php', {
-        dataType: 'json',
-        data: (function () {
-            var request = {}, content = {};
-            content.amount = $('#invest-modal h2 > strong').html();
-            content.product_serial = $('#invest-modal h3:eq(0) > strong').html();
-            request.name = 'INVEST';
-            request.content = content;
-            return 'request=' + JSON.stringify(request);
-        }()),
-        type: 'POST',
-        success: function (obj) {
-            $('#invest-modal').modal('hide');
-            product_list = obj.content;
-            filter();
-        }
-    });
-}
-
-function save_product() {
-    'use strict';
-    var i, income, name, tmp;
-    product = $('form#product').serializeObject();
-    income = Number($.cookie('income'));
-    for (i = 0; i < INCOME.length - 1; i += 1) {
-        if (income >= INCOME[i]) {
-            break;
-        }
-    }
-    product.level = i;
-    product.rate = RATE[i];
+    var name, tmp;
     $('div#content > div:nth-child(1) > a:nth-child(4)').removeClass('active');
     $('div#content > div:nth-child(1) > a:nth-child(5)').addClass('active');
     $('div#content > div:nth-child(2)').html(CONFIRM_PAGE_STR);
@@ -1437,6 +1263,191 @@ function save_product() {
             }
         }
     }
+}
+
+function load_upload_page() {
+    'use strict';
+    var i;
+    $('div#content > div:nth-child(1) > a').removeClass('active');
+    $('div#content > div:nth-child(1) > a:nth-child(4)').addClass('active');
+    $('div#content > div:nth-child(2)').html(FILE_UPLOAD_STR);
+    for (i = 0; i < FILE_ATTR.length; i += 1) {
+        $('table#file-list').append('<tr><th>' + FILE_ATTR[i] + '</th><td>' + FILE_DESC[i] +
+                                    '<a href="">示例圖片</a></td><td>0</td><td><button class="btn btn-info" data-toggle="modal" data-target="#image-upload-modal">上傳</button></td></tr>');
+    }
+    $('div#modal').html(IMAGE_UPLOAD_MODAL_STR);
+    $(".filestyle").fileinput({
+        uploadUrl: UPLOAD_URL,
+        language: 'zh',
+        maxFilesNum: 1
+    });
+    /*
+    $(".filestyle").on('fileuploaded', function () {
+        $(this).fileinput('clear');
+        i = Number($(this).parents('td').prev().text()) + 1;
+        $(this).parents('td').prev().text(i);
+    });*/
+}
+
+function submit_borrow_detail() {
+    'use strict';
+    if ($('input[name="first_name"]').val() === '' || $('input[name="last_name"]').val() === '') {
+        alert('请填写姓名');
+        return;
+    } else if ($('input[name="uid"]').val() === '') {
+        alert('请填写身份证');
+        return;
+    } else if ($('input[name="cellphone"]').val() === '') {
+        alert('请填写手机号');
+        return;
+    } else if ($('input[name="birth"]').val() === '') {
+        alert('请填写生日');
+        return;
+    }
+    $.ajax('http://localhost/project/php/request.php', {
+        dataType: 'json',
+        data: (function () {
+            var request = {};
+            request.name = 'SUBMIT_PROFILE';
+            $('input, select').attr('disabled', false);
+            request.content = $('form#profile').serializeObject();
+            request.content.work_status = $.cookie('work_status');
+            if (request.content.income === undefined) {
+                request.content.income = INCOME[2];
+            }
+            $.cookie('income', request.content.income, 30, '/');
+            $.cookie('first_name', request.content.first_name, 30, '/');
+            member = request.content;
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            load_product_info_page();
+        }
+    });
+}
+
+function submit_authen() {
+    'use strict';
+    if ($('input[name="first_name"]').val() === '' || $('input[name="last_name"]').val() === '') {
+        alert('请填写姓名');
+        return;
+    } else if ($('input[name="uid"]').val() === '') {
+        alert('请填写身份证');
+        return;
+    } else if ($('input[name="cellphone"]').val() === '') {
+        alert('请填写手机号');
+        return;
+    }
+    $.ajax('http://localhost/project/php/request.php', {
+        dataType: 'json',
+        async: false,
+        data: (function () {
+            var request = {};
+            request.name = 'SET_MEMBER';
+            request.content = $('form#authen').serializeObject();
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            member = obj.content;
+            $('#authen-modal').modal('hide');
+            $('#charge-modal').modal('show');
+        }
+    });
+}
+
+function submit_charge() {
+    'use strict';
+    if ($('input#name').val() === '') {
+        alert('请填写姓名');
+        return;
+    } else if ($('input#card-number').val() === '') {
+        alert('请填写银行卡号');
+        return;
+    } else if ($('input#cellphone').val() === '') {
+        alert('请填写手机号');
+        return;
+    } else if ($('input[name="remain"]').val() === '') {
+        alert('请填写充值金额');
+        return;
+    }
+    $.ajax('http://localhost/project/php/request.php', {
+        dataType: 'json',
+        async: false,
+        data: (function () {
+            var request = {};
+            request.name = 'CHARGE';
+            request.content = $('form#charge').serializeObject();
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            member = obj.content;
+            $('#charge-modal').modal('hide');
+        }
+    });
+}
+
+function submit_file_upload() {
+    'use strict';
+    load_product_confirm_page();
+}
+
+function submit_product_detail() {
+    'use strict';
+    $.ajax('http://localhost/project/php/request.php', {
+        dataType: 'json',
+        data: (function () {
+            var request = {};
+            request.name = 'SUBMIT_PRODUCT_DETAIL';
+            request.content = product;
+            product = null;
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            $('div#content > div:nth-child(1) > a:nth-child(5)').removeClass('active');
+            $('div#content > div:nth-child(1) > a:nth-child(6)').addClass('active');
+            $('div#content > div:nth-child(2)').html('<div class="alert alert-success" role="alert">已送交审核，谢谢您！</div>');
+        }
+    });
+}
+
+function submit_invest() {
+    'use strict';
+    $.ajax('http://localhost/project/php/request.php', {
+        dataType: 'json',
+        data: (function () {
+            var request = {}, content = {};
+            content.amount = $('#invest-modal h2 > strong').html();
+            content.product_serial = $('#invest-modal h3:eq(0) > strong').html();
+            request.name = 'INVEST';
+            request.content = content;
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            $('#invest-modal').modal('hide');
+            product_list = obj.content;
+            filter();
+        }
+    });
+}
+
+function save_product() {
+    'use strict';
+    var i, income;
+    product = $('form#product').serializeObject();
+    income = Number($.cookie('income'));
+    for (i = 0; i < INCOME.length - 1; i += 1) {
+        if (income >= INCOME[i]) {
+            break;
+        }
+    }
+    product.level = i;
+    product.rate = RATE[i];
+    load_upload_page();
 }
 
 function sign_out() {
