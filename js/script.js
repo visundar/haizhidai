@@ -852,6 +852,11 @@ function get_member() {
     });
 }
 
+function start_upload() {
+    'use strict';
+    $('#image-upload-modal button.btn.btn-primary').attr('disabled', true);
+}
+
 function filter_slider_init() {
     'use strict';
     $("#complete-slider").slider({
@@ -1273,7 +1278,7 @@ function load_upload_page() {
     $('div#content > div:nth-child(2)').html(FILE_UPLOAD_STR);
     for (i = 0; i < FILE_ATTR.length; i += 1) {
         $('table#file-list').append('<tr><th>' + FILE_ATTR[i] + '</th><td>' + FILE_DESC[i] +
-                                    '<a href="">示例圖片</a></td><td>0</td><td><button class="btn btn-info" data-toggle="modal" data-target="#image-upload-modal">上傳</button></td></tr>');
+                                    '<a href="">示例圖片</a></td><td>0</td><td><button class="btn btn-info" data-toggle="modal" data-target="#image-upload-modal" onclick="start_upload()">上傳</button></td></tr>');
     }
     $('div#modal').html(IMAGE_UPLOAD_MODAL_STR);
     $(".filestyle").fileinput({
@@ -1281,12 +1286,14 @@ function load_upload_page() {
         language: 'zh',
         maxFilesNum: 1
     });
-    /*
     $(".filestyle").on('fileuploaded', function () {
+        $('#image-upload-modal button.btn.btn-primary').attr('disabled', false);
+        /*
         $(this).fileinput('clear');
         i = Number($(this).parents('td').prev().text()) + 1;
         $(this).parents('td').prev().text(i);
-    });*/
+        */
+    });
 }
 
 function submit_borrow_detail() {
