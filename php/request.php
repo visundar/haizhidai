@@ -20,6 +20,19 @@ try {
     mysql_select_db('haizhidai', $con);
 
     switch ($obj->name) {
+        case 'CHARGE':
+            $query = "UPDATE `member` SET `remain`=`remain`+" . $obj->content->remain . " WHERE `user_serial`=" . $_COOKIE['user_serial'];
+            mysql_query($query, $con) or throw_exception(mysql_error());
+            $query = "SELECT * FROM `member` WHERE `user_serial`='" . $_COOKIE['user_serial'] . "'";
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            $response->content = mysql_fetch_object($result);
+            mysql_free_result($result);
+            break;
+        case 'INVEST':
+            $query = "UPDATE `product` SET `complete`=`complete`+" . $obj->content->amount . " WHERE `product_serial`=" . $obj->content->product_serial;
+            mysql_query($query, $con) or throw_exception(mysql_error());
+            $query = "UPDATE `member` SET `remain`=`remain`-" . $obj->content->amount . " WHERE `user_serial`=" . $_COOKIE['user_serial'];
+            mysql_query($query, $con) or throw_exception(mysql_error());
         case 'GET_ALL_PRODUCT':
             $query = "SELECT * FROM `product`";
             $result = mysql_query($query, $con) or throw_exception(mysql_error());
@@ -29,12 +42,6 @@ try {
             }
             mysql_free_result($result);
             $response->content = $a;
-            break;
-        case 'GET_PROFILE':
-            $query = "SELECT * FROM `member` WHERE `user_serial`=" . $_COOKIE['user_serial'];
-            $result = mysql_query($query, $con) or throw_exception(mysql_error());
-            $response->content = mysql_fetch_object($result);
-            mysql_free_result($result);
             break;
         case 'SUBMIT_PRODUCT_DETAIL':
             $names = "";
@@ -46,21 +53,6 @@ try {
             $names .= "`borrower`";
             $values .= $_COOKIE['user_serial'];
             $query = "INSERT INTO `product` (" . $names . ") VALUES (" . $values . ")";
-            mysql_query($query, $con) or throw_exception(mysql_error());
-            break;
-        case 'SUBMIT_PROFILE':
-            $query = "UPDATE `member` SET ";
-            foreach ($obj->content as $name => $value) {
-                if ($name === 'asset') {
-                    $value = 0;
-                    foreach ($obj->content->asset as $num) {
-                        $value += (int) $num;
-                    }
-                }
-                $query .= "`" . $name . "`='" . $value . "', ";
-            }
-            $query = substr($query, 0, -2);
-            $query .= " WHERE `user_serial`=" . $_COOKIE['user_serial'];
             mysql_query($query, $con) or throw_exception(mysql_error());
             break;
         case 'SIGN_UP':
@@ -80,6 +72,27 @@ try {
             if (mysql_num_rows($result) === 0) {
                 throw_exception('ACCOUNT_NOT_FOUND');
             }
+            $response->content = mysql_fetch_object($result);
+            mysql_free_result($result);
+            break;
+        case 'SUBMIT_PROFILE':
+        case 'SET_MEMBER':
+            $query = "UPDATE `member` SET ";
+            foreach ($obj->content as $name => $value) {
+                if ($name === 'asset') {
+                    $value = 0;
+                    foreach ($obj->content->asset as $num) {
+                        $value += (int) $num;
+                    }
+                }
+                $query .= "`" . $name . "`='" . $value . "', ";
+            }
+            $query = substr($query, 0, -2);
+            $query .= " WHERE `user_serial`=" . $_COOKIE['user_serial'];
+            mysql_query($query, $con) or throw_exception(mysql_error());
+        case 'GET_MEMBER':
+            $query = "SELECT * FROM `member` WHERE `user_serial`='" . $_COOKIE['user_serial'] . "'";
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
             $response->content = mysql_fetch_object($result);
             mysql_free_result($result);
             break;

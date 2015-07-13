@@ -5,14 +5,13 @@ var STORES = ['淘宝网', '拍拍网', '阿里巴巴', '京东', '一号店', '
 var FILE_ATTR = ['身份证', '结婚证', '营业执照', '劳动合同', '工牌、名片、工作证', '社保', '工资卡/常用银行流水', '学生证/一卡通', '房产证', '行驶证', '支付宝截图', '个人信用报告', '信用卡对账单', '学历学位证书', '其他所有贷款协议/凭证'];
 var FILE_DESC = ['二代身份证正反面各一张，本人手持身份证合照一张，共3张。', '本人结婚证，包含结婚日期、本人及配偶所有信息。', '营业执照照片或工商网站截图，必须清晰显示法人、成立时间、经营范围、经营时间等关键信息。', '本人当前的有效劳动合同，从封面一页一页拍至最后一页。', '个人工作证或单位工牌、名片均可，必须完整显示单位信息及个人信息。', '社保/公积金网站截图，需完整显示本人姓名、身份证、缴费状态、缴费金额等关键信息。', '本人银行卡正反面照片各一张，以及近3个月完整流水打印单或网银流水截屏。工资卡需显示代发工资项。', '个人学生证信息页照片，需完整显示学校信息及个人信息', '房产证的基本信息页及盖章页各一张，共2张。', '正副本照片，需完整显示车辆登记信息及年检信息。', '支付宝账户基本信息页截图和上一年度个人年度对账单截图。', '仅接受人民银行征信中心网络查询的PDF版。', '用户本人信用卡正面照片及对应的近3 个月信用卡（电子或纸质）对账单。', '本人大专及以上学历或学位证书，接受结业证。', '本人其他金融机构的贷款协议或凭证证明。'];
 var EDUCATION = ['初中及以下', '中专', '高中', '大专', '本科', '研究生及以上'];
-var PRODUCT_ATTR = ['完成度', '瀏覽次數', '上架日期', '金額', '借貸者'];
+var PRODUCT_ATTR = ['利率', '浏览次数', '上架日期', '金额', '借贷者'];
 var WORK_YEAR = ['1 年已內', '2 年已內', '3 年已內', '4 年(含)以上'];
 var UPLOAD_URL = 'http://localhost/upload/index.php';
 var RATE = [1.99, 3.99, 5.99, 8.99, 11.99, 14.99, 19.99];
 var INCOME = [500000, 250000, 125000, 62500, 31250, 15625, 7812];
 var LEVEL = ['AA', 'A', 'B', 'C', 'D', 'E', 'HR'];
-var TERM = ['7 天', '14 天', '28 天', '半年', '一年'];
-var USAGE = ['還款', '學費', '租金'];
+var USAGE = ['还款', '学费', '租金'];
 var PRODUCT = [{
         name: '普通借款标',
         suit: '工薪族',
@@ -38,7 +37,15 @@ var PRODUCT = [{
             '学籍认证',
             '视频认证']
     }];
-var BORROW_PROGRESS = ['產品選擇', '個人信息', '資料上传', '產品信息', '資料确认', '審核狀況'];
+var BORROW_PROGRESS = ['产品选择', '个人信息', '资料上传', '产品信息', '资料确认', '审核状况'];
+var NAVBAR_STR = function () {
+    'use strict';
+    /*
+<li><a href="javascript:void(0)" onclick="load_invest_page()">我要投资</a></li>
+<li><a href="javascript:void(0)" onclick="load_borrow_page()">我要借款</a></li>
+<li><a href="javascript:void(0)" onclick="load_account_page()">我的帐户</a></li>
+    */
+}.toString().slice(38, -4);
 var PRODUCT_PANEL_STR = function () {
     'use strict';
     /*
@@ -115,13 +122,13 @@ var DETAIL_STUDENT_STR = function () {
 <div class="form-group">
     <label class="col-md-2 control-label">*学校名称</label>
     <div class="col-md-5">
-      <input type="text" class="form-control" id="work_name">
+      <input type="text" class="form-control" id="work-name" name="work_name">
     </div>
 </div>
 <div class="form-group">
     <label class="col-md-2 control-label">*宿舍电话</label>
     <div class="col-md-5">
-      <input type="text" class="form-control" id="work_phone">
+      <input type="text" class="form-control" id="work-phone" name="work_phone">
     </div>
 </div>
     */
@@ -177,16 +184,20 @@ var PRODUCT_DETAIL_STR = function () {
     /*
 <form class="form-horizontal" id="product">
     <div class="form-group">
-        <label for="name" class="col-md-2 control-label">*借款名稱</label>
+        <label for="name" class="col-md-2 control-label">*借款名称</label>
         <div class="col-md-6">
           <input type="text" class="form-control" name="name" placeholder="">
         </div>
     </div>
     <div class="form-group">
-        <label for="term" class="col-md-2 control-label">*還款期限</label>
+        <label for="term" class="col-md-2 control-label">*还款期限</label>
         <div class="col-md-6">
-            <select class="form-control" name="term" id="term">
-            </select>
+            <div class="input-group">
+                <span class="input-group-addon pointer" onclick="change_term(this)" value="-"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></span>
+                <input class="form-control" type="text" name="term" value="7">
+                <span class="input-group-addon">天</span>
+                <span class="input-group-addon pointer" onclick="change_term(this)" value="+"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></span>
+            </div>
         </div>
     </div>
     <div class="form-group">
@@ -197,7 +208,7 @@ var PRODUCT_DETAIL_STR = function () {
         </div>
     </div>
     <div class="form-group">
-        <label for="amount" class="col-md-2 control-label">*借款金額</label>
+        <label for="amount" class="col-md-2 control-label">*借款金额</label>
         <div class="col-md-6">
           <div class="input-group">
               <span class="input-group-addon">&yen;</span>
@@ -207,13 +218,13 @@ var PRODUCT_DETAIL_STR = function () {
         </div>
     </div>
     <div class="form-group">
-        <label for="source" class="col-md-2 control-label">*還款來源</label>
+        <label for="source" class="col-md-2 control-label">*还款来源</label>
         <div class="col-md-6">
           <input type="text" class="form-control" name="source" placeholder="">
         </div>
     </div>
     <div class="form-group">
-        <label for="descript" class="col-md-2 control-label">*借款簡介</label>
+        <label for="descript" class="col-md-2 control-label">*借款简介</label>
         <div class="col-md-6">
           <textarea name="descript" class="form-control" rows="3"></textarea>
         </div>
@@ -392,12 +403,12 @@ var FILTER_MODAL_STR = function () {
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="filter-modal-label">過濾</h4>
+            <h4 class="modal-title" id="filter-modal-label">过滤</h4>
           </div>
           <div class="modal-body">
               <div class="row">
                   <h4>
-                      <div class="col-md-2 text-right">利率</div>
+                      <div class="col-md-2 text-right">完成度</div>
                       <div class="col-md-10">
                           <span class="label label-danger" id="first-lower"></span>
                           ~
@@ -442,7 +453,7 @@ var FILTER_MODAL_STR = function () {
               </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="filter()">過濾</button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="filter()">过滤</button>
           </div>
         </div>
       </div>
@@ -477,6 +488,80 @@ var RATE_MODAL_STR = function () {
       </div>
     </div>
   </div>
+</div>
+    */
+}.toString().slice(38, -4);
+var PRODUCT_MODAL_STR = function () {
+    'use strict';
+    /*
+<div class="modal fade" id="product-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">第<u></u>号借款</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-hover">
+                    <tr>
+                        <th>借款名称</th>
+                        <td id="name"></td>
+                    </tr>
+                    <tr>
+                        <th>借款等级</th>
+                        <td id="level"></td>
+                    </tr>
+                    <tr>
+                        <th>借款利率</th>
+                        <td id="rate"></td>
+                    </tr>
+                    <tr>
+                        <th>借款期限</th>
+                        <td id="term"></td>
+                    </tr>
+                    <tr>
+                        <th>借款用途</th>
+                        <td id="usage"></td>
+                    </tr>
+                    <tr>
+                        <th>还款来源</th>
+                        <td id="source"></td>
+                    </tr>
+                    <tr>
+                        <th>借款金额</th>
+                        <td id="amount"></td>
+                    </tr>
+                    <tr>
+                        <th>借款简介</th>
+                        <td id="descript"></td>
+                    </tr>
+                    <tr>
+                        <th>刊登时间</th>
+                        <td id="time"></td>
+                    </tr>
+                    <tr>
+                        <th>完成度</th>
+                        <td id="complete"></td>
+                    </tr>
+                    <tr>
+                        <th>浏览次数</th>
+                        <td id="view"></td>
+                    </tr>
+                    <tr>
+                        <th>借贷者</th>
+                        <td id="borrower"></td>
+                    </tr>
+                    <tr>
+                        <th>附注</th>
+                        <td id="ps"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">了解</button>
+            </div>
+        </div>
+    </div>
 </div>
     */
 }.toString().slice(38, -4);
@@ -528,26 +613,182 @@ var INVEST_PAGE_STR = function () {
 <ul class="nav nav-tabs">
   <li role="presentation" class="active"><a href="javascript:void(0)">所有商品</a></li>
   <form class="form-inline navbar-right">
-      <div class="btn btn-info" data-toggle="modal" data-target="#rate-modal">利率指標</div>
-      <div class="btn btn-warning" data-toggle="modal" data-target="#filter-modal">過濾</div>
-      <input type="text" class="form-control input-sm" placeholder="關鍵字">
-      <button type="button" class="btn btn-default input-sm" onclick="">搜尋</button>
+      <div class="btn btn-info" data-toggle="modal" data-target="#rate-modal">利率指标</div>
+      <div class="btn btn-warning" data-toggle="modal" data-target="#filter-modal">过滤</div>
+      <input type="text" class="form-control input-sm" placeholder="关键字">
+      <button type="button" class="btn btn-default input-sm" onclick="">搜寻</button>
   </form>
 </ul>
 <table class="table table-bordered table-hover" id="product-list">
     <tr>
-        <th class="col-md-3">標題</th>
-        <th class="col-md-1">投标</th>
-        <th class="col-md-2" name="descript">描述</th>
-        <th class="col-md-2" name="rate">利率</th>
-        <th class="col-md-2" name="level">等级</th>
-        <th class="col-md-2" name="term">期限</th>
+        <th class="col-md-2">标题</th>
+        <th class="col-md-3" name="descript">描述</th>
+        <th class="col-md-2" name="complete">完成度</th>
+        <th class="col-md-1" name="level">等级</th>
+        <th class="col-md-1" name="term">期限</th>
+        <th class="col-md-3">投标</th>
     </tr>
 </table>
     */
 }.toString().slice(38, -4);
+var AUTHEN_MODAL_STR = function () {
+    'use strict';
+    /*
+<div class="modal fade" id="authen-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">实名认证</h4>（港澳台认证，请点击<a>此处</a>）
+            </div>
+            <div class="modal-body">
+                <h5>尊敬的用户您好，为了您的资金安全，请先完成身份认証及手机绑定再充值。</h5>
+                <br>
+                <form class="form-horizontal" id="authen">
+                    <div class="form-group">
+                        <label for="name" class="col-md-offset-1 col-md-2 control-label">*姓名</label>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" name="last_name" placeholder="姓">
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" name="first_name" placeholder="名">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="uid" class="col-md-offset-1 col-md-2 control-label">*身份证</label>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control" name="uid" placeholder="身份证">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="cellphone" class="col-md-offset-1 col-md-2 control-label">*手机号</label>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control" name="cellphone" placeholder="手机号">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="authen" class="col-md-offset-1 col-md-2 control-label">*验证码</label>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <input type="button" class="btn" value="获取验证码">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="submit_authen()">认证</button>
+            </div>
+        </div>
+    </div>
+</div>
+    */
+}.toString().slice(38, -4);
+var CHARGE_MODAL_STR = function () {
+    'use strict';
+    /*
+<div class="modal fade" id="charge-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">快速充值</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" id="charge">
+                    <div class="form-group">
+                        <label for="amount" class="col-md-offset-1 col-md-2 control-label">可用餘額</label>
+                        <div class="col-md-8">
+                            <div class="input-group">
+                                <span class="input-group-addon">&yen;</span>
+                                <input class="form-control" type="text" disabled id="amount">
+                                <span class="input-group-addon">元</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="name" class="col-md-offset-1 col-md-2 control-label">*持卡人姓名</label>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control" id="name">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="card_number" class="col-md-offset-1 col-md-2 control-label">*銀行卡號</label>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control" id="card-number" placeholder="請輸入銀行卡號">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="cellphone" class="col-md-offset-1 col-md-2 control-label">*手机号</label>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control" id="cellphone" placeholder="手机号">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="remain" class="col-md-offset-1 col-md-2 control-label">充值金額</label>
+                        <div class="col-md-8">
+                            <div class="input-group">
+                                <span class="input-group-addon">&yen;</span>
+                                <input class="form-control" type="text" placeholder="限額5萬元/次" name="remain">
+                                <span class="input-group-addon">元</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="authen" class="col-md-offset-1 col-md-2 control-label">*手機验证</label>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <input type="button" class="btn" value="获取验证码">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="submit_charge()">充值</button>
+            </div>
+        </div>
+    </div>
+</div>
+    */
+}.toString().slice(38, -4);
+var INVEST_COL_STR = function () {
+    'use strict';
+    /*
+<div class="input-group input-group-sm">
+    <span class="input-group-addon pointer" onclick="change_amount(this)" value="-"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></span>
+    <span class="input-group-addon">&yen;</span>
+    <input class="form-control" type="text" value="100">
+    <span class="input-group-addon pointer" onclick="change_amount(this)" value="+"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></span>
+</div>
+<div class="invest-area col-md-12" onclick="invest_this(this)">马上投标</div>
+    */
+}.toString().slice(38, -4);
+var INVEST_MODAL_STR = function () {
+    'use strict';
+    /*
+<div class="modal fade" id="invest-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">投資</h4>
+            </div>
+            <div class="modal-body">
+                <h2>投資金額：<strong></strong>元</h2>
+                <h3>借款序號：<strong></strong></h3>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="submit_invest()">我確定想投資</button>
+            </div>
+        </div>
+    </div>
+</div>
+    */
+}.toString().slice(38, -4);
 var member, product, product_list;
-
 
 (function ($) {
     'use strict';
@@ -621,6 +862,55 @@ function filter_slider_init() {
     $("#third-upper").html($("#third-slider").slider("values", 1) + "天");
 }
 
+function generate_product_row(para0, para1, para2, para3, para4, para5) {
+    'use strict';
+    var row;
+    row = '<tr class="product-content" value="' + para0 + '">';
+    row += '<td><a onclick="display_product_modal(this)">' + para1 + '</a></td>';
+    row += '<td>' + para2 + '</td>';
+    row += '<td class="text-center">' + para3 + '</td>';
+    row += '<td class="text-center">' + para4 + '</td>';
+    row += '<td class="text-center">' + para5 + '</td>';
+    row += '<td class="text-center">';
+    row += INVEST_COL_STR + '</td>';
+    row += '</tr>';
+    return row;
+}
+
+function filter() {
+    'use strict';
+    var first_lower = $("#first-slider").slider("values", 0),
+        first_upper = $("#first-slider").slider("values", 1),
+        second_lower = $("#second-slider").slider("values", 0),
+        second_upper = $("#second-slider").slider("values", 1),
+        third_lower = $("#third-slider").slider("values", 0),
+        third_upper = $("#third-slider").slider("values", 1),
+        first_name = $('table#product-list > tbody > tr:first > th:nth-child(3)').attr('name'),
+        second_name = $('table#product-list > tbody > tr:first > th:nth-child(4)').attr('name'),
+        third_name = $('table#product-list > tbody > tr:first > th:nth-child(5)').attr('name'),
+        i,
+        a = [];
+    for (i = 0; i < product_list.length; i += 1) {
+        /*Number(product_list[i][first_name]) >= first_lower &&
+                Number(product_list[i][first_name]) <= first_upper &&*/
+        if (Number(product_list[i][second_name]) >= second_lower &&
+                Number(product_list[i][second_name]) <= second_upper &&
+                Number(product_list[i][third_name]) >= third_lower &&
+                Number(product_list[i][third_name]) <= third_upper) {
+            a.push(i);
+        }
+    }
+    $('tr').remove('.product-content');
+    for (i = 0; i < a.length; i += 1) {
+        $('table#product-list').append(generate_product_row(product_list[i].product_serial,
+                                                            product_list[a[i]].name,
+                                                            product_list[a[i]].descript,
+                                                            product_list[a[i]].complete,
+                                                            LEVEL[Number(product_list[a[i]].level)],
+                                                            product_list[a[i]].term));
+    }
+}
+
 function load_product_list() {
     'use strict';
     $.ajax('http://localhost/project/php/request.php', {
@@ -642,6 +932,8 @@ function load_product_list() {
 function load_home_page() {
     'use strict';
     clear_all();
+    $('body').removeClass('index-cover');
+    $('div#navbar-collapse > ul:eq(0)').html(NAVBAR_STR);
     $('div#navbar-collapse > .navbar-right').remove();
     $('div#navbar-collapse').append((function () {
         var name = $.cookie('first_name');
@@ -652,21 +944,43 @@ function load_home_page() {
             'onclick="sign_out()">登出</button></div><ul class="nav navbar-nav navbar-right">' +
             '<li><a>Hi, ' + name + '</a></li></ul>';
     }()));
+    $.ajax('http://localhost/project/php/request.php', {
+        dataType: 'json',
+        async: false,
+        data: (function () {
+            var request = {};
+            request.name = 'GET_MEMBER';
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            member = obj.content;
+        }
+    });
 }
 
-function generate_product_row(para1, para2, para3, para4, para5) {
+function display_product_modal(a) {
     'use strict';
-    var row;
-    row = '<tr class="product-content">';
-    row += '<td><a href="javascript:void(0)">' + para1 + '</a></td>';
-    row += '<td class="text-center"><button type="button" class="btn btn-info btn-xs" onclick="bid()">投標</button>';
-    row += '<button type="button" class="btn btn-success btn-xs" id="btn-concern" onclick="concern()">關注</button></td>';
-    row += '<td>' + para2 + '</td>';
-    row += '<td class="text-center">' + para3 + '</td>';
-    row += '<td class="text-center">' + para4 + '</td>';
-    row += '<td class="text-center">' + para5 + '</td>';
-    row += '</tr>';
-    return row;
+    var i, tmp, name;
+    tmp = Number($(a).parents('tr').attr('value'));
+    for (i = 0; i < product_list.length; i += 1) {
+        if (tmp === Number(product_list[i].product_serial)) {
+            break;
+        }
+    }
+    $('#product-modal u').html(tmp);
+    for (name in product_list[i]) {
+        if (name === 'level') {
+            $('#product-modal td#' + name).html(LEVEL[Number(product_list[i][name])]);
+        } else if (name === 'term') {
+            $('#product-modal td#' + name).html(product_list[i][name] + '天');
+        } else if (name === 'usage') {
+            $('#product-modal td#' + name).html(USAGE[Number(product_list[i][name])]);
+        } else {
+            $('#product-modal td#' + name).html(product_list[i][name]);
+        }
+    }
+    $('#product-modal').modal('show');
 }
 
 function load_invest_page() {
@@ -678,15 +992,17 @@ function load_invest_page() {
         $('div#content > div:nth-child(1)').append('<a class="list-group-item" draggable="true">' + PRODUCT_ATTR[i] + '</a>');
     }
     $('div#content > div:nth-child(2)').html(INVEST_PAGE_STR);
-    $('div#modal').append(RATE_MODAL_STR + FILTER_MODAL_STR);
+    $('div#modal').append(RATE_MODAL_STR + FILTER_MODAL_STR + PRODUCT_MODAL_STR);
+    $('div#modal').append(CHARGE_MODAL_STR + AUTHEN_MODAL_STR + INVEST_MODAL_STR);
     filter_slider_init();
     load_product_list();
     for (i = 0; i < product_list.length; i += 1) {
-        $('table#product-list').append(generate_product_row(product_list[i].name,
-                                                           product_list[i].descript,
-                                                           product_list[i].rate + '%',
-                                                           LEVEL[Number(product_list[i].level)],
-                                                           product_list[i].term));
+        $('table#product-list').append(generate_product_row(product_list[i].product_serial,
+                                                            product_list[i].name,
+                                                            product_list[i].descript,
+                                                            product_list[i].complete,
+                                                            LEVEL[Number(product_list[i].level)],
+                                                            product_list[i].term));
     }
 }
 
@@ -709,7 +1025,7 @@ function load_borrow_page() {
             $('div#content > div:nth-child(2) ul:last').append('<li>' + PRODUCT[i].condition[j] + '</li>');
         }
         $('div#content > div:nth-child(2) div.panel-body:last').append('<hr><button class="btn btn-primary col-md-offset-3 col-md-6"' +
-                                                                       ' value="' + i + '" onclick="load_borrow_detail_page(this)">立即申請</button>');
+                                                                       ' value="' + i + '" onclick="load_borrow_detail_page(this)">立即申请</button>');
     }
 }
 
@@ -719,13 +1035,18 @@ function load_borrow_detail_page(btn) {
     $('div#content > div:nth-child(1) > a').removeClass('active');
     $('div#content > div:nth-child(1) > a:nth-child(2)').addClass('active');
     $('div#content > div:nth-child(2)').html(PROFILE_STR);
-    if ($(btn).val() === '0' || $.cookie('work_status') === '0') {
+    if (btn === undefined) {
+        i = $.cookie('work_status');
+    } else {
+        i = $(btn).val();
+    }
+    if (i === '0') {
         $(DETAIL_WORKER_STR).insertBefore('form > div.form-group:has(div.col-md-offset-8)');
         $.cookie('work_status', 0, 30, '/');
-    } else if ($(btn).val() === '1' || $.cookie('work_status') === '1') {
+    } else if (i === '1') {
         $(DETAIL_STORE_STR).insertBefore('form > div.form-group:has(div.col-md-offset-8)');
         $.cookie('work_status', 1, 30, '/');
-    } else if ($(btn).val() === '2' || $.cookie('work_status') === '2') {
+    } else if (i === '2') {
         $(DETAIL_STUDENT_STR).insertBefore('form > div.form-group:has(div.col-md-offset-8)');
         $.cookie('work_status', 2, 30, '/');
     }
@@ -748,7 +1069,7 @@ function load_borrow_detail_page(btn) {
             dataType: 'json',
             data: (function () {
                 var request = {};
-                request.name = 'GET_PROFILE';
+                request.name = 'GET_MEMBER';
                 request.content = {};
                 return 'request=' + JSON.stringify(request);
             }()),
@@ -785,16 +1106,33 @@ function load_account_page() {
 function submit_borrow_detail() {
     'use strict';
     var i;
+    if ($('input[name="first_name"]').val() === '' || $('input[name="last_name"]').val() === '') {
+        alert('请填写姓名');
+        return;
+    } else if ($('input[name="uid"]').val() === '') {
+        alert('请填写身份证');
+        return;
+    } else if ($('input[name="cellphone"]').val() === '') {
+        alert('请填写手机号');
+        return;
+    } else if ($('input[name="birth"]').val() === '') {
+        alert('请填写生日');
+        return;
+    }
     $.ajax('http://localhost/project/php/request.php', {
         dataType: 'json',
         data: (function () {
             var request = {};
             request.name = 'SUBMIT_PROFILE';
             $('input, select').attr('disabled', false);
-            $('input[name="first_name"], input[name="last_name"], input[name="uid"], input[name="birth"], input[name="cellphone"], input[name="gender"]').attr('disabled', true);
             request.content = $('form#profile').serializeObject();
             request.content.work_status = $.cookie('work_status');
-            $.cookie('income', request.content.income, 30, '/');
+            if (request.content.income === undefined) {
+                $.cookie('income', 0, 30, '/');
+            } else {
+                $.cookie('income', request.content.income, 30, '/');
+            }
+            $.cookie('first_name', request.content.first_name, 30, '/');
             member = request.content;
             return 'request=' + JSON.stringify(request);
         }()),
@@ -823,6 +1161,68 @@ function submit_borrow_detail() {
     });
 }
 
+function submit_authen() {
+    'use strict';
+    if ($('input[name="first_name"]').val() === '' || $('input[name="last_name"]').val() === '') {
+        alert('请填写姓名');
+        return;
+    } else if ($('input[name="uid"]').val() === '') {
+        alert('请填写身份证');
+        return;
+    } else if ($('input[name="cellphone"]').val() === '') {
+        alert('请填写手机号');
+        return;
+    }
+    $.ajax('http://localhost/project/php/request.php', {
+        dataType: 'json',
+        async: false,
+        data: (function () {
+            var request = {};
+            request.name = 'SET_MEMBER';
+            request.content = $('form#authen').serializeObject();
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            member = obj.content;
+            $('#authen-modal').modal('hide');
+            $('#charge-modal').modal('show');
+        }
+    });
+}
+
+function submit_charge() {
+    'use strict';
+    if ($('input#name').val() === '') {
+        alert('请填写姓名');
+        return;
+    } else if ($('input#card-number').val() === '') {
+        alert('请填写银行卡号');
+        return;
+    } else if ($('input#cellphone').val() === '') {
+        alert('请填写手机号');
+        return;
+    } else if ($('input[name="remain"]').val() === '') {
+        alert('请填写充值金额');
+        return;
+    }
+    $.ajax('http://localhost/project/php/request.php', {
+        dataType: 'json',
+        async: false,
+        data: (function () {
+            var request = {};
+            request.name = 'CHARGE';
+            request.content = $('form#charge').serializeObject();
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            member = obj.content;
+            $('#charge-modal').modal('hide');
+        }
+    });
+}
+
 function load_product_info_page() {
     'use strict';
     var i, name;
@@ -830,15 +1230,12 @@ function load_product_info_page() {
     $('div#content > div:nth-child(1) > a:nth-child(4)').addClass('active');
     $('div#modal').html('');
     $('div#content > div:nth-child(2)').html(PRODUCT_DETAIL_STR);
-    for (i = 0; i < TERM.length; i += 1) {
-        $('select[name="term"]').append('<option value="' + i + '">' + TERM[i] + '</option>');
-    }
     for (i = 0; i < USAGE.length; i += 1) {
         $('select[name="usage"]').append('<option value="' + i + '">' + USAGE[i] + '</option>');
     }
     if (product !== null) {
         for (name in product) {
-            if (name === 'term' || name === 'usage') {
+            if (name === 'usage') {
                 $('select#' + name.replace('_', '-')).val(product[name]);
             } else if (name === 'descript' || name === 'ps') {
                 $('textarea[name="' + name + '"]').val(product[name]);
@@ -869,7 +1266,28 @@ function submit_product_detail() {
         success: function (obj) {
             $('div#content > div:nth-child(1) > a:nth-child(5)').removeClass('active');
             $('div#content > div:nth-child(1) > a:nth-child(6)').addClass('active');
-            $('div#content > div:nth-child(2)').html('<div class="alert alert-success" role="alert">已送交審核，謝謝您！</div>');
+            $('div#content > div:nth-child(2)').html('<div class="alert alert-success" role="alert">已送交审核，谢谢您！</div>');
+        }
+    });
+}
+
+function submit_invest() {
+    'use strict';
+    $.ajax('http://localhost/project/php/request.php', {
+        dataType: 'json',
+        data: (function () {
+            var request = {}, content = {};
+            content.amount = $('#invest-modal h2 > strong').html();
+            content.product_serial = $('#invest-modal h3:eq(0) > strong').html();
+            request.name = 'INVEST';
+            request.content = content;
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            $('#invest-modal').modal('hide');
+            product_list = obj.content;
+            filter();
         }
     });
 }
@@ -879,7 +1297,7 @@ function save_product() {
     var i, income, name, tmp;
     product = $('form#product').serializeObject();
     income = Number($.cookie('income'));
-    for (i = 0; i < INCOME.length; i += 1) {
+    for (i = 0; i < INCOME.length - 1; i += 1) {
         if (income > INCOME[i]) {
             break;
         }
@@ -936,7 +1354,7 @@ function save_product() {
             if (name === 'name') {
                 $('ul#product').append('<li>借款名稱:' + product[name] + '</li>');
             } else if (name === 'term') {
-                $('ul#product').append('<li>還款期限:' + TERM[Number(product[name])] + '</li>');
+                $('ul#product').append('<li>還款期限:' + product[name] + '天</li>');
             } else if (name === 'usage') {
                 $('ul#product').append('<li>借款用途:' + USAGE[Number(product[name])] + '</li>');
             } else if (name === 'amount') {
@@ -968,13 +1386,13 @@ function sign_out() {
 function sign_up() {
     'use strict';
     if ($('input#sign-up-email').val() === '') {
-        alert('請輸入郵箱');
+        alert('请输入邮箱');
         return;
     } else if ($('input#sign-up-password').val() === '') {
-        alert('請輸入密碼');
+        alert('请输入密码');
         return;
     } else if ($('input#sign-up-email').val() !== $('input#sign-up-confirm-email').val()) {
-        alert('請檢查郵箱');
+        alert('请检查邮箱');
         return;
     }
     $.ajax('http://localhost/project/php/request.php', {
@@ -988,7 +1406,7 @@ function sign_up() {
         type: 'POST',
         success: function (obj) {
             if (obj.title === 'ERROR') {
-                alert('此帳戶已被使用');
+                alert('此帐户已被使用');
                 return;
             }
             $.cookie('user_serial', obj.content.user_serial, 30, '/');
@@ -1011,7 +1429,7 @@ function sign_in(btn) {
         type: 'POST',
         success: function (obj) {
             if (obj.title === 'ERROR') {
-                alert('郵箱 或 密碼錯誤, 請重新輸入');
+                alert('邮箱 或 密码错误, 请重新输入');
                 return;
             }
             $.cookie('user_serial', obj.content.user_serial, 30, '/');
@@ -1035,36 +1453,48 @@ function edit_profile(obj) {
     }
 }
 
-function filter() {
+function change_amount(span) {
     'use strict';
-    var first_lower = $("#first-slider").slider("values", 0),
-        first_upper = $("#first-slider").slider("values", 1),
-        second_lower = $("#second-slider").slider("values", 0),
-        second_upper = $("#second-slider").slider("values", 1),
-        third_lower = $("#third-slider").slider("values", 0),
-        third_upper = $("#third-slider").slider("values", 1),
-        first_name = $('table#product-list > tbody > tr:first > th:nth-child(4)').attr('name'),
-        second_name = $('table#product-list > tbody > tr:first > th:nth-child(5)').attr('name'),
-        third_name = $('table#product-list > tbody > tr:first > th:nth-child(6)').attr('name'),
-        i,
-        a = [];
-    for (i = 0; i < product_list.length; i += 1) {
-        if (Number(product_list[i][first_name]) >= first_lower &&
-                Number(product_list[i][first_name]) <= first_upper &&
-                Number(product_list[i][second_name]) >= second_lower &&
-                Number(product_list[i][second_name]) <= second_upper &&
-                Number(product_list[i][third_name]) >= third_lower &&
-                Number(product_list[i][third_name]) <= third_upper) {
-            a.push(i);
+    var num;
+    if ($(span).attr('value') === '+') {
+        $(span).prev().val(Number($(span).prev().val()) + 100);
+    } else {
+        num = Number($(span).next().next().val()) - 100;
+        if (num < 0) {
+            return;
         }
+        $(span).next().next().val(num);
     }
-    $('tr').remove('.product-content');
-    for (i = 0; i < a.length; i += 1) {
-        $('table#product-list').append(generate_product_row(product_list[a[i]].name,
-                                                           product_list[a[i]].descript,
-                                                           product_list[a[i]].rate + '%',
-                                                           LEVEL[Number(product_list[a[i]].level)],
-                                                           product_list[a[i]].term));
+}
+
+function change_term(span) {
+    'use strict';
+    var num;
+    if ($(span).attr('value') === '+') {
+        $(span).prev().prev().val(Number($(span).prev().prev().val()) + 1);
+    } else {
+        num = Number($(span).next().val()) - 1;
+        if (num < 1) {
+            return;
+        }
+        $(span).next().val(num);
+    }
+}
+
+function invest_this(div) {
+    'use strict';
+    var tmp = Number($(div).prev().children('input').val()), serial = Number($(div).parents('tr').attr('value'));
+    if (Number(member.remain) < tmp) {
+        $('form#charge input#amount').val(member.remain);
+        if (member.first_name === null) {
+            $('#authen-modal').modal('show');
+        } else {
+            $('#charge-modal').modal('show');
+        }
+    } else {
+        $('#invest-modal h2 > strong').html(tmp);
+        $('#invest-modal h3:eq(0) > strong').html(serial);
+        $('#invest-modal').modal('show');
     }
 }
 

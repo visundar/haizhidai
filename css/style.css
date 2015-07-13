@@ -13,3 +13,25 @@ div#content > div:nth-child(2) {
 div.slider {
     margin: 30px 0;
 }
+
+.pointer {
+    cursor: pointer;
+}
+
+.pointer:hover {
+    background-color: orange;
+}
+
+.invest-area {
+    background-color: #39A1EA;
+    margin: 5px 0 0 0;
+    border-radius: 2px;
+    text-align: center;
+    color: white;
+    font-size: 120%;
+    cursor: pointer;
+}
+
+.index-cover {
+    background-image: url(../img/Financial.jpg);
+}
