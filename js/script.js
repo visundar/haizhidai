@@ -5,7 +5,6 @@ var STORES = ['淘宝网', '拍拍网', '阿里巴巴', '京东', '一号店', '
 var FILE_ATTR = ['身份证', '结婚证', '营业执照', '劳动合同', '工牌、名片、工作证', '社保', '工资卡/常用银行流水', '学生证/一卡通', '房产证', '行驶证', '支付宝截图', '个人信用报告', '信用卡对账单', '学历学位证书', '其他所有贷款协议/凭证'];
 var FILE_DESC = ['二代身份证正反面各一张，本人手持身份证合照一张，共3张。', '本人结婚证，包含结婚日期、本人及配偶所有信息。', '营业执照照片或工商网站截图，必须清晰显示法人、成立时间、经营范围、经营时间等关键信息。', '本人当前的有效劳动合同，从封面一页一页拍至最后一页。', '个人工作证或单位工牌、名片均可，必须完整显示单位信息及个人信息。', '社保/公积金网站截图，需完整显示本人姓名、身份证、缴费状态、缴费金额等关键信息。', '本人银行卡正反面照片各一张，以及近3个月完整流水打印单或网银流水截屏。工资卡需显示代发工资项。', '个人学生证信息页照片，需完整显示学校信息及个人信息', '房产证的基本信息页及盖章页各一张，共2张。', '正副本照片，需完整显示车辆登记信息及年检信息。', '支付宝账户基本信息页截图和上一年度个人年度对账单截图。', '仅接受人民银行征信中心网络查询的PDF版。', '用户本人信用卡正面照片及对应的近3 个月信用卡（电子或纸质）对账单。', '本人大专及以上学历或学位证书，接受结业证。', '本人其他金融机构的贷款协议或凭证证明。'];
 var EDUCATION = ['初中及以下', '中专', '高中', '大专', '本科', '研究生及以上'];
-var PRODUCT_ATTR = ['利率', '浏览次数', '上架日期', '金额', '借贷者'];
 var WORK_YEAR = ['1 年已內', '2 年已內', '3 年已內', '4 年(含)以上'];
 var UPLOAD_URL = 'http://localhost/upload/index.php';
 var RATE = [1.99, 3.99, 5.99, 8.99, 11.99, 14.99, 19.99];
@@ -410,45 +409,60 @@ var FILTER_MODAL_STR = function () {
                   <h4>
                       <div class="col-md-2 text-right">完成度</div>
                       <div class="col-md-10">
-                          <span class="label label-danger" id="first-lower"></span>
+                          <span class="label label-danger" id="complete-lower"></span>
                           ~
-                          <span class="label label-info" id="first-upper"></span>
+                          <span class="label label-info" id="complete-upper"></span>
                       </div>
                   </h4>
               </div>
               <div class="row">
                   <div class="col-md-10 col-md-offset-2">
-                      <div id="first-slider" class="slider" name="rate"></div>
+                      <div id="complete-slider" class="slider" name="rate"></div>
+                  </div>
+              </div>
+              <div class="row">
+                  <h4>
+                      <div class="col-md-2 text-right">金額</div>
+                      <div class="col-md-10">
+                          <span class="label label-danger" id="amount-lower"></span>
+                          ~
+                          <span class="label label-info" id="amount-upper"></span>
+                      </div>
+                  </h4>
+              </div>
+              <div class="row">
+                  <div class="col-md-10 col-md-offset-2">
+                      <div id="amount-slider" class="slider" name="level"></div>
                   </div>
               </div>
               <div class="row">
                   <h4>
                       <div class="col-md-2 text-right">等級</div>
                       <div class="col-md-10">
-                          <span class="label label-danger" id="second-lower"></span>
+                          <span class="label label-danger" id="level-lower"></span>
                           ~
-                          <span class="label label-info" id="second-upper"></span>
+                          <span class="label label-info" id="level-upper"></span>
                       </div>
                   </h4>
               </div>
               <div class="row">
                   <div class="col-md-10 col-md-offset-2">
-                      <div id="second-slider" class="slider" name="level"></div>
+                      <div id="level-slider" class="slider" name="term"></div>
                   </div>
               </div>
               <div class="row">
                   <h4>
                       <div class="col-md-2 text-right">期限</div>
                       <div class="col-md-10">
-                          <span class="label label-danger" id="third-lower"></span>
+                          <span class="label label-danger" id="term-lower"></span>
                           ~
-                          <span class="label label-info" id="third-upper"></span>
+                          <span class="label label-info" id="term-upper"></span>
                       </div>
                   </h4>
               </div>
               <div class="row">
                   <div class="col-md-10 col-md-offset-2">
-                      <div id="third-slider" class="slider" name="term"></div>
+                      <div id="term-slider" class="slider" name="term"></div>
                   </div>
               </div>
           </div>
@@ -621,11 +635,12 @@ var INVEST_PAGE_STR = function () {
 </ul>
 <table class="table table-bordered table-hover" id="product-list">
     <tr>
-        <th class="col-md-2">标题</th>
-        <th class="col-md-3" name="descript">描述</th>
-        <th class="col-md-2" name="complete">完成度</th>
+        <th class="col-md-2" name="name">标题</th>
+        <th class="col-md-3" name="complete">完成度</th>
+        <th class="col-md-1" name="amount">金额(元)</th>
+        <th class="col-md-1" name="view">浏览数</th>
         <th class="col-md-1" name="level">等级</th>
-        <th class="col-md-1" name="term">期限</th>
+        <th class="col-md-1" name="term">期限(天)</th>
         <th class="col-md-3">投标</th>
     </tr>
 </table>
@@ -822,93 +837,120 @@ function clear_all() {
 
 function filter_slider_init() {
     'use strict';
-    $("#first-slider").slider({
+    $("#complete-slider").slider({
         range: true,
         min: 0,
         max: 100,
         values: [0, 100],
         slide: function (event, ui) {
-            $("#first-lower").html(ui.values[0] + "%");
-            $("#first-upper").html(ui.values[1] + "%");
+            $("#complete-lower").html(ui.values[0] + "%");
+            $("#complete-upper").html(ui.values[1] + "%");
         }
     });
-    $("#first-lower").html($("#first-slider").slider("values", 0) + "%");
-    $("#first-upper").html($("#first-slider").slider("values", 1) + "%");
+    $("#complete-lower").html($("#complete-slider").slider("values", 0) + "%");
+    $("#complete-upper").html($("#complete-slider").slider("values", 1) + "%");
     
-    $("#second-slider").slider({
+    $("#level-slider").slider({
         range: true,
         min: 0,
         max: 6,
         values: [0, 6],
         slide: function (event, ui) {
-            $("#second-lower").html(LEVEL[ui.values[0]]);
-            $("#second-upper").html(LEVEL[ui.values[1]]);
+            $("#level-lower").html(LEVEL[ui.values[0]]);
+            $("#level-upper").html(LEVEL[ui.values[1]]);
         }
     });
-    $("#second-lower").html(LEVEL[$("#second-slider").slider("values", 0)]);
-    $("#second-upper").html(LEVEL[$("#second-slider").slider("values", 1)]);
+    $("#level-lower").html(LEVEL[$("#level-slider").slider("values", 0)]);
+    $("#level-upper").html(LEVEL[$("#level-slider").slider("values", 1)]);
     
-    $("#third-slider").slider({
+    $("#term-slider").slider({
         range: true,
         min: 0,
-        max: 60,
-        values: [0, 60],
+        max: 366,
+        values: [0, 366],
         slide: function (event, ui) {
-            $("#third-lower").html(ui.values[0] + "天");
-            $("#third-upper").html(ui.values[1] + "天");
+            $("#term-lower").html(ui.values[0] + "天");
+            $("#term-upper").html(ui.values[1] + "天");
         }
     });
-    $("#third-lower").html($("#third-slider").slider("values", 0) + "天");
-    $("#third-upper").html($("#third-slider").slider("values", 1) + "天");
+    $("#term-lower").html($("#term-slider").slider("values", 0) + "天");
+    $("#term-upper").html($("#term-slider").slider("values", 1) + "天");
+    
+    $("#amount-slider").slider({
+        range: true,
+        min: 0,
+        max: 99999,
+        values: [0, 99999],
+        slide: function (event, ui) {
+            $("#amount-lower").html(ui.values[0] + "天");
+            $("#amount-upper").html(ui.values[1] + "天");
+        }
+    });
+    $("#amount-lower").html($("#amount-slider").slider("values", 0) + "元");
+    $("#amount-upper").html($("#amount-slider").slider("values", 1) + "元");
 }
 
-function generate_product_row(para0, para1, para2, para3, para4, para5) {
+function generate_product_row(para0, para1, para2, para3, para4, para5, para6) {
     'use strict';
     var row;
     row = '<tr class="product-content" value="' + para0 + '">';
     row += '<td><a onclick="display_product_modal(this)">' + para1 + '</a></td>';
-    row += '<td>' + para2 + '</td>';
+    row += '<td class="text-center"><div class="progress"><div class="progress-bar" role="progressbar"></div></div>' + para2 + '</td>';
     row += '<td class="text-center">' + para3 + '</td>';
     row += '<td class="text-center">' + para4 + '</td>';
     row += '<td class="text-center">' + para5 + '</td>';
-    row += '<td class="text-center">';
-    row += INVEST_COL_STR + '</td>';
+    row += '<td class="text-center">' + para6 + '</td>';
+    row += '<td>' + INVEST_COL_STR + '</td>';
     row += '</tr>';
     return row;
 }
 
+function generate_product_table(a) {
+    'use strict';
+    var i, per;
+    $('tr').remove('.product-content');
+    for (i = 0; i < a.length; i += 1) {
+        $('table#product-list').append(generate_product_row(product_list[a[i]].product_serial,
+                                                            product_list[a[i]].name,
+                                                            product_list[a[i]].complete + '/' + product_list[a[i]].amount,
+                                                            product_list[a[i]].amount,
+                                                            product_list[a[i]].view,
+                                                            LEVEL[Number(product_list[a[i]].level)],
+                                                            product_list[a[i]].term));
+        per = Math.floor(Number(product_list[a[i]].complete) * 100 / Number(product_list[a[i]].amount)) + '%';
+        $('table#product-list div.progress-bar:last').width(per);
+    }
+}
+
 function filter() {
     'use strict';
-    var first_lower = $("#first-slider").slider("values", 0),
-        first_upper = $("#first-slider").slider("values", 1),
-        second_lower = $("#second-slider").slider("values", 0),
-        second_upper = $("#second-slider").slider("values", 1),
-        third_lower = $("#third-slider").slider("values", 0),
-        third_upper = $("#third-slider").slider("values", 1),
-        first_name = $('table#product-list > tbody > tr:first > th:nth-child(3)').attr('name'),
-        second_name = $('table#product-list > tbody > tr:first > th:nth-child(4)').attr('name'),
-        third_name = $('table#product-list > tbody > tr:first > th:nth-child(5)').attr('name'),
+    var complete_lower = $("#complete-slider").slider("values", 0),
+        complete_upper = $("#complete-slider").slider("values", 1),
+        amount_lower = $("#amount-slider").slider("values", 0),
+        amount_upper = $("#amount-slider").slider("values", 1),
+        level_lower = $("#level-slider").slider("values", 0),
+        level_upper = $("#level-slider").slider("values", 1),
+        term_lower = $("#term-slider").slider("values", 0),
+        term_upper = $("#term-slider").slider("values", 1),
         i,
+        complete,
+        amount,
+        level,
+        term,
         a = [];
     for (i = 0; i < product_list.length; i += 1) {
-        /*Number(product_list[i][first_name]) >= first_lower &&
-                Number(product_list[i][first_name]) <= first_upper &&*/
-        if (Number(product_list[i][second_name]) >= second_lower &&
-                Number(product_list[i][second_name]) <= second_upper &&
-                Number(product_list[i][third_name]) >= third_lower &&
-                Number(product_list[i][third_name]) <= third_upper) {
+        complete = Math.floor(Number(product_list[i].complete) * 100 / Number(product_list[i].amount));
+        amount = Number(product_list[i].amount);
+        level = Number(product_list[i].level);
+        term = Number(product_list[i].term);
+        if (complete >= complete_lower && complete <= complete_upper &&
+                amount >= amount_lower && amount <= amount_upper &&
+                level >= level_lower && level <= level_upper &&
+                term >= term_lower && term <= term_upper) {
             a.push(i);
         }
     }
-    $('tr').remove('.product-content');
-    for (i = 0; i < a.length; i += 1) {
-        $('table#product-list').append(generate_product_row(product_list[i].product_serial,
-                                                            product_list[a[i]].name,
-                                                            product_list[a[i]].descript,
-                                                            product_list[a[i]].complete,
-                                                            LEVEL[Number(product_list[a[i]].level)],
-                                                            product_list[a[i]].term));
-    }
+    generate_product_table(a);
 }
 
 function load_product_list() {
@@ -985,25 +1027,18 @@ function display_product_modal(a) {
 
 function load_invest_page() {
     'use strict';
-    var i;
+    var i, per, a = [];
     clear_all();
     $('div#navbar-collapse > ul:first > li:nth-child(1)').addClass('active');
-    for (i = 0; i < PRODUCT_ATTR.length; i += 1) {
-        $('div#content > div:nth-child(1)').append('<a class="list-group-item" draggable="true">' + PRODUCT_ATTR[i] + '</a>');
-    }
     $('div#content > div:nth-child(2)').html(INVEST_PAGE_STR);
     $('div#modal').append(RATE_MODAL_STR + FILTER_MODAL_STR + PRODUCT_MODAL_STR);
     $('div#modal').append(CHARGE_MODAL_STR + AUTHEN_MODAL_STR + INVEST_MODAL_STR);
     filter_slider_init();
     load_product_list();
     for (i = 0; i < product_list.length; i += 1) {
-        $('table#product-list').append(generate_product_row(product_list[i].product_serial,
-                                                            product_list[i].name,
-                                                            product_list[i].descript,
-                                                            product_list[i].complete,
-                                                            LEVEL[Number(product_list[i].level)],
-                                                            product_list[i].term));
+        a.push(i);
     }
+    generate_product_table(a);
 }
 
 function load_borrow_page() {
@@ -1496,6 +1531,11 @@ function invest_this(div) {
         $('#invest-modal h3:eq(0) > strong').html(serial);
         $('#invest-modal').modal('show');
     }
+}
+
+function view_product(a) {
+    'use strict';
+    
 }
 
 $(document).ready(function () {
