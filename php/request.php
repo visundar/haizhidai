@@ -20,6 +20,10 @@ try {
     mysql_select_db('haizhidai', $con);
 
     switch ($obj->name) {
+        case 'VIEW_PRODUCT':
+            $query = "UPDATE `product` SET `view`=`view`+1 WHERE `product_serial`=" . $obj->content->product_serial;
+            mysql_query($query, $con) or throw_exception(mysql_error());
+            break;
         case 'CHARGE':
             $query = "UPDATE `member` SET `remain`=`remain`+" . $obj->content->remain . " WHERE `user_serial`=" . $_COOKIE['user_serial'];
             mysql_query($query, $con) or throw_exception(mysql_error());

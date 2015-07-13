@@ -1023,6 +1023,19 @@ function display_product_modal(a) {
         }
     }
     $('#product-modal').modal('show');
+    $.ajax('http://localhost/project/php/request.php', {
+        dataType: 'json',
+        data: (function () {
+            var request = {}, content = {};
+            content.product_serial = tmp;
+            request.name = 'VIEW_PRODUCT';
+            request.content = content;
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+        }
+    });
 }
 
 function load_invest_page() {
@@ -1531,11 +1544,6 @@ function invest_this(div) {
         $('#invest-modal h3:eq(0) > strong').html(serial);
         $('#invest-modal').modal('show');
     }
-}
-
-function view_product(a) {
-    'use strict';
-    
 }
 
 $(document).ready(function () {
