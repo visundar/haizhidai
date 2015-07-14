@@ -672,11 +672,11 @@ var INVEST_PAGE_STR = function () {
 <table class="table table-bordered table-hover" id="product-list">
     <tr>
         <th class="col-md-2" name="name">标题</th>
-        <th class="col-md-3" name="complete">完成度</th>
-        <th class="col-md-1" name="amount">金额(元)</th>
-        <th class="col-md-1" name="view">浏览数</th>
-        <th class="col-md-1" name="level">等级</th>
-        <th class="col-md-1" name="term">期限(天)</th>
+        <th class="col-md-3 pointer" name="complete" onclick="product_sort(this)">完成度</th>
+        <th class="col-md-1 pointer" name="amount" onclick="product_sort(this)">金额</th>
+        <th class="col-md-1 pointer" name="view" onclick="product_sort(this)">浏览数</th>
+        <th class="col-md-1 pointer" name="level" onclick="product_sort(this)">等级</th>
+        <th class="col-md-1 pointer" name="term" onclick="product_sort(this)">期限</th>
         <th class="col-md-3">投标</th>
     </tr>
 </table>
@@ -999,6 +999,30 @@ function generate_product_table(a) {
         per = Math.floor(Number(product_list[a[i]].complete) * 100 / Number(product_list[a[i]].amount)) + '%';
         $('table#product-list div.progress-bar:last').width(per);
     }
+}
+
+function product_sort(th) {
+    'use strict';
+    var a = [], i, attr = $(th).attr('name'), tx, ty, t = 1;
+    for (i = 0; i < product_list.length; i += 1) {
+        a.push(i);
+    }
+    if (attr === 'complete') {
+        a.sort(function (x, y) {
+            tx = Number(product_list[x][attr]) * 100 / Number(product_list[x].amount);
+            ty = Number(product_list[y][attr]) * 100 / Number(product_list[y].amount);
+            return (tx - ty) * t;
+        });
+    } else if (attr === 'level') {
+        a.sort(function (x, y) {
+            return (Number(product_list[y][attr]) - Number(product_list[x][attr])) * t;
+        });
+    } else {
+        a.sort(function (x, y) {
+            return (Number(product_list[x][attr]) - Number(product_list[y][attr])) * t;
+        });
+    }
+    generate_product_table(a);
 }
 
 function filter() {
@@ -1381,7 +1405,8 @@ function load_upload_page() {
     $(".filestyle").fileinput({
         uploadUrl: UPLOAD_URL,
         language: 'zh',
-        maxFilesNum: 1
+        maxFilesNum: 1,
+        allowedFileTypes: ['image']
     });
     $(".filestyle").on('fileuploaded', function () {
         $('#image-upload-modal button.btn.btn-primary').attr('disabled', false);
@@ -1622,6 +1647,9 @@ function save_product() {
         return;
     } else if (!(/^\d+$/.test($('input[name="amount"]').val()))) {
         alert('请检查借款金额');
+        return;
+    } else if (Number($('input[name="amount"]').val()) < 1000) {
+        alert('借款金额须大于1000');
         return;
     } else if (!(/^\S+$/.test($('input[name="source"]').val()))) {
         alert('请检查还款来源');
