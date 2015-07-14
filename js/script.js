@@ -595,6 +595,27 @@ var FILE_UPLOAD_STR = function () {
 </p>
     */
 }.toString().slice(38, -4);
+var CLAUSE_MODAL = function () {
+    'use strict';
+    /*
+<div class="modal fade" id="clause-modal" tabindex="-1" role="dialog" aria-labelledby="clause-modal-label">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="rate-modal-label">借贷条款</h4>
+      </div>
+      <div class="modal-body">
+        借贷条款内容
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">确认</button>
+      </div>
+    </div>
+  </div>
+</div>
+    */
+}.toString().slice(38, -4);
 var CONFIRM_PAGE_STR = function () {
     'use strict';
     /*
@@ -617,7 +638,18 @@ var CONFIRM_PAGE_STR = function () {
         </td>
         <td><button class="btn btn-info" onclick="load_product_info_page()">編輯</button></td>
     </tr>
-    <tr><th></th><td colspan="2" class="text-right"><button class="btn btn-warning" onclick="submit_product_detail()">我已閱讀且同意</button></td></tr>
+    <tr>
+        <th>借贷条款</th>
+        <td>
+           <div class="form-group">
+            <label>
+               <input type="checkbox" onclick="toggle_submit_product()"> <a data-toggle="modal" data-target="#clause-modal">海智贷条款</a>
+            </label>
+           </div>
+        </td>
+        <td></td>
+    </tr>
+    <tr><th></th><td colspan="2" class="text-right"><button class="btn btn-warning" onclick="submit_product_detail()" disabled>我已閱讀且同意</button></td></tr>
 </table>
     */
 }.toString().slice(38, -4);
@@ -835,7 +867,18 @@ function clear_all() {
     $('div#content > div').html('');
 }
 
-function get_member() {
+function get_product_by_serial(serial) {
+    'use strict';
+    var i;
+    for (i = 0; i < product_list.length; i += 1) {
+        if (Number(product_list[i].product_serial) === serial) {
+            return product_list[i];
+        }
+    }
+    return undefined;
+}
+
+function get_member_from_server() {
     'use strict';
     $.ajax('http://localhost/project/php/request.php', {
         dataType: 'json',
@@ -850,6 +893,16 @@ function get_member() {
             member = obj.content;
         }
     });
+}
+
+function toggle_submit_product() {
+    'use strict';
+    var bool = $('button.btn-warning').prop('disabled');
+    if (bool === true) {
+        $('button.btn-warning').prop('disabled', false);
+    } else {
+        $('button.btn-warning').prop('disabled', true);
+    }
 }
 
 function start_upload() {
@@ -1070,7 +1123,7 @@ function load_invest_page() {
     $('div#modal').append(CHARGE_MODAL_STR + AUTHEN_MODAL_STR + INVEST_MODAL_STR);
     filter_slider_init();
     load_product_list();
-    get_member();
+    get_member_from_server();
     for (i = 0; i < product_list.length; i += 1) {
         a.push(i);
     }
@@ -1203,6 +1256,7 @@ function load_product_confirm_page() {
     $('div#content > div:nth-child(1) > a:nth-child(4)').removeClass('active');
     $('div#content > div:nth-child(1) > a:nth-child(5)').addClass('active');
     $('div#content > div:nth-child(2)').html(CONFIRM_PAGE_STR);
+    $('div#modal').html(CLAUSE_MODAL);
     for (name in member) {
         if (member[name] !== null) {
             if (name === 'marriage') {
@@ -1538,13 +1592,18 @@ function edit_profile(obj) {
 
 function change_amount(span) {
     'use strict';
-    var num;
+    var num, maximum, tmp_product = get_product_by_serial(Number($(span).parents('tr').attr('value')));
+    maximum = Number(tmp_product.amount) - Number(tmp_product.complete);
     if ($(span).attr('value') === '+') {
-        $(span).prev().val(Number($(span).prev().val()) + 100);
+        num = Number($(span).prev().val()) + 100;
+        if (num > maximum) {
+            num = maximum;
+        }
+        $(span).prev().val(num);
     } else {
         num = Number($(span).next().next().val()) - 100;
         if (num < 0) {
-            return;
+            num = 0;
         }
         $(span).next().next().val(num);
     }
@@ -1567,6 +1626,7 @@ function change_term(span) {
 function invest_this(div) {
     'use strict';
     var tmp = Number($(div).prev().children('input').val()), serial = Number($(div).parents('tr').attr('value'));
+    get_member_from_server();
     if (Number(member.remain) < tmp) {
         $('form#charge input#amount').val(member.remain);
         if (member.first_name === null) {

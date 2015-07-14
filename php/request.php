@@ -38,7 +38,7 @@ try {
             $query = "UPDATE `member` SET `remain`=`remain`-" . $obj->content->amount . " WHERE `user_serial`=" . $_COOKIE['user_serial'];
             mysql_query($query, $con) or throw_exception(mysql_error());
         case 'GET_ALL_PRODUCT':
-            $query = "SELECT * FROM `product`";
+            $query = "SELECT * FROM `product` WHERE `complete` < `amount`";
             $result = mysql_query($query, $con) or throw_exception(mysql_error());
             $a = array();
             while ($o = mysql_fetch_object($result)) {
