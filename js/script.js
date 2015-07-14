@@ -10,7 +10,7 @@ var UPLOAD_URL = 'http://localhost/upload/index.php';
 var RATE = [1.99, 3.99, 5.99, 8.99, 11.99, 14.99, 19.99];
 var INCOME = [500000, 250000, 125000, 62500, 31250, 15625, 7812];
 var LEVEL = ['AA', 'A', 'B', 'C', 'D', 'E', 'HR'];
-var USAGE = ['还款', '学费', '租金'];
+var USAGE = ['', '还款', '学费', '租金'];
 var PRODUCT = [{
         name: '普通借款标',
         suit: '工薪族',
@@ -665,8 +665,8 @@ var INVEST_PAGE_STR = function () {
   <form class="form-inline navbar-right">
       <div class="btn btn-info" data-toggle="modal" data-target="#rate-modal">利率指标</div>
       <div class="btn btn-warning" data-toggle="modal" data-target="#filter-modal">过滤</div>
-      <input type="text" class="form-control input-sm" placeholder="关键字">
-      <button type="button" class="btn btn-default input-sm" onclick="">搜寻</button>
+      <input type="text" class="form-control input-sm" placeholder="关键字" id="keyword">
+      <button type="button" class="btn btn-default input-sm" onclick="searcher()">搜寻</button>
   </form>
 </ul>
 <table class="table table-bordered table-hover" id="product-list">
@@ -1032,6 +1032,17 @@ function filter() {
     generate_product_table(a);
 }
 
+function searcher() {
+    'use strict';
+    var a = [], keyword = $('input#keyword').val(), i;
+    for (i = 0; i < product_list.length; i += 1) {
+        if (product_list[i].name.search(keyword) !== -1) {
+            a.push(i);
+        }
+    }
+    generate_product_table(a);
+}
+
 function load_product_list() {
     'use strict';
     $.ajax('http://localhost/haizhidai/php/request.php', {
@@ -1196,7 +1207,6 @@ function load_borrow_detail_page(btn) {
         dateFormat: 'yy-mm-dd'
     });
     if ($.cookie('first_name') !== undefined) {
-        $('input, select').attr('disabled', true);
         $.ajax('http://localhost/haizhidai/php/request.php', {
             dataType: 'json',
             data: (function () {
@@ -1211,6 +1221,12 @@ function load_borrow_detail_page(btn) {
                 for (name in obj.content) {
                     if (name === 'gender' || name === 'insurance' || name === 'marriage' || name === 'child') {
                         $('input[name="' + name + '"]').val([obj.content[name]]);
+                    } else if (name === 'work_department') {
+                        if ($.cookie('work_status') === '1') {
+                            $('select[name="' + name + '"]').val(obj.content[name]);
+                        } else {
+                            $('input[name="' + name + '"]').val(obj.content[name]);
+                        }
                     } else if (name === 'work_state' || name === 'home_state' || name === 'work_years' || name === 'education') {
                         $('select#' + name.replace('_', '-')).val(obj.content[name]);
                     } else if (name === 'asset') {
@@ -1225,6 +1241,7 @@ function load_borrow_detail_page(btn) {
                         $('input[name="' + name + '"]').val(obj.content[name]);
                     }
                 }
+                $('input, select').attr('disabled', true);
             }
         });
     }
@@ -1291,7 +1308,13 @@ function load_product_confirm_page() {
             } else if (name === 'income') {
                 $('ul#member').append('<li>月收入:' + member[name] + '</li>');
             } else if (name === 'work_name') {
-                $('ul#member').append('<li>公司名稱:' + member[name] + '</li>');
+                if ($.cookie('work_status') === '0') {
+                    $('ul#member').append('<li>公司名稱:' + member[name] + '</li>');
+                } else if ($.cookie('work_status') === '1') {
+                    $('ul#member').append('<li>店铺链接:' + member[name] + '</li>');
+                } else {
+                    $('ul#member').append('<li>学校名称:' + member[name] + '</li>');
+                }
             } else if (name === 'work_years') {
                 $('ul#member').append('<li>公作年限:' + WORK_YEAR[Number(member[name])] + '</li>');
             } else if (name === 'work_state') {
@@ -1299,11 +1322,23 @@ function load_product_confirm_page() {
             } else if (name === 'work_address') {
                 $('ul#member').append('<li>单位地址:' + member[name] + '</li>');
             } else if (name === 'work_phone') {
-                $('ul#member').append('<li>单位电话:' + member[name] + '</li>');
+                if ($.cookie('work_status') === '0') {
+                    $('ul#member').append('<li>单位电话:' + member[name] + '</li>');
+                } else {
+                    $('ul#member').append('<li>学校电话:' + member[name] + '</li>');
+                }
             } else if (name === 'work_department') {
-                $('ul#member').append('<li>任职部门:' + member[name] + '</li>');
+                if ($.cookie('work_status') === '0') {
+                    $('ul#member').append('<li>任职部门:' + member[name] + '</li>');
+                } else {
+                    $('ul#member').append('<li>经营网店:' + STORES[Number(member[name])] + '</li>');
+                }
             } else if (name === 'work_title') {
-                $('ul#member').append('<li>任职职位:' + member[name] + '</li>');
+                if ($.cookie('work_status') === '0') {
+                    $('ul#member').append('<li>任职职位:' + member[name] + '</li>');
+                } else {
+                    $('ul#member').append('<li>卖家昵称:' + member[name] + '</li>');
+                }
             }
         }
     }
@@ -1467,14 +1502,14 @@ function submit_borrow_detail() {
 
 function submit_authen() {
     'use strict';
-    if ($('input[name="first_name"]').val() === '' || $('input[name="last_name"]').val() === '') {
-        alert('请填写姓名');
+    if (!(/^\S+$/.test($('input[name="first_name"]').val())) || !(/^\S+$/.test($('input[name="last_name"]').val()))) {
+        alert('请检查姓名');
         return;
-    } else if ($('input[name="uid"]').val() === '') {
-        alert('请填写身份证');
+    } else if (!(/^\d+$/.test($('input[name="uid"]').val()))) {
+        alert('请检查身份证');
         return;
-    } else if ($('input[name="cellphone"]').val() === '') {
-        alert('请填写手机号');
+    } else if (!(/^\d+$/.test($('input[name="cellphone"]').val()))) {
+        alert('请检查手机号');
         return;
     }
     $.ajax('http://localhost/haizhidai/php/request.php', {
@@ -1497,17 +1532,17 @@ function submit_authen() {
 
 function submit_charge() {
     'use strict';
-    if ($('input#name').val() === '') {
-        alert('请填写姓名');
+    if (!(/^\S+$/.test($('input#name').val()))) {
+        alert('请检查持卡人姓名');
         return;
-    } else if ($('input#card-number').val() === '') {
-        alert('请填写银行卡号');
+    } else if (!(/^\d+$/.test($('input#card-number').val()))) {
+        alert('请检查銀行卡號');
         return;
-    } else if ($('input#cellphone').val() === '') {
-        alert('请填写手机号');
+    } else if (!(/^\d+$/.test($('input#cellphone').val()))) {
+        alert('请检查手机号');
         return;
-    } else if ($('input[name="remain"]').val() === '') {
-        alert('请填写充值金额');
+    } else if (!(/^\d+$/.test($('input[name="remain"]').val()))) {
+        alert('请检查充值金額');
         return;
     }
     $.ajax('http://localhost/haizhidai/php/request.php', {
@@ -1576,6 +1611,25 @@ function submit_invest() {
 function save_product() {
     'use strict';
     var i, income;
+    if (!(/^\S+$/.test($('input[name="name"]').val()))) {
+        alert('请检查借款名称');
+        return;
+    } else if (!(/^\d+$/.test($('input[name="term"]').val()))) {
+        alert('请检查还款期限');
+        return;
+    } else if ($('select#usage').val() === '0') {
+        alert('请检查借款用途');
+        return;
+    } else if (!(/^\d+$/.test($('input[name="amount"]').val()))) {
+        alert('请检查借款金额');
+        return;
+    } else if (!(/^\S+$/.test($('input[name="source"]').val()))) {
+        alert('请检查还款来源');
+        return;
+    } else if (!(/^\S+$/.test($('textarea[name="descript"]').val()))) {
+        alert('请检查借款简介');
+        return;
+    }
     product = $('form#product').serializeObject();
     income = Number($.cookie('income'));
     for (i = 0; i < INCOME.length - 1; i += 1) {
@@ -1724,5 +1778,3 @@ $(document).ready(function () {
         load_home_page();
     }
 });
-
-//alert(/^\d{4}-(1[0-2]|0[1-9])-(0[1-9]|[12]\d|3[01])$/.test('1992-12-32'));
