@@ -193,8 +193,8 @@ var PRODUCT_DETAIL_STR = function () {
         <div class="col-md-6">
             <div class="input-group">
                 <span class="input-group-addon pointer" onclick="change_term(this)" value="-"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></span>
-                <input class="form-control" type="text" name="term" value="7">
-                <span class="input-group-addon">天</span>
+                <input class="form-control" type="text" name="term" value="3">
+                <span class="input-group-addon">月</span>
                 <span class="input-group-addon pointer" onclick="change_term(this)" value="+"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></span>
             </div>
         </div>
@@ -839,6 +839,29 @@ var INVEST_MODAL_STR = function () {
 </div>
     */
 }.toString().slice(38, -4);
+var HOME_PANEL_STR = function () {
+    'use strict';
+    /*
+<div class="col-md-6" onclick="load_invest_page()" id="home-invest-panel">
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h1 class="panel-title">我要投資</h1>
+        </div>
+        <div class="panel-body">
+        </div>
+    </div>
+</div>
+<div class="col-md-6" onclick="load_borrow_page()" id="home-borrow-panel">
+    <div class="panel panel-warning">
+        <div class="panel-heading">
+            <h1 class="panel-title">我要借款</h1>
+        </div>
+        <div class="panel-body">
+        </div>
+    </div>
+</div>
+    */
+}.toString().slice(38, -4);
 var member, product, product_list;
 
 (function ($) {
@@ -978,7 +1001,7 @@ function generate_product_row(para0, para1, para2, para3, para4, para5, para6) {
     row += '<td class="text-center">' + para3 + '</td>';
     row += '<td class="text-center">' + para4 + '</td>';
     row += '<td class="text-center">' + para5 + '</td>';
-    row += '<td class="text-center">' + para6 + '</td>';
+    row += '<td class="text-center">' + para6 + '个月</td>';
     row += '<td>' + INVEST_COL_STR + '</td>';
     row += '</tr>';
     return row;
@@ -1103,7 +1126,7 @@ function load_home_page() {
     'use strict';
     clear_all();
     $('body').removeClass('index-cover');
-    $('div#content > div:eq(1)').html('');
+    $('div#content > div:eq(1)').html(HOME_PANEL_STR);
     $('div#navbar-collapse > ul:eq(0)').html(NAVBAR_STR);
     $('div#navbar-collapse > .navbar-right').remove();
     $('div#navbar-collapse').append((function () {
@@ -1385,7 +1408,7 @@ function load_product_confirm_page() {
             if (name === 'name') {
                 $('ul#product').append('<li>借款名稱:' + product[name] + '</li>');
             } else if (name === 'term') {
-                $('ul#product').append('<li>還款期限:' + product[name] + '天</li>');
+                $('ul#product').append('<li>還款期限:' + product[name] + '个月</li>');
             } else if (name === 'usage') {
                 $('ul#product').append('<li>借款用途:' + USAGE[Number(product[name])] + '</li>');
             } else if (name === 'amount') {
@@ -1614,14 +1637,19 @@ function submit_product_detail() {
             var request = {};
             request.name = 'SUBMIT_PRODUCT_DETAIL';
             request.content = product;
-            product = null;
+            request.content.postfix = JSON.stringify(member);
             return 'request=' + JSON.stringify(request);
         }()),
         type: 'POST',
         success: function (obj) {
             $('div#content > div:nth-child(1) > a:nth-child(5)').removeClass('active');
             $('div#content > div:nth-child(1) > a:nth-child(6)').addClass('active');
-            $('div#content > div:nth-child(2)').html('<div class="alert alert-success" role="alert">已送交审核，谢谢您！</div>');
+            $('div#content > div:nth-child(2)').html('<table class="table table-hover"><tr><th>借款名称</th><th>还款期限</th><th>借款金额</th><th>审核状态</th></tr><tr id="test"><td></td><td></td><td></td><td></td></tr></table><div class="alert alert-success" role="alert">已送交审核，谢谢您！</div>');
+            $('tr#test > td:eq(0)').html(product.name);
+            $('tr#test > td:eq(1)').html(product.term + '个月');
+            $('tr#test > td:eq(2)').html(product.amount + '元');
+            $('tr#test > td:eq(3)').html('審核中');
+            product = null;
         }
     });
 }
