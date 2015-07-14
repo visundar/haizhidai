@@ -35,3 +35,19 @@ div.slider {
 .index-cover {
     background-image: url(../img/Financial.jpg);
 }
+
+div#home-invest-panel, div#home-borrow-panel {
+    cursor: pointer;
+}
+
+div#home-invest-panel > div > div:nth-child(2) {
+    background-image: url(../img/invest.jpg);
+    background-size: contain;
+    height: 250px;
+}
+
+div#home-borrow-panel > div > div:nth-child(2) {
+    background-image: url(../img/borrow.jpg);
+    background-size: contain;
+    height: 250px;
+}
