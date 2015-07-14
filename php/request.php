@@ -84,9 +84,13 @@ try {
             $query = "UPDATE `member` SET ";
             foreach ($obj->content as $name => $value) {
                 if ($name === 'asset') {
-                    $value = 0;
-                    foreach ($obj->content->asset as $num) {
-                        $value += (int) $num;
+                    if (is_array($obj->content->asset)) {
+                        $value = 0;
+                        foreach ($obj->content->asset as $num) {
+                            $value += (int) $num;
+                        }
+                    } else {
+                        $value = (int) $obj->content->asset;
                     }
                 }
                 $query .= "`" . $name . "`='" . $value . "', ";
