@@ -6,7 +6,7 @@ var FILE_ATTR = ['身份证', '结婚证', '营业执照', '劳动合同', '工�
 var FILE_DESC = ['二代身份证正反面各一张，本人手持身份证合照一张，共3张。', '本人结婚证，包含结婚日期、本人及配偶所有信息。', '营业执照照片或工商网站截图，必须清晰显示法人、成立时间、经营范围、经营时间等关键信息。', '本人当前的有效劳动合同，从封面一页一页拍至最后一页。', '个人工作证或单位工牌、名片均可，必须完整显示单位信息及个人信息。', '社保/公积金网站截图，需完整显示本人姓名、身份证、缴费状态、缴费金额等关键信息。', '本人银行卡正反面照片各一张，以及近3个月完整流水打印单或网银流水截屏。工资卡需显示代发工资项。', '个人学生证信息页照片，需完整显示学校信息及个人信息', '房产证的基本信息页及盖章页各一张，共2张。', '正副本照片，需完整显示车辆登记信息及年检信息。', '支付宝账户基本信息页截图和上一年度个人年度对账单截图。', '仅接受人民银行征信中心网络查询的PDF版。', '用户本人信用卡正面照片及对应的近3 个月信用卡（电子或纸质）对账单。', '本人大专及以上学历或学位证书，接受结业证。', '本人其他金融机构的贷款协议或凭证证明。'];
 var EDUCATION = ['', '初中及以下', '中专', '高中', '大专', '本科', '研究生及以上'];
 var WORK_YEAR = ['', '1 年已內', '2 年已內', '3 年已內', '4 年(含)以上'];
-var UPLOAD_URL = 'http://localhost/upload/index.php';
+var UPLOAD_URL = '../upload/index.php';
 var RATE = [1.99, 3.99, 5.99, 8.99, 11.99, 14.99, 19.99];
 var INCOME = [500000, 250000, 125000, 62500, 31250, 15625, 7812];
 var LEVEL = ['AA', 'A', 'B', 'C', 'D', 'E', 'HR'];
@@ -884,7 +884,7 @@ function get_product_by_serial(serial) {
 
 function get_member_from_server() {
     'use strict';
-    $.ajax('http://localhost/haizhidai/php/request.php', {
+    $.ajax('php/request.php', {
         dataType: 'json',
         async: false,
         data: (function () {
@@ -1069,7 +1069,7 @@ function searcher() {
 
 function load_product_list() {
     'use strict';
-    $.ajax('http://localhost/haizhidai/php/request.php', {
+    $.ajax('php/request.php', {
         dataType: 'json',
         async: false,
         data: (function () {
@@ -1101,7 +1101,7 @@ function load_home_page() {
             'onclick="sign_out()">登出</button></div><ul class="nav navbar-nav navbar-right">' +
             '<li><a>Hi, ' + name + '</a></li></ul>';
     }()));
-    $.ajax('http://localhost/haizhidai/php/request.php', {
+    $.ajax('php/request.php', {
         dataType: 'json',
         async: false,
         data: (function () {
@@ -1138,7 +1138,7 @@ function display_product_modal(a) {
         }
     }
     $('#product-modal').modal('show');
-    $.ajax('http://localhost/haizhidai/php/request.php', {
+    $.ajax('php/request.php', {
         dataType: 'json',
         data: (function () {
             var request = {}, content = {};
@@ -1231,7 +1231,7 @@ function load_borrow_detail_page(btn) {
         dateFormat: 'yy-mm-dd'
     });
     if ($.cookie('first_name') !== undefined) {
-        $.ajax('http://localhost/haizhidai/php/request.php', {
+        $.ajax('php/request.php', {
             dataType: 'json',
             data: (function () {
                 var request = {};
@@ -1502,7 +1502,7 @@ function submit_borrow_detail() {
         }
         return;
     }
-    $.ajax('http://localhost/haizhidai/php/request.php', {
+    $.ajax('php/request.php', {
         dataType: 'json',
         data: (function () {
             var request = {};
@@ -1537,7 +1537,7 @@ function submit_authen() {
         alert('请检查手机号');
         return;
     }
-    $.ajax('http://localhost/haizhidai/php/request.php', {
+    $.ajax('php/request.php', {
         dataType: 'json',
         async: false,
         data: (function () {
@@ -1570,7 +1570,7 @@ function submit_charge() {
         alert('请检查充值金額');
         return;
     }
-    $.ajax('http://localhost/haizhidai/php/request.php', {
+    $.ajax('php/request.php', {
         dataType: 'json',
         async: false,
         data: (function () {
@@ -1594,7 +1594,7 @@ function submit_file_upload() {
 
 function submit_product_detail() {
     'use strict';
-    $.ajax('http://localhost/haizhidai/php/request.php', {
+    $.ajax('php/request.php', {
         dataType: 'json',
         data: (function () {
             var request = {};
@@ -1614,7 +1614,7 @@ function submit_product_detail() {
 
 function submit_invest() {
     'use strict';
-    $.ajax('http://localhost/haizhidai/php/request.php', {
+    $.ajax('php/request.php', {
         dataType: 'json',
         data: (function () {
             var request = {}, content = {};
@@ -1691,7 +1691,7 @@ function sign_up() {
         alert('请检查邮箱');
         return;
     }
-    $.ajax('http://localhost/haizhidai/php/request.php', {
+    $.ajax('php/request.php', {
         dataType: 'json',
         data: (function () {
             var request = {};
@@ -1713,7 +1713,7 @@ function sign_up() {
 
 function sign_in(btn) {
     'use strict';
-    $.ajax('http://localhost/haizhidai/php/request.php', {
+    $.ajax('php/request.php', {
         dataType: 'json',
         data: (function () {
             var request = {};
