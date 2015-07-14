@@ -1,11 +1,11 @@
 /*global $, jQuery, alert*/
 /*jslint forin: true, bitwise: true*/
-var STATES = ['北京', '上海', '天津', '重庆', '河北', '山西', '内蒙古自治区', '辽宁', '吉林', '黑龙江', '江苏', '浙江', '安徽', '福建', '江西', '山东', '河南', '湖北', '湖南', '广东', '广西壮族自治区', '海南', '四川', '贵州', '云南', '西藏自治区', '陕西', '甘肃', '青海', '宁夏回族自治区', '新疆维吾尔自治区', '其他'];
-var STORES = ['淘宝网', '拍拍网', '阿里巴巴', '京东', '一号店', '当当网', '敦煌', '其他'];
+var STATES = ['', '北京', '上海', '天津', '重庆', '河北', '山西', '内蒙古自治区', '辽宁', '吉林', '黑龙江', '江苏', '浙江', '安徽', '福建', '江西', '山东', '河南', '湖北', '湖南', '广东', '广西壮族自治区', '海南', '四川', '贵州', '云南', '西藏自治区', '陕西', '甘肃', '青海', '宁夏回族自治区', '新疆维吾尔自治区', '其他'];
+var STORES = ['', '淘宝网', '拍拍网', '阿里巴巴', '京东', '一号店', '当当网', '敦煌', '其他'];
 var FILE_ATTR = ['身份证', '结婚证', '营业执照', '劳动合同', '工牌、名片、工作证', '社保', '工资卡/常用银行流水', '学生证/一卡通', '房产证', '行驶证', '支付宝截图', '个人信用报告', '信用卡对账单', '学历学位证书', '其他所有贷款协议/凭证'];
 var FILE_DESC = ['二代身份证正反面各一张，本人手持身份证合照一张，共3张。', '本人结婚证，包含结婚日期、本人及配偶所有信息。', '营业执照照片或工商网站截图，必须清晰显示法人、成立时间、经营范围、经营时间等关键信息。', '本人当前的有效劳动合同，从封面一页一页拍至最后一页。', '个人工作证或单位工牌、名片均可，必须完整显示单位信息及个人信息。', '社保/公积金网站截图，需完整显示本人姓名、身份证、缴费状态、缴费金额等关键信息。', '本人银行卡正反面照片各一张，以及近3个月完整流水打印单或网银流水截屏。工资卡需显示代发工资项。', '个人学生证信息页照片，需完整显示学校信息及个人信息', '房产证的基本信息页及盖章页各一张，共2张。', '正副本照片，需完整显示车辆登记信息及年检信息。', '支付宝账户基本信息页截图和上一年度个人年度对账单截图。', '仅接受人民银行征信中心网络查询的PDF版。', '用户本人信用卡正面照片及对应的近3 个月信用卡（电子或纸质）对账单。', '本人大专及以上学历或学位证书，接受结业证。', '本人其他金融机构的贷款协议或凭证证明。'];
-var EDUCATION = ['初中及以下', '中专', '高中', '大专', '本科', '研究生及以上'];
-var WORK_YEAR = ['1 年已內', '2 年已內', '3 年已內', '4 年(含)以上'];
+var EDUCATION = ['', '初中及以下', '中专', '高中', '大专', '本科', '研究生及以上'];
+var WORK_YEAR = ['', '1 年已內', '2 年已內', '3 年已內', '4 年(含)以上'];
 var UPLOAD_URL = 'http://localhost/upload/index.php';
 var RATE = [1.99, 3.99, 5.99, 8.99, 11.99, 14.99, 19.99];
 var INCOME = [500000, 250000, 125000, 62500, 31250, 15625, 7812];
@@ -247,42 +247,46 @@ var PROFILE_STR = function () {
     /*
 <form class="form-horizontal" id="profile">
     <div class="alert alert-warning" role="alert"><strong>温馨提示</strong>： 请填写真实完善的个人信息，以保证您的借款需求通过审核。海智贷拥有严格的信息及安全加密机制，确保您的信息安全。</div>
-    <div class="form-group">
-        <label for="name" class="col-md-2 control-label">*姓名</label>
-        <div class="col-md-2">
-          <input type="text" class="form-control" name="last_name" placeholder="姓">
+    <div class="alert alert-danger">
+        <p class="text-center"><strong>此区日后无法变更，请确实填写</strong></p>
+        <br><br>
+        <div class="form-group">
+            <label for="name" class="col-md-2 control-label">*姓名</label>
+            <div class="col-md-2">
+              <input type="text" class="form-control" name="last_name" placeholder="姓">
+            </div>
+            <div class="col-md-3">
+              <input type="text" class="form-control" name="first_name" placeholder="名">
+            </div>
         </div>
-        <div class="col-md-3">
-          <input type="text" class="form-control" name="first_name" placeholder="名">
+        <div class="form-group">
+            <label for="uid" class="col-md-2 control-label">*身份证</label>
+            <div class="col-md-5">
+              <input type="text" class="form-control" name="uid" placeholder="身份证">
+            </div>
         </div>
-    </div>
-    <div class="form-group">
-        <label for="uid" class="col-md-2 control-label">*身份证</label>
-        <div class="col-md-5">
-          <input type="text" class="form-control" name="uid" placeholder="身份证">
+        <div class="form-group">
+            <label for="cellphone" class="col-md-2 control-label">*手机号</label>
+            <div class="col-md-5">
+              <input type="text" class="form-control" name="cellphone" placeholder="手机号">
+            </div>
         </div>
-    </div>
-    <div class="form-group">
-        <label for="cellphone" class="col-md-2 control-label">*手机号</label>
-        <div class="col-md-5">
-          <input type="text" class="form-control" name="cellphone" placeholder="手机号">
+        <div class="form-group">
+           <label for="gender" class="col-md-2 control-label">*性別</label>
+            <div class="col-md-5">
+                <label class="radio-inline">
+                  <input type="radio" name="gender" value="1"> 男
+                </label>
+                <label class="radio-inline">
+                  <input type="radio" name="gender" value="0"> 女
+                </label>
+            </div>
         </div>
-    </div>
-    <div class="form-group">
-       <label for="gender" class="col-md-2 control-label">*性別</label>
-        <div class="col-md-5">
-            <label class="radio-inline">
-              <input type="radio" name="gender" value="1"> 男
-            </label>
-            <label class="radio-inline">
-              <input type="radio" name="gender" value="0"> 女
-            </label>
-        </div>
-    </div>
-    <div class="form-group">
-        <label for="birth" class="col-md-2 control-label">*生日</label>
-        <div class="col-md-5">
-          <input type="text" class="form-control" name="birth" placeholder="1990-01-01">
+        <div class="form-group">
+            <label for="birth" class="col-md-2 control-label">*生日</label>
+            <div class="col-md-5">
+              <input type="text" class="form-control" name="birth" placeholder="1990-01-01">
+            </div>
         </div>
     </div>
     <div class="form-group">
@@ -1050,6 +1054,7 @@ function load_home_page() {
     'use strict';
     clear_all();
     $('body').removeClass('index-cover');
+    $('div#content > div:eq(1)').html('');
     $('div#navbar-collapse > ul:eq(0)').html(NAVBAR_STR);
     $('div#navbar-collapse > .navbar-right').remove();
     $('div#navbar-collapse').append((function () {
@@ -1187,6 +1192,9 @@ function load_borrow_detail_page(btn) {
     for (i = 0; i < STORES.length; i += 1) {
         $('select[name="work_department"]').append('<option value="' + i + '">' + STORES[i] + '</option>');
     }
+    $('input[name="birth"]').datepicker({
+        dateFormat: 'yy-mm-dd'
+    });
     if ($.cookie('first_name') !== undefined) {
         $('input, select').attr('disabled', true);
         $.ajax('http://localhost/haizhidai/php/request.php', {
@@ -1352,17 +1360,86 @@ function load_upload_page() {
 
 function submit_borrow_detail() {
     'use strict';
-    if ($('input[name="first_name"]').val() === '' || $('input[name="last_name"]').val() === '') {
-        alert('请填写姓名');
+    if (!(/^\S+$/.test($('input[name="first_name"]').val())) || !(/^\S+$/.test($('input[name="last_name"]').val()))) {
+        alert('请检查姓名');
         return;
-    } else if ($('input[name="uid"]').val() === '') {
-        alert('请填写身份证');
+    } else if (!(/^\d+$/.test($('input[name="uid"]').val()))) {
+        alert('请检查身份证');
         return;
-    } else if ($('input[name="cellphone"]').val() === '') {
-        alert('请填写手机号');
+    } else if (!(/^\d+$/.test($('input[name="cellphone"]').val()))) {
+        alert('请检查手机号');
         return;
-    } else if ($('input[name="birth"]').val() === '') {
-        alert('请填写生日');
+    } else if ($('input[name="gender"]:checked').val() === undefined) {
+        alert('请检查性別');
+        return;
+    } else if (!(/^\d{4}-(1[0-2]|0[1-9])-(0[1-9]|[12]\d|3[01])$/.test($('input[name="birth"]').val()))) {
+        alert('请检查生日');
+        return;
+    } else if ($('input[name="insurance"]:checked').val() === undefined) {
+        alert('请检查保險');
+        return;
+    } else if ($('input[name="marriage"]:checked').val() === undefined) {
+        alert('请检查婚姻状况');
+        return;
+    } else if ($('select#education').val() === '0') {
+        alert('请检查学历');
+        return;
+    } else if ($('input[name="child"]:checked').val() === undefined) {
+        alert('请检查子女');
+        return;
+    } else if ($('select#home-state').val() === '0') {
+        alert('请检查住宅省份');
+        return;
+    } else if ($('input[name="asset"]:checked').val() === undefined) {
+        alert('请检查财力证明');
+        return;
+    } else if ($('input[name="income"]').val() !== undefined && !(/^\d+$/.test($('input[name="income"]').val()))) {
+        if ($.cookie('work_status') === '0') {
+            alert('请检查月收入');
+        } else {
+            alert('请检查月营业额');
+        }
+        return;
+    } else if (!(/^\S+$/.test($('input[name="work_name"]').val()))) {
+        if ($.cookie('work_status') === '0') {
+            alert('请检查单位名称');
+        } else if ($.cookie('work_status') === '1') {
+            alert('请检查店铺链接');
+        } else {
+            alert('请检查学校名称');
+        }
+        return;
+    } else if ($('select#work-years').val() !== undefined && $('select#work-years').val() === '0') {
+        alert('请检查工作年限');
+        return;
+    } else if ($('select#work-state').val() !== undefined && $('select#work-state').val() === '0') {
+        if ($.cookie('work_status') === '0') {
+            alert('请检查单位省份');
+        } else {
+            alert('请检查经营省份');
+        }
+        return;
+    } else if ($('input[name="work_phone"]').val() !== undefined && !(/^\d+$/.test($('input[name="work_phone"]').val()))) {
+        if ($.cookie('work_status') === '0') {
+            alert('请检查单位电话');
+        } else {
+            alert('请检查宿舍电话');
+        }
+        return;
+    } else if (($('input[name="work_department"]').val() !== undefined && !(/^\S+$/.test($('input[name="work_department"]').val()))) ||
+            ($('select[name="work_department"]').val() !== undefined && $('select[name="work_department"]').val() === '0')) {
+        if ($.cookie('work_status') === '0') {
+            alert('请检查任职部门');
+        } else {
+            alert('请检查经营网店');
+        }
+        return;
+    } else if ($('input[name="work_title"]').val() !== undefined && !(/^\S+$/.test($('input[name="work_title"]').val()))) {
+        if ($.cookie('work_status') === '0') {
+            alert('请检查任职职位');
+        } else {
+            alert('请检查卖家昵称');
+        }
         return;
     }
     $.ajax('http://localhost/haizhidai/php/request.php', {
@@ -1647,3 +1724,5 @@ $(document).ready(function () {
         load_home_page();
     }
 });
+
+//alert(/^\d{4}-(1[0-2]|0[1-9])-(0[1-9]|[12]\d|3[01])$/.test('1992-12-32'));
