@@ -674,7 +674,7 @@ var INVEST_PAGE_STR = function () {
         <th class="col-md-2" name="name">标题</th>
         <th class="col-md-3 pointer" name="complete" onclick="product_sort(this)">完成度</th>
         <th class="col-md-1 pointer" name="amount" onclick="product_sort(this)">金额</th>
-        <th class="col-md-1 pointer" name="view" onclick="product_sort(this)">浏览数</th>
+        <th class="col-md-1 pointer" name="view" onclick="product_sort(this)">浏览</th>
         <th class="col-md-1 pointer" name="level" onclick="product_sort(this)">等级</th>
         <th class="col-md-1 pointer" name="term" onclick="product_sort(this)">期限</th>
         <th class="col-md-3">投标</th>
@@ -1003,7 +1003,21 @@ function generate_product_table(a) {
 
 function product_sort(th) {
     'use strict';
-    var a = [], i, attr = $(th).attr('name'), tx, ty, t = 1;
+    var a = [], i, attr = $(th).attr('name'), tx, ty,
+        sort_span = '<span class="glyphicon glyphicon-sort-by-attributes sort" aria-hidden="true"></span>',
+        sort_alt_span = '<span class="glyphicon glyphicon-sort-by-attributes-alt sort" aria-hidden="true"></span>',
+        t = $(th).html();
+    $('span.sort').remove();
+    if (t.search(sort_span) !== -1) {
+        $(th).append(sort_alt_span);
+        t = -1;
+    } else if (t.search(sort_alt_span) !== -1) {
+        $(th).append(sort_span);
+        t = 1;
+    } else {
+        $(th).append(sort_span);
+        t = 1;
+    }
     for (i = 0; i < product_list.length; i += 1) {
         a.push(i);
     }
