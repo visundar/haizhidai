@@ -880,7 +880,7 @@ function get_product_by_serial(serial) {
 
 function get_member_from_server() {
     'use strict';
-    $.ajax('http://localhost/project/php/request.php', {
+    $.ajax('http://localhost/haizhidai/php/request.php', {
         dataType: 'json',
         async: false,
         data: (function () {
@@ -954,8 +954,8 @@ function filter_slider_init() {
     $("#amount-slider").slider({
         range: true,
         min: 0,
-        max: 99999,
-        values: [0, 99999],
+        max: 999999,
+        values: [0, 999999],
         slide: function (event, ui) {
             $("#amount-lower").html(ui.values[0] + "天");
             $("#amount-upper").html(ui.values[1] + "天");
@@ -1030,7 +1030,7 @@ function filter() {
 
 function load_product_list() {
     'use strict';
-    $.ajax('http://localhost/project/php/request.php', {
+    $.ajax('http://localhost/haizhidai/php/request.php', {
         dataType: 'json',
         async: false,
         data: (function () {
@@ -1061,7 +1061,7 @@ function load_home_page() {
             'onclick="sign_out()">登出</button></div><ul class="nav navbar-nav navbar-right">' +
             '<li><a>Hi, ' + name + '</a></li></ul>';
     }()));
-    $.ajax('http://localhost/project/php/request.php', {
+    $.ajax('http://localhost/haizhidai/php/request.php', {
         dataType: 'json',
         async: false,
         data: (function () {
@@ -1098,7 +1098,7 @@ function display_product_modal(a) {
         }
     }
     $('#product-modal').modal('show');
-    $.ajax('http://localhost/project/php/request.php', {
+    $.ajax('http://localhost/haizhidai/php/request.php', {
         dataType: 'json',
         data: (function () {
             var request = {}, content = {};
@@ -1189,7 +1189,7 @@ function load_borrow_detail_page(btn) {
     }
     if ($.cookie('first_name') !== undefined) {
         $('input, select').attr('disabled', true);
-        $.ajax('http://localhost/project/php/request.php', {
+        $.ajax('http://localhost/haizhidai/php/request.php', {
             dataType: 'json',
             data: (function () {
                 var request = {};
@@ -1365,7 +1365,7 @@ function submit_borrow_detail() {
         alert('请填写生日');
         return;
     }
-    $.ajax('http://localhost/project/php/request.php', {
+    $.ajax('http://localhost/haizhidai/php/request.php', {
         dataType: 'json',
         data: (function () {
             var request = {};
@@ -1400,7 +1400,7 @@ function submit_authen() {
         alert('请填写手机号');
         return;
     }
-    $.ajax('http://localhost/project/php/request.php', {
+    $.ajax('http://localhost/haizhidai/php/request.php', {
         dataType: 'json',
         async: false,
         data: (function () {
@@ -1433,7 +1433,7 @@ function submit_charge() {
         alert('请填写充值金额');
         return;
     }
-    $.ajax('http://localhost/project/php/request.php', {
+    $.ajax('http://localhost/haizhidai/php/request.php', {
         dataType: 'json',
         async: false,
         data: (function () {
@@ -1457,7 +1457,7 @@ function submit_file_upload() {
 
 function submit_product_detail() {
     'use strict';
-    $.ajax('http://localhost/project/php/request.php', {
+    $.ajax('http://localhost/haizhidai/php/request.php', {
         dataType: 'json',
         data: (function () {
             var request = {};
@@ -1477,7 +1477,7 @@ function submit_product_detail() {
 
 function submit_invest() {
     'use strict';
-    $.ajax('http://localhost/project/php/request.php', {
+    $.ajax('http://localhost/haizhidai/php/request.php', {
         dataType: 'json',
         data: (function () {
             var request = {}, content = {};
@@ -1532,7 +1532,7 @@ function sign_up() {
         alert('请检查邮箱');
         return;
     }
-    $.ajax('http://localhost/project/php/request.php', {
+    $.ajax('http://localhost/haizhidai/php/request.php', {
         dataType: 'json',
         data: (function () {
             var request = {};
@@ -1554,7 +1554,7 @@ function sign_up() {
 
 function sign_in(btn) {
     'use strict';
-    $.ajax('http://localhost/project/php/request.php', {
+    $.ajax('http://localhost/haizhidai/php/request.php', {
         dataType: 'json',
         data: (function () {
             var request = {};
