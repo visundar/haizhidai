@@ -4,6 +4,7 @@ var STATES = ['', '北京', '上海', '天津', '重庆', '河北', '山西', '�
 var STORES = ['', '淘宝网', '拍拍网', '阿里巴巴', '京东', '一号店', '当当网', '敦煌', '其他'];
 var FILE_ATTR = ['身份证', '结婚证', '营业执照', '劳动合同', '工牌、名片、工作证', '社保', '工资卡/常用银行流水', '学生证/一卡通', '房产证', '行驶证', '支付宝截图', '个人信用报告', '信用卡对账单', '学历学位证书', '其他所有贷款协议/凭证'];
 var FILE_DESC = ['二代身份证正反面各一张，本人手持身份证合照一张，共3张。', '本人结婚证，包含结婚日期、本人及配偶所有信息。', '营业执照照片或工商网站截图，必须清晰显示法人、成立时间、经营范围、经营时间等关键信息。', '本人当前的有效劳动合同，从封面一页一页拍至最后一页。', '个人工作证或单位工牌、名片均可，必须完整显示单位信息及个人信息。', '社保/公积金网站截图，需完整显示本人姓名、身份证、缴费状态、缴费金额等关键信息。', '本人银行卡正反面照片各一张，以及近3个月完整流水打印单或网银流水截屏。工资卡需显示代发工资项。', '个人学生证信息页照片，需完整显示学校信息及个人信息', '房产证的基本信息页及盖章页各一张，共2张。', '正副本照片，需完整显示车辆登记信息及年检信息。', '支付宝账户基本信息页截图和上一年度个人年度对账单截图。', '仅接受人民银行征信中心网络查询的PDF版。', '用户本人信用卡正面照片及对应的近3 个月信用卡（电子或纸质）对账单。', '本人大专及以上学历或学位证书，接受结业证。', '本人其他金融机构的贷款协议或凭证证明。'];
+var FILE_IMG = [['uid_1.jpg', 'uid_2.jpg', 'uid_3.jpg'], 'jiehunzheng.jpg', 'yingyezhizhao.jpg', 'laodonghetong.jpg', 'gongpai.jpg', 'shebao.png', 'yinhangliushui.jpg', 'xueshengzheng.jpg', 'fangchanzheng.jpg', 'xingshizheng.jpg', 'zhifubao.jpg', 'xinyongbaogao.png', 'xinyongkazhangdan.bmp', 'xuelizhengshu.bmp', 'qitapingzheng.jpg'];
 var EDUCATION = ['', '初中及以下', '中专', '高中', '大专', '本科', '研究生及以上'];
 var WORK_YEAR = ['', '1 年已內', '2 年已內', '3 年已內', '4 年(含)以上'];
 var UPLOAD_URL = '../upload/index.php';
@@ -43,6 +44,29 @@ var NAVBAR_STR = function () {
 <li><a href="javascript:void(0)" onclick="load_invest_page()">我要投资</a></li>
 <li><a href="javascript:void(0)" onclick="load_borrow_page()">我要借款</a></li>
 <li><a href="javascript:void(0)" onclick="load_account_page()">我的帐户</a></li>
+    */
+}.toString().slice(38, -4);
+var SAMPLE_MODAL_STR = function () {
+    'use strict';
+    /*
+<div class="modal fade" id="sample-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">示例图片</h4>
+            </div>
+            <div class="modal-body">
+                <img src="" alt="" class="sample-image">
+                <img src="" alt="" class="sample-image">
+                <img src="" alt="" class="sample-image">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">了解</button>
+            </div>
+        </div>
+    </div>
+</div>
     */
 }.toString().slice(38, -4);
 var PRODUCT_PANEL_STR = function () {
@@ -862,7 +886,7 @@ var HOME_PANEL_STR = function () {
 </div>
     */
 }.toString().slice(38, -4);
-var member, product, product_list;
+var member, product, product_list, where_you_upload, my_images;
 
 (function ($) {
     'use strict';
@@ -932,9 +956,17 @@ function toggle_submit_product() {
     }
 }
 
-function start_upload() {
+function start_upload(btn) {
     'use strict';
+    var i, tmp;
     $('#image-upload-modal button.btn.btn-primary').attr('disabled', true);
+    tmp = $(btn).parent().siblings('th').html();
+    for (i = 0; i < FILE_ATTR.length; i += 1) {
+        if (tmp === FILE_ATTR[i]) {
+            where_you_upload = i;
+            break;
+        }
+    }
 }
 
 function filter_slider_init() {
@@ -1190,6 +1222,24 @@ function display_product_modal(a) {
     });
 }
 
+function change_sample_modal(a) {
+    'use strict';
+    var i, tmp = $(a).parent().prev().html();
+    for (i = 0; i < FILE_ATTR.length; i += 1) {
+        if (tmp === FILE_ATTR[i]) {
+            break;
+        }
+    }
+    if (tmp === '身份证') {
+        $('#sample-modal img:nth-child(1)').attr('src', 'img/' + FILE_IMG[i][0]);
+        $('#sample-modal img:nth-child(2)').attr('src', 'img/' + FILE_IMG[i][1]);
+        $('#sample-modal img:nth-child(3)').attr('src', 'img/' + FILE_IMG[i][2]);
+    } else {
+        $('#sample-modal img').attr('src', '');
+        $('#sample-modal img:nth-child(1)').attr('src', 'img/' + FILE_IMG[i]);
+    }
+}
+
 function load_invest_page() {
     'use strict';
     var i, per, a = [];
@@ -1430,28 +1480,60 @@ function load_product_confirm_page() {
 
 function load_upload_page() {
     'use strict';
-    var i;
+    var i, tmpa = [];
+    for (i = 0; i < FILE_ATTR.length; i += 1) {
+        tmpa[i] = 0;
+    }
+    $.ajax('php/request.php', {
+        dataType: 'json',
+        async: false,
+        data: (function () {
+            var request = {};
+            request.name = 'GET_MY_IMAGE';
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            my_images = obj.content;
+            for (i = 0; i < my_images.length; i += 1) {
+                tmpa[Number(my_images[i].what)] += 1;
+            }
+        }
+    });
     $('div#content > div:nth-child(1) > a').removeClass('active');
     $('div#content > div:nth-child(1) > a:nth-child(4)').addClass('active');
     $('div#content > div:nth-child(2)').html(FILE_UPLOAD_STR);
     for (i = 0; i < FILE_ATTR.length; i += 1) {
         $('table#file-list').append('<tr><th>' + FILE_ATTR[i] + '</th><td>' + FILE_DESC[i] +
-                                    '<a href="">示例圖片</a></td><td>0</td><td><button class="btn btn-info" data-toggle="modal" data-target="#image-upload-modal" onclick="start_upload()">上傳</button></td></tr>');
+                                    '<a href="javascript:void(0)" onclick="change_sample_modal(this)" data-toggle="modal" data-target="#sample-modal">示例圖片</a></td><td>' + tmpa[i] + '</td><td><button class="btn btn-info" data-toggle="modal" data-target="#image-upload-modal" onclick="start_upload(this)">上傳</button>&nbsp;&nbsp;&nbsp;<a>查看</a></td></tr>');
     }
-    $('div#modal').html(IMAGE_UPLOAD_MODAL_STR);
+    $('div#modal').html(IMAGE_UPLOAD_MODAL_STR + SAMPLE_MODAL_STR);
     $(".filestyle").fileinput({
         uploadUrl: UPLOAD_URL,
         language: 'zh',
         maxFilesNum: 1,
         allowedFileTypes: ['image']
     });
-    $(".filestyle").on('fileuploaded', function () {
+    $(".filestyle").on('fileuploaded', function (event, rdata) {
         $('#image-upload-modal button.btn.btn-primary').attr('disabled', false);
-        /*
-        $(this).fileinput('clear');
-        i = Number($(this).parents('td').prev().text()) + 1;
-        $(this).parents('td').prev().text(i);
-        */
+        $.ajax('php/request.php', {
+            dataType: 'json',
+            data: (function () {
+                var request = {}, content = {};
+                content.name = rdata.response[0];
+                content.user_serial = Number($.cookie('user_serial'));
+                content.what = where_you_upload;
+                request.name = 'UPLOADED_IMAGE';
+                request.content = content;
+                return 'request=' + JSON.stringify(request);
+            }()),
+            type: 'POST',
+            success: function (obj) {
+                my_images = obj.content;
+                i = Number($('table#file-list tr:eq(' + (where_you_upload + 1) + ') > td:eq(1)').html());
+                $('table#file-list tr:eq(' + (where_you_upload + 1) + ') > td:eq(1)').html((i + 1));
+            }
+        });
     });
 }
 
