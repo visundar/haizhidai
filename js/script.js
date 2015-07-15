@@ -412,7 +412,7 @@ var IMAGE_UPLOAD_MODAL_STR = function () {
                 <input type="file" class="filestyle" data-input="false" accept="image/\*" name="image">
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal">完成</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="$('button.fileinput-remove-button').click()">完成</button>
             </div>
         </div>
     </div>
@@ -1302,6 +1302,9 @@ function load_invest_page() {
     $('div#content > div:nth-child(2)').html(INVEST_PAGE_STR);
     $('div#modal').append(RATE_MODAL_STR + FILTER_MODAL_STR + PRODUCT_MODAL_STR);
     $('div#modal').append(CHARGE_MODAL_STR + AUTHEN_MODAL_STR + INVEST_MODAL_STR);
+    $('form').submit(function () {
+        return false;
+    });
     filter_slider_init();
     load_product_list();
     get_member_from_server();
@@ -1600,13 +1603,13 @@ function load_upload_page() {
                                     '<a href="javascript:void(0)" onclick="change_sample_modal(this)" data-toggle="modal" data-target="#sample-modal">示例圖片</a></td><td>' + tmpa[i] + '</td><td><button class="btn btn-info" data-toggle="modal" data-target="#image-upload-modal" onclick="start_upload(this)">上傳</button>&nbsp;&nbsp;&nbsp;<a value="' + i + '" data-toggle="modal" data-target="#sample-modal" onclick="display_my_image(this)">查看</a></td></tr>');
     }
     $('div#modal').html(IMAGE_UPLOAD_MODAL_STR + SAMPLE_MODAL_STR);
-    $(".filestyle").fileinput({
+    $('.filestyle').fileinput({
         uploadUrl: UPLOAD_URL,
         language: 'zh',
         maxFilesNum: 1,
         allowedFileTypes: ['image']
     });
-    $(".filestyle").on('fileuploaded', function (event, rdata) {
+    $('.filestyle').on('fileuploaded', function (event, rdata) {
         $('#image-upload-modal button.btn.btn-primary').attr('disabled', false);
         $.ajax('php/request.php', {
             dataType: 'json',
@@ -1624,7 +1627,6 @@ function load_upload_page() {
                 my_images = obj.content;
                 i = Number($('table#file-list tr:eq(' + (where_you_upload + 1) + ') > td:eq(1)').html());
                 $('table#file-list tr:eq(' + (where_you_upload + 1) + ') > td:eq(1)').html((i + 1));
-                $('button.fileinput-remove-button').click();
             }
         });
     });
@@ -1780,6 +1782,9 @@ function submit_charge() {
         return;
     } else if (!(/^\d+$/.test($('input[name="remain"]').val()))) {
         alert('请检查充值金額');
+        return;
+    } else if (Number($('input[name="remain"]').val()) > 50000) {
+        alert('充值金額应小于50000');
         return;
     }
     $.ajax('php/request.php', {
@@ -2003,8 +2008,16 @@ function change_term(span) {
 
 function invest_this(div) {
     'use strict';
-    var tmp = Number($(div).prev().children('input').val()), serial = Number($(div).parents('tr').attr('value'));
-    if (Number(member.remain) < tmp) {
+    var tmp = Number($(div).prev().children('input').val()), serial = Number($(div).parents('tr').attr('value')),
+        tmp_product = get_product_by_serial(serial),
+        maximum = Number(tmp_product.amount) - Number(tmp_product.complete);
+    if (isNaN(tmp)) {
+        alert('请检查投资金额');
+    } else if (tmp === 0) {
+        alert('投标金额须大于0');
+    } else if (tmp > maximum) {
+        alert('投标金额不可大于所需金额：' + maximum);
+    } else if (Number(member.remain) < tmp) {
         charge();
     } else {
         get_member_from_server();
