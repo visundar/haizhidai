@@ -9,7 +9,7 @@ var EDUCATION = ['', '初中及以下', '中专', '高中', '大专', '本科', 
 var WORK_YEAR = ['', '1 年已內', '2 年已內', '3 年已內', '4 年(含)以上'];
 var UPLOAD_URL = '../upload/index.php';
 var RATE = [1.99, 3.99, 5.99, 8.99, 11.99, 14.99, 19.99];
-var INCOME = [500000, 250000, 125000, 62500, 31250, 15625, 7812];
+var INCOME = [500000, 250000, 125000, 62500, 31250, 15625];
 var LEVEL = ['AA', 'A', 'B', 'C', 'D', 'E', 'HR'];
 var USAGE = ['', '还款', '学费', '租金'];
 var PRODUCT = [{
@@ -1792,7 +1792,7 @@ function submit_invest() {
 function save_product() {
     'use strict';
     var i, income;
-    if (!(/^\S+$/.test($('input[name="name"]').val()))) {
+    if (!(/^\S[\s\S]*$/.test($('input[name="name"]').val()))) {
         alert('请检查借款名称');
         return;
     } else if (!(/^\d+$/.test($('input[name="term"]').val()))) {
@@ -1807,16 +1807,16 @@ function save_product() {
     } else if (Number($('input[name="amount"]').val()) < 1000) {
         alert('借款金额须大于1000');
         return;
-    } else if (!(/^\S+$/.test($('input[name="source"]').val()))) {
+    } else if (!(/^\S[\s\S]*$/.test($('input[name="source"]').val()))) {
         alert('请检查还款来源');
         return;
-    } else if (!(/^\S+$/.test($('textarea[name="descript"]').val()))) {
+    } else if (!(/^\S[\s\S]*$/.test($('textarea[name="descript"]').val()))) {
         alert('请检查借款简介');
         return;
     }
     product = $('form#product').serializeObject();
     income = Number($.cookie('income'));
-    for (i = 0; i < INCOME.length - 1; i += 1) {
+    for (i = 0; i < INCOME.length; i += 1) {
         if (income >= INCOME[i]) {
             break;
         }
