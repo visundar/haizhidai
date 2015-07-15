@@ -51,3 +51,7 @@ div#home-borrow-panel > div > div:nth-child(2) {
     background-size: contain;
     height: 250px;
 }
+
+img.sample-image {
+    max-width: 570px;
+}
