@@ -1899,14 +1899,15 @@ function sign_out() {
 
 function sign_up() {
     'use strict';
-    if ($('input#sign-up-email').val() === '') {
-        alert('请输入邮箱');
+    var reg = /^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z]+$/;
+    if (!(reg.test($('input#sign-up-email').val()))) {
+        alert('请检查邮箱');
         return;
     } else if ($('input#sign-up-password').val() === '') {
         alert('请输入密码');
         return;
     } else if ($('input#sign-up-email').val() !== $('input#sign-up-confirm-email').val()) {
-        alert('请检查邮箱');
+        alert('请检查确认邮箱');
         return;
     }
     $.ajax('php/request.php', {
