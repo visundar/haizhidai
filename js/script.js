@@ -1532,6 +1532,7 @@ function load_upload_page() {
                 my_images = obj.content;
                 i = Number($('table#file-list tr:eq(' + (where_you_upload + 1) + ') > td:eq(1)').html());
                 $('table#file-list tr:eq(' + (where_you_upload + 1) + ') > td:eq(1)').html((i + 1));
+                $('button.fileinput-remove-button').click();
             }
         });
     });
