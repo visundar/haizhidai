@@ -385,7 +385,7 @@ var PROFILE_STR = function () {
               <input type="checkbox" name="asset" value="2"> 我有存款
             </label>
             <label class="checkbox-inline">
-              <input type="checkbox" name="asset" value="1"> 无
+              <input type="checkbox" name="asset" value="1" onclick="toggle_asset_checkbox(this)"> 无
             </label>
         </div>
     </div>
@@ -983,6 +983,20 @@ function get_member_from_server() {
             member = obj.content;
         }
     });
+}
+
+function toggle_asset_checkbox(input) {
+    'use strict';
+    var bool = $(input).prop('checked');
+    if (bool === false) {
+        $(input).prop('checked', false);
+        $('input[name="asset"]').prop('disabled', false);
+    } else {
+        $('input[name="asset"]').prop('disabled', true);
+        $('input[name="asset"]').prop('checked', false);
+        $(input).prop('checked', true);
+        $(input).prop('disabled', false);
+    }
 }
 
 function toggle_submit_product() {
@@ -1634,7 +1648,7 @@ function load_upload_page() {
 
 function submit_borrow_detail() {
     'use strict';
-    if (!(/^\S+$/.test($('input[name="first_name"]').val())) || !(/^\S+$/.test($('input[name="last_name"]').val()))) {
+    if (!(/^\S[\s\S]*$/.test($('input[name="first_name"]').val())) || !(/^\S[\s\S]*$/.test($('input[name="last_name"]').val()))) {
         alert('请检查姓名');
         return;
     } else if (!(/^\d+$/.test($('input[name="uid"]').val()))) {
@@ -1700,7 +1714,7 @@ function submit_borrow_detail() {
             alert('请检查宿舍电话');
         }
         return;
-    } else if (($('input[name="work_department"]').val() !== undefined && !(/^\S+$/.test($('input[name="work_department"]').val()))) ||
+    } else if (($('input[name="work_department"]').val() !== undefined && !(/^\S[\s\S]*$/.test($('input[name="work_department"]').val()))) ||
             ($('select[name="work_department"]').val() !== undefined && $('select[name="work_department"]').val() === '0')) {
         if ($.cookie('work_status') === '0') {
             alert('请检查任职部门');
@@ -1708,7 +1722,7 @@ function submit_borrow_detail() {
             alert('请检查经营网店');
         }
         return;
-    } else if ($('input[name="work_title"]').val() !== undefined && !(/^\S+$/.test($('input[name="work_title"]').val()))) {
+    } else if ($('input[name="work_title"]').val() !== undefined && !(/^\S[\s\S]*$/.test($('input[name="work_title"]').val()))) {
         if ($.cookie('work_status') === '0') {
             alert('请检查任职职位');
         } else {
@@ -1741,7 +1755,7 @@ function submit_borrow_detail() {
 
 function submit_authen() {
     'use strict';
-    if (!(/^\S+$/.test($('input[name="first_name"]').val())) || !(/^\S+$/.test($('input[name="last_name"]').val()))) {
+    if (!(/^\S[\s\S]*$/.test($('input[name="first_name"]').val())) || !(/^\S[\s\S]*$/.test($('input[name="last_name"]').val()))) {
         alert('请检查姓名');
         return;
     } else if (!(/^\d+$/.test($('input[name="uid"]').val()))) {
