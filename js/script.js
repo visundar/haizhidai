@@ -1,4 +1,4 @@
-/*global $, jQuery, alert*/
+/*global $, jQuery, alert, Chart*/
 /*jslint forin: true, bitwise: true*/
 var STATES = ['', '北京', '上海', '天津', '重庆', '河北', '山西', '内蒙古自治区', '辽宁', '吉林', '黑龙江', '江苏', '浙江', '安徽', '福建', '江西', '山东', '河南', '湖北', '湖南', '广东', '广西壮族自治区', '海南', '四川', '贵州', '云南', '西藏自治区', '陕西', '甘肃', '青海', '宁夏回族自治区', '新疆维吾尔自治区', '其他'];
 var STORES = ['', '淘宝网', '拍拍网', '阿里巴巴', '京东', '一号店', '当当网', '敦煌', '其他'];
@@ -892,6 +892,39 @@ var HOME_PANEL_STR = function () {
 </div>
     */
 }.toString().slice(38, -4);
+var ACCOUNT_PAGE_STR = function () {
+    'use strict';
+    /*
+<div class="row">
+    <div class="col-md-4" style="overflow:hidden">
+        <img src="img/greg_head.png" height="200px" width="200px">
+    </div>
+</div>
+<hr>
+<div class="row">
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">账户余额</div>
+            <div class="panel-body">
+                <p>可用余额:&yen;<u><strong></strong></u></p>
+                <div class="text-right">
+                    <button class="btn btn-info" onclick="charge()">充值</button>
+                    <button class="btn btn-primary">提现</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6" style="overflos:scroll">
+        <div class="panel panel-default">
+            <div class="panel-heading">用户分析</div>
+            <div class="panel-body">
+                <canvas id="radar-chart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+    */
+}.toString().slice(38, -4);
 var member, product, product_list, where_you_upload, my_images;
 
 (function ($) {
@@ -1217,9 +1250,11 @@ function display_product_modal(a) {
         if (name === 'level') {
             $('#product-modal td#' + name).html(LEVEL[Number(product_list[i][name])]);
         } else if (name === 'term') {
-            $('#product-modal td#' + name).html(product_list[i][name] + '天');
+            $('#product-modal td#' + name).html(product_list[i][name] + '个月');
         } else if (name === 'usage') {
             $('#product-modal td#' + name).html(USAGE[Number(product_list[i][name])]);
+        } else if (name === 'complete') {
+            $('#product-modal td#' + name).html(Math.floor(Number(product_list[i][name]) * 100 / Number(product_list[i].amount)) + '%');
         } else {
             $('#product-modal td#' + name).html(product_list[i][name]);
         }
@@ -1377,9 +1412,35 @@ function load_borrow_detail_page(btn) {
     }
 }
 
+function charge() {
+    'use strict';
+    get_member_from_server();
+    $('form#charge input#amount').val(member.remain);
+    if (member.first_name === null) {
+        $('#authen-modal').modal('show');
+    } else {
+        $('#charge-modal').modal('show');
+    }
+}
+
 function load_account_page() {
     'use strict';
     clear_all();
+    $('div#navbar-collapse > ul:first > li:nth-child(3)').addClass('active');
+    $('div#content > div:nth-child(2)').append(ACCOUNT_PAGE_STR);
+    $('div#content > div:nth-child(2) p > u > strong').html(member.remain);
+    $('div#modal').append(CHARGE_MODAL_STR + AUTHEN_MODAL_STR);
+    new Chart(document.getElementById("radar-chart").getContext("2d")).Radar({
+        labels: ["信用额度", "借款次数", "违约次数", "借款总金额", "投资总金额"],
+        datasets: [
+            {
+                fillColor: "rgba(220,220,220,0.2)",
+                data: [65, 59, 90, 81, 56]
+            }
+        ]
+    }, {
+        responsive: true
+    });
 }
 
 function load_product_info_page() {
@@ -1733,6 +1794,7 @@ function submit_charge() {
         type: 'POST',
         success: function (obj) {
             member = obj.content;
+            $('div#content > div:nth-child(2) p > u > strong').html(member.remain);
             $('#charge-modal').modal('hide');
         }
     });
@@ -1941,15 +2003,10 @@ function change_term(span) {
 function invest_this(div) {
     'use strict';
     var tmp = Number($(div).prev().children('input').val()), serial = Number($(div).parents('tr').attr('value'));
-    get_member_from_server();
     if (Number(member.remain) < tmp) {
-        $('form#charge input#amount').val(member.remain);
-        if (member.first_name === null) {
-            $('#authen-modal').modal('show');
-        } else {
-            $('#charge-modal').modal('show');
-        }
+        charge();
     } else {
+        get_member_from_server();
         $('#invest-modal h2 > strong').html(tmp);
         $('#invest-modal h3:eq(0) > strong').html(serial);
         $('#invest-modal').modal('show');
