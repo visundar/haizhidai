@@ -54,12 +54,9 @@ var SAMPLE_MODAL_STR = function () {
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">示例图片</h4>
+                <h4 class="modal-title"></h4>
             </div>
             <div class="modal-body">
-                <img src="" alt="" class="sample-image">
-                <img src="" alt="" class="sample-image">
-                <img src="" alt="" class="sample-image">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-dismiss="modal">了解</button>
@@ -666,6 +663,15 @@ var CONFIRM_PAGE_STR = function () {
         </td>
         <td><button class="btn btn-info" onclick="load_product_info_page()">編輯</button></td>
     </tr>
+    <tr><th>上传资料</th><td></td><td></td></tr>
+    <tr>
+       <th></th>
+       <td>
+           <ul id="image">
+           </ul>
+        </td>
+        <td><button class="btn btn-info" onclick="load_upload_page()">編輯</button></td>
+    </tr>
     <tr>
         <th>借贷条款</th>
         <td>
@@ -956,6 +962,18 @@ function toggle_submit_product() {
     }
 }
 
+function display_my_image(a) {
+    'use strict';
+    var v = Number($(a).attr('value')), i;
+    $('#sample-modal h4.modal-title').html(FILE_ATTR[v]);
+    $('#sample-modal div.modal-body').html('');
+    for (i = 0; i < my_images.length; i += 1) {
+        if (Number(my_images[i].what) === v) {
+            $('#sample-modal div.modal-body').append('<img src="../upload/uploads/' + my_images[i].name + '" class="sample-image">');
+        }
+    }
+}
+
 function start_upload(btn) {
     'use strict';
     var i, tmp;
@@ -1230,13 +1248,14 @@ function change_sample_modal(a) {
             break;
         }
     }
+    $('#sample-modal h4.modal-title').html('示例图片');
+    $('#sample-modal div.modal-body').html('');
     if (tmp === '身份证') {
-        $('#sample-modal img:nth-child(1)').attr('src', 'img/' + FILE_IMG[i][0]);
-        $('#sample-modal img:nth-child(2)').attr('src', 'img/' + FILE_IMG[i][1]);
-        $('#sample-modal img:nth-child(3)').attr('src', 'img/' + FILE_IMG[i][2]);
+        $('#sample-modal div.modal-body').append('<img src="img/' + FILE_IMG[i][0] + '" class="sample-image">');
+        $('#sample-modal div.modal-body').append('<img src="img/' + FILE_IMG[i][1] + '" class="sample-image">');
+        $('#sample-modal div.modal-body').append('<img src="img/' + FILE_IMG[i][2] + '" class="sample-image">');
     } else {
-        $('#sample-modal img').attr('src', '');
-        $('#sample-modal img:nth-child(1)').attr('src', 'img/' + FILE_IMG[i]);
+        $('#sample-modal div.modal-body').append('<img src="img/' + FILE_IMG[i] + '" class="sample-image">');
     }
 }
 
@@ -1388,11 +1407,11 @@ function load_product_info_page() {
 
 function load_product_confirm_page() {
     'use strict';
-    var name, tmp;
+    var name, tmp, obj, i;
     $('div#content > div:nth-child(1) > a:nth-child(4)').removeClass('active');
     $('div#content > div:nth-child(1) > a:nth-child(5)').addClass('active');
     $('div#content > div:nth-child(2)').html(CONFIRM_PAGE_STR);
-    $('div#modal').html(CLAUSE_MODAL);
+    $('div#modal').html(CLAUSE_MODAL + SAMPLE_MODAL_STR);
     for (name in member) {
         if (member[name] !== null) {
             if (name === 'marriage') {
@@ -1476,6 +1495,18 @@ function load_product_confirm_page() {
             }
         }
     }
+    tmp = [];
+    for (i = 0; i < FILE_ATTR.length; i += 1) {
+        tmp[i] = 0;
+    }
+    for (i = 0; i < my_images.length; i += 1) {
+        tmp[Number(my_images[i].what)] += 1;
+    }
+    for (i = 0; i < FILE_ATTR.length; i += 1) {
+        if (tmp[i] > 0) {
+            $('ul#image').append('<li>' + FILE_ATTR[i] + ': ' + tmp[i] + '张&nbsp;<a value="' + i + '" data-toggle="modal" data-target="#sample-modal" onclick="display_my_image(this)">查看</a>' + '</li>');
+        }
+    }
 }
 
 function load_upload_page() {
@@ -1505,7 +1536,7 @@ function load_upload_page() {
     $('div#content > div:nth-child(2)').html(FILE_UPLOAD_STR);
     for (i = 0; i < FILE_ATTR.length; i += 1) {
         $('table#file-list').append('<tr><th>' + FILE_ATTR[i] + '</th><td>' + FILE_DESC[i] +
-                                    '<a href="javascript:void(0)" onclick="change_sample_modal(this)" data-toggle="modal" data-target="#sample-modal">示例圖片</a></td><td>' + tmpa[i] + '</td><td><button class="btn btn-info" data-toggle="modal" data-target="#image-upload-modal" onclick="start_upload(this)">上傳</button>&nbsp;&nbsp;&nbsp;<a>查看</a></td></tr>');
+                                    '<a href="javascript:void(0)" onclick="change_sample_modal(this)" data-toggle="modal" data-target="#sample-modal">示例圖片</a></td><td>' + tmpa[i] + '</td><td><button class="btn btn-info" data-toggle="modal" data-target="#image-upload-modal" onclick="start_upload(this)">上傳</button>&nbsp;&nbsp;&nbsp;<a value="' + i + '" data-toggle="modal" data-target="#sample-modal" onclick="display_my_image(this)">查看</a></td></tr>');
     }
     $('div#modal').html(IMAGE_UPLOAD_MODAL_STR + SAMPLE_MODAL_STR);
     $(".filestyle").fileinput({
