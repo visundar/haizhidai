@@ -42,13 +42,13 @@ div#home-invest-panel, div#home-borrow-panel {
 
 div#home-invest-panel > div > div:nth-child(2) {
     background-image: url(../img/invest.jpg);
-    background-size: contain;
+    background-size: cover;
     height: 250px;
 }
 
 div#home-borrow-panel > div > div:nth-child(2) {
     background-image: url(../img/borrow.jpg);
-    background-size: contain;
+    background-size: cover;
     height: 250px;
 }
 

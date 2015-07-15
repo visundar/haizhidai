@@ -1648,86 +1648,90 @@ function load_upload_page() {
 
 function submit_borrow_detail() {
     'use strict';
+    var warning = '';
     if (!(/^\S[\s\S]*$/.test($('input[name="first_name"]').val())) || !(/^\S[\s\S]*$/.test($('input[name="last_name"]').val()))) {
-        alert('请检查姓名');
-        return;
-    } else if (!(/^\d+$/.test($('input[name="uid"]').val()))) {
-        alert('请检查身份证');
-        return;
-    } else if (!(/^\d+$/.test($('input[name="cellphone"]').val()))) {
-        alert('请检查手机号');
-        return;
-    } else if ($('input[name="gender"]:checked').val() === undefined) {
-        alert('请检查性別');
-        return;
-    } else if (!(/^\d{4}-(1[0-2]|0[1-9])-(0[1-9]|[12]\d|3[01])$/.test($('input[name="birth"]').val()))) {
-        alert('请检查生日');
-        return;
-    } else if ($('input[name="insurance"]:checked').val() === undefined) {
-        alert('请检查保險');
-        return;
-    } else if ($('input[name="marriage"]:checked').val() === undefined) {
-        alert('请检查婚姻状况');
-        return;
-    } else if ($('select#education').val() === '0') {
-        alert('请检查学历');
-        return;
-    } else if ($('input[name="child"]:checked').val() === undefined) {
-        alert('请检查子女');
-        return;
-    } else if ($('select#home-state').val() === '0') {
-        alert('请检查住宅省份');
-        return;
-    } else if ($('input[name="asset"]:checked').val() === undefined) {
-        alert('请检查财力证明');
-        return;
-    } else if ($('input[name="income"]').val() !== undefined && !(/^\d+$/.test($('input[name="income"]').val()))) {
+        warning += '姓名 ';
+    }
+    if (!(/^\d+$/.test($('input[name="uid"]').val()))) {
+        warning += '身份证 ';
+    }
+    if (!(/^\d+$/.test($('input[name="cellphone"]').val()))) {
+        warning += '手机号 ';
+    }
+    if ($('input[name="gender"]:checked').val() === undefined) {
+        warning += '性別 ';
+    }
+    if (!(/^\d{4}-(1[0-2]|0[1-9])-(0[1-9]|[12]\d|3[01])$/.test($('input[name="birth"]').val()))) {
+        warning += '生日 ';
+    }
+    if ($('input[name="insurance"]:checked').val() === undefined) {
+        warning += '保險 ';
+    }
+    if ($('input[name="marriage"]:checked').val() === undefined) {
+        warning += '婚姻状况 ';
+    }
+    if ($('select#education').val() === '0') {
+        warning += '学历 ';
+    }
+    if ($('input[name="child"]:checked').val() === undefined) {
+        warning += '子女 ';
+    }
+    if ($('select#home-state').val() === '0') {
+        warning += '住宅省份 ';
+    }
+    if ($('input[name="asset"]:checked').val() === undefined) {
+        warning += '财力证明 ';
+    }
+    if ($('input[name="income"]').val() !== undefined && !(/^\d+$/.test($('input[name="income"]').val()))) {
         if ($.cookie('work_status') === '0') {
-            alert('请检查月收入');
+            warning += '月收入 ';
         } else {
-            alert('请检查月营业额');
+            warning += '月营业额 ';
         }
-        return;
-    } else if (!(/^\S+$/.test($('input[name="work_name"]').val()))) {
+    }
+    if (!(/^\S+$/.test($('input[name="work_name"]').val()))) {
         if ($.cookie('work_status') === '0') {
-            alert('请检查单位名称');
+            warning += '单位名称 ';
         } else if ($.cookie('work_status') === '1') {
-            alert('请检查店铺链接');
+            warning += '店铺链接 ';
         } else {
-            alert('请检查学校名称');
+            warning += '学校名称 ';
         }
-        return;
-    } else if ($('select#work-years').val() !== undefined && $('select#work-years').val() === '0') {
-        alert('请检查工作年限');
-        return;
-    } else if ($('select#work-state').val() !== undefined && $('select#work-state').val() === '0') {
+    }
+    if ($('select#work-years').val() !== undefined && $('select#work-years').val() === '0') {
+        warning += '工作年限 ';
+    }
+    if ($('select#work-state').val() !== undefined && $('select#work-state').val() === '0') {
         if ($.cookie('work_status') === '0') {
-            alert('请检查单位省份');
+            warning += '单位省份 ';
         } else {
-            alert('请检查经营省份');
+            warning += '经营省份 ';
         }
-        return;
-    } else if ($('input[name="work_phone"]').val() !== undefined && !(/^\d+$/.test($('input[name="work_phone"]').val()))) {
+    }
+    if ($('input[name="work_phone"]').val() !== undefined && !(/^\d+$/.test($('input[name="work_phone"]').val()))) {
         if ($.cookie('work_status') === '0') {
-            alert('请检查单位电话');
+            warning += '单位电话 ';
         } else {
-            alert('请检查宿舍电话');
+            warning += '宿舍电话 ';
         }
-        return;
-    } else if (($('input[name="work_department"]').val() !== undefined && !(/^\S[\s\S]*$/.test($('input[name="work_department"]').val()))) ||
+    }
+    if (($('input[name="work_department"]').val() !== undefined && !(/^\S[\s\S]*$/.test($('input[name="work_department"]').val()))) ||
             ($('select[name="work_department"]').val() !== undefined && $('select[name="work_department"]').val() === '0')) {
         if ($.cookie('work_status') === '0') {
-            alert('请检查任职部门');
+            warning += '任职部门 ';
         } else {
-            alert('请检查经营网店');
+            warning += '经营网店 ';
         }
-        return;
-    } else if ($('input[name="work_title"]').val() !== undefined && !(/^\S[\s\S]*$/.test($('input[name="work_title"]').val()))) {
+    }
+    if ($('input[name="work_title"]').val() !== undefined && !(/^\S[\s\S]*$/.test($('input[name="work_title"]').val()))) {
         if ($.cookie('work_status') === '0') {
-            alert('请检查任职职位');
+            warning += '任职职位 ';
         } else {
-            alert('请检查卖家昵称');
+            warning += '卖家昵称 ';
         }
+    }
+    if (warning !== '') {
+        alert('请检查' + warning);
         return;
     }
     $.ajax('php/request.php', {
