@@ -1018,15 +1018,15 @@ function filter_slider_init() {
     $("#term-slider").slider({
         range: true,
         min: 0,
-        max: 366,
-        values: [0, 366],
+        max: 24,
+        values: [0, 24],
         slide: function (event, ui) {
-            $("#term-lower").html(ui.values[0] + "天");
-            $("#term-upper").html(ui.values[1] + "天");
+            $("#term-lower").html(ui.values[0] + "月");
+            $("#term-upper").html(ui.values[1] + "月");
         }
     });
-    $("#term-lower").html($("#term-slider").slider("values", 0) + "天");
-    $("#term-upper").html($("#term-slider").slider("values", 1) + "天");
+    $("#term-lower").html($("#term-slider").slider("values", 0) + "月");
+    $("#term-upper").html($("#term-slider").slider("values", 1) + "月");
     
     $("#amount-slider").slider({
         range: true,
