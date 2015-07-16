@@ -38,6 +38,7 @@ var PRODUCT = [{
             '视频认证']
     }];
 var BORROW_PROGRESS = ['产品选择', '个人信息', '产品信息', '资料上传', '资料确认', '审核状况'];
+var ACCOUNT_NAV = ['帳戶首頁', '投資管理'];
 var NAVBAR_STR = function () {
     'use strict';
     /*
@@ -892,9 +893,77 @@ var HOME_PANEL_STR = function () {
 </div>
     */
 }.toString().slice(38, -4);
+var ALERT_DISMISS_STR = function () {
+    'use strict';
+    /*
+<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+  <span aria-hidden="true">&times;</span>
+</button>
+    */
+}.toString().slice(38, -4);
 var ACCOUNT_PAGE_STR = function () {
     'use strict';
     /*
+<div class="row">
+    <div class="col-md-2 head-photo">
+    </div>
+    <div class="col-md-5">
+        <h2>您好，<span>x</span>先生</h2>
+    </div>
+    <div class="col-md-5">
+        <h2><small>已有<u>0</u>人瀏覽您的資料</small?</h2>
+    </div>
+    <div class="col-md-5">
+        <h3><small>帳戶安全</small>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:red">低</span></h3>
+        <h3><small>上次登錄</small>&nbsp;&nbsp;&nbsp;&nbsp;<span>2015-06-15 09:58:52</span></h3>
+    </div>
+    <div class="col-md-5">
+        <h3><small>可用餘額</small>&nbsp;&nbsp;&nbsp;&nbsp;&yen;<span>0.00</span></h3>
+        <button class="btn btn-warning col-md-offset-1 col-md-4" onclick="charge()">充值</button>
+        <button class="btn btn-primary col-md-offset-1 col-md-4">提現</button>
+    </div>
+</div>
+<hr>
+<div class="row">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            資產情況
+            <div class="navbar-right">
+                帳戶總資產&nbsp;&yen;<strong class="font-size-larger">0.00</strong>&nbsp;&nbsp;
+            </div>
+        </div>
+        <div class="panel-body"></div>
+        <div class="panel-footer">
+            <pre>投標中 &yen;<u>0.00</u> (投標中 <u>0</u> 筆) | 取現中 &yen;<u>0.00</u> | 待還 &yen;<u>0.00</u></pre>
+        </div>
+    </div>
+</div>
+<hr>
+<div class="row">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            本月散標回款紀錄
+            <div class="navbar-right">
+                本月應收款&nbsp;&yen;<strong class="font-size-larger">0.00</strong>&nbsp;|&nbsp;
+                本月實收款&nbsp;&yen;<strong class="font-size-larger">0.00</strong>&nbsp;&nbsp;
+            </div>
+        </div>
+        <div class="panel-body"></div>
+        <div class="panel-footer">
+            註：
+            <ol>
+                <li>本日曆應收款不包含逾期回款，提前回款等狀況。</li>
+                <li>本日曆實收款顯示當天應收款的還款情況，包含正常還款+提前還款+逾期還款(含罰息)。</li>
+                <li>今天以後顯示應收款和提前還款。</li>
+            </ol>
+        </div>
+    </div>
+</div>
+    */
+}.toString().slice(38, -4);
+/*
+var ACCOUNT_PAGE_STR = function () {
+    'use strict';
 <div class="row">
     <div class="col-md-4" style="overflow:hidden">
         <img src="img/greg_head.png" height="200px" width="200px">
@@ -923,9 +992,18 @@ var ACCOUNT_PAGE_STR = function () {
         </div>
     </div>
 </div>
-    */
-}.toString().slice(38, -4);
-var member, product, product_list, where_you_upload, my_images;
+}.toString().slice(38, -4);*/
+var member, product, product_list, where_you_upload, my_images,
+    message = [{
+        type: 'warning',
+        content: '提醒您，帳戶餘額為<u>xxx</u>元，請儘速充值'
+    }, {
+        type: 'danger',
+        content: '管理員送來訊息：xxxxxxxxx'
+    }, {
+        type: 'info',
+        content: '收入：&yen;xxx，支出：&yen;xxx'
+    }];
 
 (function ($) {
     'use strict';
@@ -1442,11 +1520,23 @@ function charge() {
 
 function load_account_page() {
     'use strict';
+    var i;
     clear_all();
     $('div#navbar-collapse > ul:first > li:nth-child(3)').addClass('active');
+    for (i = 0; i < ACCOUNT_NAV.length; i += 1) {
+        $('div#content > div:nth-child(1)').append('<a class="list-group-item">' + ACCOUNT_NAV[i] + '</a>');
+    }
+    $('div#content > div:nth-child(1) > a:nth-child(1)').addClass('active');
+    for (i = 0; i < message.length; i += 1) {
+        $('div#content > div:nth-child(3)').append('<div class="alert alert-' + message[i].type + '">' + ALERT_DISMISS_STR + message[i].content + '</div>');
+    }
     $('div#content > div:nth-child(2)').append(ACCOUNT_PAGE_STR);
-    $('div#content > div:nth-child(2) p > u > strong').html(member.remain);
+    $('div#content > div:nth-child(2) h2:eq(0) > span').html(member.last_name);
+    $('div#content > div:nth-child(2) h3:eq(1) > span').html(member.latest_sign_in);
+    $('div#content > div:nth-child(2) h3:eq(2) > span').html(member.remain + '.00');
     $('div#modal').append(CHARGE_MODAL_STR + AUTHEN_MODAL_STR);
+    /*
+    $('div#content > div:nth-child(2) p > u > strong').html(member.remain);
     new Chart(document.getElementById("radar-chart").getContext("2d")).Radar({
         labels: ["信用额度", "借款次数", "违约次数", "借款总金额", "投资总金额"],
         datasets: [
@@ -1457,7 +1547,7 @@ function load_account_page() {
         ]
     }, {
         responsive: true
-    });
+    });*/
 }
 
 function load_product_info_page() {
@@ -1789,7 +1879,7 @@ function submit_authen() {
 
 function submit_charge() {
     'use strict';
-    if (!(/^\S+$/.test($('input#name').val()))) {
+    if (!(/^\S[\s\S]*$/.test($('input#name').val()))) {
         alert('请检查持卡人姓名');
         return;
     } else if (!(/^\d+$/.test($('input#card-number').val()))) {
@@ -1817,7 +1907,7 @@ function submit_charge() {
         type: 'POST',
         success: function (obj) {
             member = obj.content;
-            $('div#content > div:nth-child(2) p > u > strong').html(member.remain);
+            $('div#content > div:nth-child(2) h3:eq(2) > span').html(member.remain + '.00');
             $('#charge-modal').modal('hide');
         }
     });
@@ -1944,6 +2034,7 @@ function sign_up() {
         type: 'POST',
         success: function (obj) {
             if (obj.title === 'ERROR') {
+                alert(JSON.stringify(obj));
                 alert('此帐户已被使用');
                 return;
             }
