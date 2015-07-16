@@ -55,3 +55,23 @@ div#home-borrow-panel > div > div:nth-child(2) {
 img.sample-image {
     max-width: 570px;
 }
+
+div.head-photo {
+    background-image: url(../img/greg_head.png);
+    background-size: cover;
+    height: 150px;
+}
+
+.font-size-larger {
+    font-size: 150%;
+}
+
+div.panel-footer u {
+    color: blue;
+}
+
+div.panel-footer pre {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
