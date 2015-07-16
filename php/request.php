@@ -87,8 +87,8 @@ try {
                 $names .= "`" . $name . "`, ";
                 $values .= "'" . $value . "', ";
             }
-            $names = substr($names, 0, -2);
-            $values = substr($values, 0, -2);
+            $names .= "`latest_sign_in`";
+            $values .= "NOW()";
             $query = "INSERT INTO `member` (" . $names . ") VALUES (" . $values . ")";
             mysql_query($query, $con) or throw_exception(mysql_error());
         case 'SIGN_IN':
@@ -99,6 +99,8 @@ try {
             }
             $response->content = mysql_fetch_object($result);
             mysql_free_result($result);
+            $query = "UPDATE `member` SET `latest_sign_in`=NOW() WHERE `user_serial`=" . $response->content->user_serial;
+            mysql_query($query, $con) or throw_exception(mysql_error());
             break;
         case 'SUBMIT_PROFILE':
         case 'SET_MEMBER':
