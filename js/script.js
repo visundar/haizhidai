@@ -948,7 +948,7 @@ var ACCOUNT_PAGE_STR = function () {
                 本月實收款&nbsp;&yen;<strong class="font-size-larger">0.00</strong>&nbsp;&nbsp;
             </div>
         </div>
-        <div class="panel-body"></div>
+        <div class="panel-body" id="calendar"></div>
         <div class="panel-footer">
             註：
             <ol>
@@ -1527,6 +1527,23 @@ function load_account_page() {
         $('div#content > div:nth-child(1)').append('<a class="list-group-item">' + ACCOUNT_NAV[i] + '</a>');
     }
     $('div#content > div:nth-child(1) > a:nth-child(1)').addClass('active');
+    $('div#content > div:nth-child(1) > a:nth-child(2)').on('click', function () {
+        $('div#content > div:nth-child(1) > a:nth-child(1)').removeClass('active');
+        $('div#content > div:nth-child(1) > a:nth-child(2)').addClass('active');
+        $('div#content > div:nth-child(2)').html('<canvas id="radar-chart"></canvas>');
+        new Chart(document.getElementById("radar-chart").getContext("2d")).Radar({
+            labels: ["個人信息", "線上數據", "還款紀錄", "負債能力", "信用歷史"],
+            datasets: [
+                {
+                    fillColor: "rgba(220,220,220,0.2)",
+                    data: [65, 59, 90, 81, 56]
+                }
+            ]
+        }, {
+            responsive: true
+        });
+        //$('div#content > div:nth-child(1) > a:nth-child(1)').on('click', load_account_page());
+    });
     for (i = 0; i < message.length; i += 1) {
         $('div#content > div:nth-child(3)').append('<div class="alert alert-' + message[i].type + '">' + ALERT_DISMISS_STR + message[i].content + '</div>');
     }
@@ -1535,6 +1552,13 @@ function load_account_page() {
     $('div#content > div:nth-child(2) h3:eq(1) > span').html(member.latest_sign_in);
     $('div#content > div:nth-child(2) h3:eq(2) > span').html(member.remain + '.00');
     $('div#modal').append(CHARGE_MODAL_STR + AUTHEN_MODAL_STR);
+    $('div#calendar').calendar({
+        tmpl_path: 'js/tmpls/',
+        events_source: (function () {
+            return [];
+        }()),
+        language: 'zh-CN'
+    });
     /*
     $('div#content > div:nth-child(2) p > u > strong').html(member.remain);
     new Chart(document.getElementById("radar-chart").getContext("2d")).Radar({
