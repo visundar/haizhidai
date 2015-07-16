@@ -12,6 +12,7 @@ var RATE = [1.99, 3.99, 5.99, 8.99, 11.99, 14.99, 19.99];
 var INCOME = [500000, 250000, 125000, 62500, 31250, 15625];
 var LEVEL = ['AA', 'A', 'B', 'C', 'D', 'E', 'HR'];
 var USAGE = ['', '还款', '学费', '租金'];
+var MARRIAGE = ['未婚', '已婚', '離異'];
 var PRODUCT = [{
         name: '普通借款标',
         suit: '工薪族',
@@ -542,60 +543,98 @@ var PRODUCT_MODAL_STR = function () {
                 <h4 class="modal-title">第<u></u>号借款</h4>
             </div>
             <div class="modal-body">
-                <table class="table table-hover">
-                    <tr>
-                        <th>借款名称</th>
-                        <td id="name"></td>
-                    </tr>
-                    <tr>
-                        <th>借款等级</th>
-                        <td id="level"></td>
-                    </tr>
-                    <tr>
-                        <th>借款利率</th>
-                        <td id="rate"></td>
-                    </tr>
-                    <tr>
-                        <th>借款期限</th>
-                        <td id="term"></td>
-                    </tr>
-                    <tr>
-                        <th>借款用途</th>
-                        <td id="usage"></td>
-                    </tr>
-                    <tr>
-                        <th>还款来源</th>
-                        <td id="source"></td>
-                    </tr>
-                    <tr>
-                        <th>借款金额</th>
-                        <td id="amount"></td>
-                    </tr>
-                    <tr>
-                        <th>借款简介</th>
-                        <td id="descript"></td>
-                    </tr>
-                    <tr>
-                        <th>刊登时间</th>
-                        <td id="time"></td>
-                    </tr>
-                    <tr>
-                        <th>完成度</th>
-                        <td id="complete"></td>
-                    </tr>
-                    <tr>
-                        <th>浏览次数</th>
-                        <td id="view"></td>
-                    </tr>
-                    <tr>
-                        <th>借贷者</th>
-                        <td id="borrower"></td>
-                    </tr>
-                    <tr>
-                        <th>附注</th>
-                        <td id="ps"></td>
-                    </tr>
-                </table>
+                <div>
+                  <ul class="nav nav-tabs" role="tablist" style="margin-bottom:25px">
+                    <li role="presentation" class="active"><a href="#product-info" aria-controls="product-info" role="tab" data-toggle="tab">借款详情</a></li>
+
+                    <li role="presentation"><a href="#member-info" aria-controls="member-info" role="tab" data-toggle="tab">借款人相关信息</a></li>
+                    <li role="presentation"><a href="#judge" aria-controls="judge" role="tab" data-toggle="tab">审核信息</a></li>
+                    <li role="presentation"><a href="#statistic" aria-controls="statistic" role="tab" data-toggle="tab">统计信息</a></li>
+                    <li role="presentation"><a href="#history" aria-controls="history" role="tab" data-toggle="tab">投标记录</a></li>
+                  </ul>
+                  <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="product-info">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">借款详情</div>
+                            <div class="panel-body">...</div>
+                        </div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th class="col-md-3">借款目的</th>
+                                    <th class="col-md-3">还款来源</th>
+                                    <th class="col-md-1">利率</th>
+                                    <th class="col-md-2">刊登时间</th>
+                                    <th class="col-md-3">附注</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="member-info">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>性别</th>
+                                    <th>年龄</th>
+                                    <th>婚姻情况</th>
+                                    <th>文化程度</th>
+                                    <th>住宅状况</th>
+                                    <th>是否购车</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="judge">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th class="col-md-8">审核项目</th>
+                                    <th class="col-md-2">审核状态</th>
+                                    <th class="col-md-2">审核时间</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="statistic">
+
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="history">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>投标人</th>
+                                    <th>当年利率</th>
+                                    <th>有效金额</th>
+                                    <th>投标时间</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                  </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-dismiss="modal">了解</button>
@@ -1337,34 +1376,35 @@ function display_product_modal(a) {
             break;
         }
     }
-    $('#product-modal u').html(tmp);
-    for (name in product_list[i]) {
-        if (name === 'level') {
-            $('#product-modal td#' + name).html(LEVEL[Number(product_list[i][name])]);
-        } else if (name === 'term') {
-            $('#product-modal td#' + name).html(product_list[i][name] + '个月');
-        } else if (name === 'usage') {
-            $('#product-modal td#' + name).html(USAGE[Number(product_list[i][name])]);
-        } else if (name === 'complete') {
-            $('#product-modal td#' + name).html(Math.floor(Number(product_list[i][name]) * 100 / Number(product_list[i].amount)) + '%');
-        } else {
-            $('#product-modal td#' + name).html(product_list[i][name]);
-        }
-    }
-    $('#product-modal').modal('show');
+    $('#product-modal h4 > u').html(tmp);
+    $('div#product-info > div.panel > div.panel-body').html(product_list[i].descript);
+    $('div#product-info > table > tbody td:eq(0)').html(product_list[i].usage);
+    $('div#product-info > table > tbody td:eq(1)').html(product_list[i].source);
+    $('div#product-info > table > tbody td:eq(2)').html(product_list[i].rate);
+    $('div#product-info > table > tbody td:eq(3)').html(product_list[i].time);
+    $('div#product-info > table > tbody td:eq(4)').html(product_list[i].ps);
     $.ajax('php/request.php', {
         dataType: 'json',
+        async: false,
         data: (function () {
             var request = {}, content = {};
-            content.product_serial = tmp;
-            request.name = 'VIEW_PRODUCT';
+            content.borrower = product_list[i].borrower;
+            request.name = 'GET_BORROWER';
             request.content = content;
             return 'request=' + JSON.stringify(request);
         }()),
         type: 'POST',
         success: function (obj) {
+            var age = Math.floor(((new Date()).getTime() - (new Date(obj.content.birth)).getTime()) / 31536000000);
+            $('div#member-info > table > tbody td:eq(0)').html((obj.content.gender === '0') ? '女' : '男');
+            $('div#member-info > table > tbody td:eq(1)').html(age);
+            $('div#member-info > table > tbody td:eq(2)').html(MARRIAGE[Number(obj.content.marriage)]);
+            $('div#member-info > table > tbody td:eq(3)').html(EDUCATION[Number(obj.content.education)]);
+            $('div#member-info > table > tbody td:eq(4)').html(((Number(obj.content.asset) & 8) === 0) ? '無' : '有');
+            $('div#member-info > table > tbody td:eq(5)').html(((Number(obj.content.asset) & 4) === 0) ? '無' : '有');
         }
     });
+    $('#product-modal').modal('show');
 }
 
 function change_sample_modal(a) {

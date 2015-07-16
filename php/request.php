@@ -20,6 +20,12 @@ try {
     mysql_select_db('haizhidai', $con);
 
     switch ($obj->name) {
+        case 'GET_BORROWER':
+            $query = "SELECT * FROM `member` WHERE `user_serial`='" . $obj->content->borrower . "'";
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            $response->content = mysql_fetch_object($result);
+            mysql_free_result($result);
+            break;
         case 'UPLOADED_IMAGE':
             $names = "";
             $values = "";
