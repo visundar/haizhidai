@@ -182,7 +182,7 @@ var DETAIL_STORE_STR = function () {
     <div class="col-md-5">
         <div class="input-group">
             <input type="text" class="form-control" name="income">
-              <span class="input-group-addon">万元</span>
+              <span class="input-group-addon">元</span>
         </div>
     </div>
 </div>
@@ -510,11 +510,11 @@ var RATE_MODAL_STR = function () {
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="rate-modal-label">利率指標</h4>
+        <h4 class="modal-title" id="rate-modal-label">利率指标</h4>
       </div>
       <div class="modal-body">
           <table class="table table-bordered table-hover">
-              <tr><th>Prosper Rating</th><th>Estimated Avg. Annual Loss Rate**</th></tr>
+              <tr><th>海智贷等级</th><th>预期平均年损率**</th></tr>
               <tr><th>AA</th><td>0.00~1.99%</td></tr>
               <tr><th>A</th><td>2.00~3.99%</td></tr>
               <tr><th>B</th><td>4.00~5.99%</td></tr>
@@ -851,7 +851,7 @@ var CHARGE_MODAL_STR = function () {
                         <div class="col-md-8">
                             <div class="input-group">
                                 <span class="input-group-addon">&yen;</span>
-                                <input class="form-control" type="text" placeholder="限額5萬元/次" name="remain">
+                                <input class="form-control" type="text" placeholder="額度上限5萬元/次" name="remain">
                                 <span class="input-group-addon">元</span>
                             </div>
                         </div>
@@ -1405,6 +1405,19 @@ function display_product_modal(a) {
         }
     });
     $('#product-modal').modal('show');
+    $.ajax('php/request.php', {
+        dataType: 'json',
+        data: (function () {
+            var request = {}, content = {};
+            content.product_serial = tmp;
+            request.name = 'VIEW_PRODUCT';
+            request.content = content;
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+        }
+    });
 }
 
 function change_sample_modal(a) {
@@ -1812,6 +1825,10 @@ function submit_borrow_detail() {
     if (!(/^\d+$/.test($('input[name="cellphone"]').val()))) {
         warning += '手机号 ';
     }
+    if ($('input[name="cellphone"]').val().length < 11) {
+        alert('手机号須大於11字');
+        return;
+    }
     if ($('input[name="gender"]:checked').val() === undefined) {
         warning += '性別 ';
     }
@@ -1921,6 +1938,9 @@ function submit_authen() {
         return;
     } else if (!(/^\d+$/.test($('input[name="cellphone"]').val()))) {
         alert('请检查手机号');
+        return;
+    } else if ($('input[name="cellphone"]').val().length < 11) {
+        alert('请检查手机号须大于11字');
         return;
     }
     $.ajax('php/request.php', {
@@ -2136,6 +2156,9 @@ function sign_in(btn) {
 
 function edit_profile(obj) {
     'use strict';
+    if ($.cookie('first_name') === undefined) {
+        return;
+    }
     if (obj.innerHTML === '完成') {
         $('input, select').attr('disabled', true);
         obj.innerHTML = '编辑';
@@ -2184,6 +2207,7 @@ function invest_this(div) {
     var tmp = Number($(div).prev().children('input').val()), serial = Number($(div).parents('tr').attr('value')),
         tmp_product = get_product_by_serial(serial),
         maximum = Number(tmp_product.amount) - Number(tmp_product.complete);
+    get_member_from_server();
     if (isNaN(tmp)) {
         alert('请检查投资金额');
     } else if (tmp === 0) {
