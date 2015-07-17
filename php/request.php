@@ -20,6 +20,40 @@ try {
     mysql_select_db('haizhidai', $con);
 
     switch ($obj->name) {
+        case 'DELETE_MESSAGE':
+            $query = "DELETE FROM `message` WHERE `message_serial`=" . $obj->content->message_serial;
+            mysql_query($query, $con) or throw_exception(mysql_error());
+            break;
+        case 'GET_MY_MESSAGE':
+            $query = "SELECT * FROM `message` WHERE `receiver`=" . $_COOKIE['user_serial'];
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            $a = array();
+            while ($o = mysql_fetch_object($result)) {
+                array_push($a, $o);
+            }
+            mysql_free_result($result);
+            $response->content = $a;
+            break;
+        case 'GET_MY_BORROW':
+            $query = "SELECT `name`, `time`, `amount`, `term`, `rate`, `complete`, `view` FROM `product` WHERE `borrower`=" . $_COOKIE['user_serial'];
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            $a = array();
+            while ($o = mysql_fetch_object($result)) {
+                array_push($a, $o);
+            }
+            mysql_free_result($result);
+            $response->content = $a;
+            break;
+        case 'GET_MY_INVEST':
+            $query = "SELECT `transaction`.*, `product`.`borrower`, `member`.`first_name`, `member`.`last_name` FROM `transaction` JOIN `product` ON `transaction`.`product_serial` = `product`.`product_serial` JOIN `member` ON `product`.`borrower` = `member`.`user_serial` WHERE `transaction`.`loaner` =" . $_COOKIE['user_serial'] . " ORDER BY `time` DESC";
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            $a = array();
+            while ($o = mysql_fetch_object($result)) {
+                array_push($a, $o);
+            }
+            mysql_free_result($result);
+            $response->content = $a;
+            break;
         case 'GET_PRODUCT_TRANSACTION':
             $query = "SELECT * FROM `transaction` WHERE `product_serial` =" . $obj->content->product_serial . " ORDER BY `time` DESC";
             $result = mysql_query($query, $con) or throw_exception(mysql_error());
@@ -74,8 +108,13 @@ try {
             mysql_query($query, $con) or throw_exception(mysql_error());
             $query = "UPDATE `member` SET `remain`=`remain`-" . $obj->content->amount . " WHERE `user_serial`=" . $_COOKIE['user_serial'];
             mysql_query($query, $con) or throw_exception(mysql_error());
+            $query = "UPDATE `member` SET `remain`=`remain`+" . $obj->content->amount . " WHERE `user_serial`=" . $obj->content->borrower;
+            mysql_query($query, $con) or throw_exception(mysql_error());
             $query = "INSERT INTO `transaction` (`loaner`, `product_serial`, `amount`, `rate`) VALUES (" . $_COOKIE['user_serial'];
             $query .= ", " . $obj->content->product_serial . ", " . $obj->content->amount . ", " . $obj->content->rate . ")";
+            mysql_query($query, $con) or throw_exception(mysql_error());
+            $query = "INSERT INTO `message` (`sender`, `receiver`, `type`, `content`) VALUES (" . $_COOKIE['user_serial'] . ", ";
+            $query .= $obj->content->borrower . ", 0, " . $obj->content->amount . ")";
             mysql_query($query, $con) or throw_exception(mysql_error());
         case 'GET_ALL_PRODUCT':
             $query = "SELECT * FROM `product` WHERE `complete` < `amount` ORDER BY `product_serial` DESC";
