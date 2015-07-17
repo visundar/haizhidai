@@ -35,7 +35,7 @@ try {
             $response->content = $a;
             break;
         case 'GET_MY_BORROW':
-            $query = "SELECT `name`, `time`, `amount`, `term`, `rate`, `complete`, `view` FROM `product` WHERE `borrower`=" . $_COOKIE['user_serial'];
+            $query = "SELECT `name`, `complete_date`, `amount`, `term`, `rate`, `complete`, `view` FROM `product` WHERE `borrower`=" . $_COOKIE['user_serial'];
             $result = mysql_query($query, $con) or throw_exception(mysql_error());
             $a = array();
             while ($o = mysql_fetch_object($result)) {
@@ -45,7 +45,7 @@ try {
             $response->content = $a;
             break;
         case 'GET_MY_INVEST':
-            $query = "SELECT `transaction`.*, `product`.`borrower`, `member`.`first_name`, `member`.`last_name` FROM `transaction` JOIN `product` ON `transaction`.`product_serial` = `product`.`product_serial` JOIN `member` ON `product`.`borrower` = `member`.`user_serial` WHERE `transaction`.`loaner` =" . $_COOKIE['user_serial'] . " ORDER BY `time` DESC";
+            $query = "SELECT `transaction`.*, `product`.`borrower`, `product`.`amount` AS `total`, `product`.`complete`, `product`.`complete_date`, `product`.`term`, `member`.`first_name`, `member`.`last_name` FROM `transaction` JOIN `product` ON `transaction`.`product_serial` = `product`.`product_serial` JOIN `member` ON `product`.`borrower` = `member`.`user_serial` WHERE `transaction`.`loaner` =" . $_COOKIE['user_serial'] . " ORDER BY `time` DESC";
             $result = mysql_query($query, $con) or throw_exception(mysql_error());
             $a = array();
             while ($o = mysql_fetch_object($result)) {
@@ -106,9 +106,18 @@ try {
         case 'INVEST':
             $query = "UPDATE `product` SET `complete`=`complete`+" . $obj->content->amount . " WHERE `product_serial`=" . $obj->content->product_serial;
             mysql_query($query, $con) or throw_exception(mysql_error());
+            $query = "SELECT * FROM `product` WHERE `product_serial`=" . $obj->content->product_serial;
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            $tmp = mysql_fetch_object($result);
+            if ($tmp->complete >= $tmp->amount) {
+                $query = "UPDATE `member` SET `remain`=`remain`+" . $tmp->amount . " WHERE `user_serial`=" . $obj->content->borrower;
+                mysql_query($query, $con) or throw_exception(mysql_error());
+                $query = "INSERT INTO `message` (`sender`, `receiver`, `type`, `content`) VALUES (0, " . $tmp->borrower . ", 1, '" . $tmp->name . "')";
+                mysql_query($query, $con) or throw_exception(mysql_error());
+                $query = "UPDATE `product` SET `complete_date`='" . date('Y-m-d') . "' WHERE `product_serial`=" . $obj->content->product_serial;
+                mysql_query($query, $con) or throw_exception(mysql_error());
+            }
             $query = "UPDATE `member` SET `remain`=`remain`-" . $obj->content->amount . " WHERE `user_serial`=" . $_COOKIE['user_serial'];
-            mysql_query($query, $con) or throw_exception(mysql_error());
-            $query = "UPDATE `member` SET `remain`=`remain`+" . $obj->content->amount . " WHERE `user_serial`=" . $obj->content->borrower;
             mysql_query($query, $con) or throw_exception(mysql_error());
             $query = "INSERT INTO `transaction` (`loaner`, `product_serial`, `amount`, `rate`) VALUES (" . $_COOKIE['user_serial'];
             $query .= ", " . $obj->content->product_serial . ", " . $obj->content->amount . ", " . $obj->content->rate . ")";

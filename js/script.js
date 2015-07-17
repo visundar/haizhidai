@@ -964,21 +964,65 @@ var INVEST_MANAGE_PAGE_STR = function () {
 <div class="row">
     <div class="panel panel-default">
         <div class="panel-heading">
-            待收款
+            投标中
         </div>
         <div class="panel-body">
-            <table class="table table-default" id="invest-manage">
+            <table class="table table-default" id="investing">
                 <thead>
                     <tr>
                         <th>借入者</th>
                         <th>利率</th>
-                        <th>金额</th>
+                        <th>投标金额</th>
+                        <th>列表进度</th>
                         <th>投标时间</th>
                     </tr>
                 </thead>
                 <tbody>
                 </tbody>
             </table>
+        </div>
+    </div>
+</div>
+<hr>
+<div class="row">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            收款中
+        </div>
+        <div class="panel-body">
+            <table class="table table-default" id="paying">
+                <thead>
+                    <tr>
+                        <th>还款日</th>
+                        <th>借入者</th>
+                        <th>期数/总期数</th>
+                        <th>本金/本息</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<hr>
+<div class="row">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            本月散標回款紀錄
+            <div class="navbar-right">
+                本月應收款&nbsp;&yen;<strong class="font-size-larger">0.00</strong>&nbsp;|&nbsp;
+                本月實收款&nbsp;&yen;<strong class="font-size-larger">0.00</strong>&nbsp;&nbsp;
+            </div>
+        </div>
+        <div class="panel-body" id="calendar"></div>
+        <div class="panel-footer">
+            註：
+            <ol>
+                <li>本日曆應收款不包含逾期回款，提前回款等狀況。</li>
+                <li>本日曆實收款顯示當天應收款的還款情況，包含正常還款+提前還款+逾期還款(含罰息)。</li>
+                <li>今天以後顯示應收款和提前還款。</li>
+            </ol>
         </div>
     </div>
 </div>
@@ -1011,7 +1055,7 @@ var BORROW_MANAGE_PAGE_STR = function () {
 <div class="row">
     <div class="panel panel-default">
         <div class="panel-heading">
-            已完成
+            已完標
         </div>
         <div class="panel-body">
             <table class="table table-default" id="complete">
@@ -1070,27 +1114,6 @@ var ACCOUNT_PAGE_STR = function () {
         <div class="panel-body"><canvas id="radar-chart"></canvas></div>
     </div>
 </div>
-<hr>
-<div class="row">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            本月散標回款紀錄
-            <div class="navbar-right">
-                本月應收款&nbsp;&yen;<strong class="font-size-larger">0.00</strong>&nbsp;|&nbsp;
-                本月實收款&nbsp;&yen;<strong class="font-size-larger">0.00</strong>&nbsp;&nbsp;
-            </div>
-        </div>
-        <div class="panel-body" id="calendar"></div>
-        <div class="panel-footer">
-            註：
-            <ol>
-                <li>本日曆應收款不包含逾期回款，提前回款等狀況。</li>
-                <li>本日曆實收款顯示當天應收款的還款情況，包含正常還款+提前還款+逾期還款(含罰息)。</li>
-                <li>今天以後顯示應收款和提前還款。</li>
-            </ol>
-        </div>
-    </div>
-</div>
     */
 }.toString().slice(38, -4);
 var ACCOUNT_NAV_STR = function () {
@@ -1101,52 +1124,6 @@ var ACCOUNT_NAV_STR = function () {
 <a class="list-group-item pointer" onclick="load_borrow_manage_page()">借款管理</a>
     */
 }.toString().slice(38, -4);
-/*
-var ACCOUNT_PAGE_STR = function () {
-    'use strict';
-<div class="row">
-    <div class="col-md-4" style="overflow:hidden">
-        <img src="img/greg_head.png" height="200px" width="200px">
-    </div>
-</div>
-<hr>
-<div class="row">
-    <div class="col-md-6">
-        <div class="panel panel-default">
-            <div class="panel-heading">账户余额</div>
-            <div class="panel-body">
-                <p>可用余额:&yen;<u><strong></strong></u></p>
-                <div class="text-right">
-                    <button class="btn btn-info" onclick="charge()">充值</button>
-                    <button class="btn btn-primary">提现</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6" style="overflos:scroll">
-        <div class="panel panel-default">
-            <div class="panel-heading">用户分析</div>
-            <div class="panel-body">
-                <canvas id="radar-chart"></canvas>
-            </div>
-        </div>
-    </div>
-</div>
-}.toString().slice(38, -4);
-<div class="row">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            資產情況
-            <div class="navbar-right">
-                帳戶總資產&nbsp;&yen;<strong class="font-size-larger">0.00</strong>&nbsp;&nbsp;
-            </div>
-        </div>
-        <div class="panel-body"></div>
-        <div class="panel-footer">
-            <pre>投標中 &yen;<u>0.00</u> (投標中 <u>0</u> 筆) | 取現中 &yen;<u>0.00</u> | 待還 &yen;<u>0.00</u></pre>
-        </div>
-    </div>
-</div>*/
 var member, product, product_list, where_you_upload, my_images,
     message = [{
         type: 'warning',
@@ -1482,6 +1459,7 @@ function load_product_list() {
 function load_home_page() {
     'use strict';
     clear_all();
+    get_member_from_server();
     $('body').removeClass('index-cover');
     $('div#content > div:eq(1)').html(HOME_PANEL_STR);
     $('div#navbar-collapse > ul:eq(0)').html(NAVBAR_STR);
@@ -1741,26 +1719,10 @@ function load_account_page() {
     'use strict';
     var i;
     clear_all();
+    get_member_from_server();
     $('div#navbar-collapse > ul:first > li:nth-child(3)').addClass('active');
     $('div#content > div:nth-child(1)').html(ACCOUNT_NAV_STR);
     $('div#content > div:nth-child(1) > a:nth-child(1)').addClass('active');
-    /*$('div#content > div:nth-child(1) > a:nth-child(2)').on('click', function () {
-        $('div#content > div:nth-child(1) > a:nth-child(1)').removeClass('active');
-        $('div#content > div:nth-child(1) > a:nth-child(2)').addClass('active');
-        $('div#content > div:nth-child(2)').html('<canvas id="radar-chart"></canvas>');
-        new Chart(document.getElementById("radar-chart").getContext("2d")).Radar({
-            labels: ["個人信息", "線上數據", "還款紀錄", "負債能力", "信用歷史"],
-            datasets: [
-                {
-                    fillColor: "rgba(220,220,220,0.2)",
-                    data: [65, 59, 90, 81, 56]
-                }
-            ]
-        }, {
-            responsive: true
-        });
-        //$('div#content > div:nth-child(1) > a:nth-child(1)').on('click', load_account_page());
-    });*/
     $.ajax('php/request.php', {
         dataType: 'json',
         data: (function () {
@@ -1779,13 +1741,17 @@ function load_account_page() {
                             'user' + ('0000' + obj.content[i].sender).slice(-4) + '借了您' + obj.content[i].content + '元' +
                             '</div>'
                     );
+                } else if (Number(obj.content[i].type) === 1) {
+                    $('div#content > div:nth-child(3)').append(
+                        '<div class="alert alert-danger" value="' + obj.content[i].message_serial + '">' +
+                            ALERT_DISMISS_STR +
+                            '您的"' +  obj.content[i].content + '"已滿標, 借款已自動匯入您的戶頭' +
+                            '</div>'
+                    );
                 }
             }
         }
     });
-    /*for (i = 0; i < message.length; i += 1) {
-        $('div#content > div:nth-child(3)').append('<div class="alert alert-' + message[i].type + '">' + ALERT_DISMISS_STR + message[i].content + '</div>');
-    }*/
     $('div#content > div:nth-child(2)').html(ACCOUNT_PAGE_STR);
     new Chart(document.getElementById("radar-chart").getContext("2d")).Radar({
         labels: ["個人信息", "線上數據", "還款紀錄", "負債能力", "信用歷史"],
@@ -1802,26 +1768,6 @@ function load_account_page() {
     $('div#content > div:nth-child(2) h3:eq(1) > span').html(member.latest_sign_in);
     $('div#content > div:nth-child(2) h3:eq(2) > span').html(member.remain + '.00');
     $('div#modal').append(CHARGE_MODAL_STR + AUTHEN_MODAL_STR);
-    $('div#calendar').calendar({
-        tmpl_path: 'js/tmpls/',
-        events_source: (function () {
-            return [];
-        }()),
-        language: 'zh-CN'
-    });
-    /*
-    $('div#content > div:nth-child(2) p > u > strong').html(member.remain);
-    new Chart(document.getElementById("radar-chart").getContext("2d")).Radar({
-        labels: ["信用额度", "借款次数", "违约次数", "借款总金额", "投资总金额"],
-        datasets: [
-            {
-                fillColor: "rgba(220,220,220,0.2)",
-                data: [65, 59, 90, 81, 56]
-            }
-        ]
-    }, {
-        responsive: true
-    });*/
 }
 
 function load_invest_manage_page() {
@@ -1841,14 +1787,38 @@ function load_invest_manage_page() {
         }()),
         type: 'POST',
         success: function (obj) {
+            window.console.log(JSON.stringify(obj));
             for (i = 0; i < obj.content.length; i += 1) {
-                $('table#invest-manage > tbody').append('<tr></tr>');
-                $('table#invest-manage > tbody > tr:last').append('<td>' + obj.content[i].last_name + obj.content[i].first_name + '</td>');
-                $('table#invest-manage > tbody > tr:last').append('<td>' + obj.content[i].rate + '</td>');
-                $('table#invest-manage > tbody > tr:last').append('<td>' + obj.content[i].amount + '</td>');
-                $('table#invest-manage > tbody > tr:last').append('<td>' + obj.content[i].time + '</td>');
+                var t1 = Number(obj.content[i].complete), t2 = Number(obj.content[i].total), tmp;
+                if (t1 < t2) {
+                    tmp = Math.floor(t1 * 100 / t2);
+                    $('table#investing > tbody').append('<tr></tr>');
+                    $('table#investing > tbody > tr:last').append('<td>' + obj.content[i].last_name + obj.content[i].first_name + '</td>');
+                    $('table#investing > tbody > tr:last').append('<td>' + obj.content[i].rate + '</td>');
+                    $('table#investing > tbody > tr:last').append('<td>' + obj.content[i].amount + '</td>');
+                    $('table#investing > tbody > tr:last').append('<td>' + tmp + '%</td>');
+                    $('table#investing > tbody > tr:last').append('<td>' + obj.content[i].time + '</td>');
+                } else {
+                    tmp = Date.parse(obj.content[i].complete_date);
+                    tmp += Number(obj.content[i].term) * 2592000000;
+                    tmp = ((new Date(tmp)).toISOString()).slice(0, 10);
+                    t1 = Number(obj.content[i].amount);
+                    t2 = t1 * Number(obj.content[i].rate) * 0.01;
+                    $('table#paying > tbody').append('<tr></tr>');
+                    $('table#paying > tbody > tr:last').append('<td>' + tmp + '</td>');
+                    $('table#paying > tbody > tr:last').append('<td>' + obj.content[i].last_name + obj.content[i].first_name + '</td>');
+                    $('table#paying > tbody > tr:last').append('<td>' + '1/24' + '</td>');
+                    $('table#paying > tbody > tr:last').append('<td>' + t1 + '/' + t2 + '</td>');
+                }
             }
         }
+    });
+    $('div#calendar').calendar({
+        tmpl_path: 'js/tmpls/',
+        events_source: (function () {
+            return [];
+        }()),
+        language: 'zh-CN'
     });
 }
 
@@ -1878,7 +1848,7 @@ function load_borrow_manage_page() {
                     $('table#borrowing > tbody > tr:last').append('<td>' + obj.content[i].view + '</td>');
                 } else {
                     var tmp;
-                    tmp = Date.parse((obj.content[i].time).slice(0, 10));
+                    tmp = Date.parse(obj.content[i].complete_date);
                     tmp += Number(obj.content[i].term) * 2592000000;
                     tmp = ((new Date(tmp)).toISOString()).slice(0, 10);
                     $('table#complete > tbody').append('<tr></tr>');
