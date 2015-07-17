@@ -958,10 +958,83 @@ var HOME_PANEL_STR = function () {
 </div>
     */
 }.toString().slice(38, -4);
+var INVEST_MANAGE_PAGE_STR = function () {
+    'use strict';
+    /*
+<div class="row">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            待收款
+        </div>
+        <div class="panel-body">
+            <table class="table table-default" id="invest-manage">
+                <thead>
+                    <tr>
+                        <th>借入者</th>
+                        <th>利率</th>
+                        <th>金额</th>
+                        <th>投标时间</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+    */
+}.toString().slice(38, -4);
+var BORROW_MANAGE_PAGE_STR = function () {
+    'use strict';
+    /*
+<div class="row">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            投標中
+        </div>
+        <div class="panel-body">
+            <table class="table table-default" id="borrowing">
+                <thead>
+                    <tr>
+                        <th>借款名稱</th>
+                        <th>已收金额</th>
+                        <th>總金额</th>
+                        <th>瀏覽人次</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            已完成
+        </div>
+        <div class="panel-body">
+            <table class="table table-default" id="complete">
+                <thead>
+                    <tr>
+                        <th>借款名稱</th>
+                        <th>金额</th>
+                        <th>還款日</th>
+                        <th>利率</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+    */
+}.toString().slice(38, -4);
 var ALERT_DISMISS_STR = function () {
     'use strict';
     /*
-<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+<button type="button" class="close" data-dismiss="alert" aria-label="Close" onclick="delete_message(this)">
   <span aria-hidden="true">&times;</span>
 </button>
     */
@@ -1018,6 +1091,14 @@ var ACCOUNT_PAGE_STR = function () {
         </div>
     </div>
 </div>
+    */
+}.toString().slice(38, -4);
+var ACCOUNT_NAV_STR = function () {
+    'use strict';
+    /*
+<a class="list-group-item pointer" onclick="load_account_page()">帳戶首頁</a>
+<a class="list-group-item pointer" onclick="load_invest_manage_page()">投資管理</a>
+<a class="list-group-item pointer" onclick="load_borrow_manage_page()">借款管理</a>
     */
 }.toString().slice(38, -4);
 /*
@@ -1108,6 +1189,14 @@ function clear_all() {
     $('div#content > div').html('');
 }
 
+function clear_all_without_left_nav() {
+    'use strict';
+    $('div#navbar-collapse > ul > li').removeClass('active');
+    $('div#modal').html('');
+    $('div#content > div:nth-child(2)').html('');
+    $('div#content > div:nth-child(3)').html('');
+}
+
 function get_product_by_serial(serial) {
     'use strict';
     var i;
@@ -1183,6 +1272,24 @@ function start_upload(btn) {
             break;
         }
     }
+}
+
+function delete_message(btn) {
+    'use strict';
+    var serial = Number($(btn).parents('div.alert').attr('value'));
+    $.ajax('php/request.php', {
+        dataType: 'json',
+        data: (function () {
+            var request = {}, content = {};
+            content.message_serial = serial;
+            request.name = 'DELETE_MESSAGE';
+            request.content = content;
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+        }
+    });
 }
 
 function filter_slider_init() {
@@ -1635,9 +1742,7 @@ function load_account_page() {
     var i;
     clear_all();
     $('div#navbar-collapse > ul:first > li:nth-child(3)').addClass('active');
-    for (i = 0; i < ACCOUNT_NAV.length; i += 1) {
-        $('div#content > div:nth-child(1)').append('<a class="list-group-item">' + ACCOUNT_NAV[i] + '</a>');
-    }
+    $('div#content > div:nth-child(1)').html(ACCOUNT_NAV_STR);
     $('div#content > div:nth-child(1) > a:nth-child(1)').addClass('active');
     /*$('div#content > div:nth-child(1) > a:nth-child(2)').on('click', function () {
         $('div#content > div:nth-child(1) > a:nth-child(1)').removeClass('active');
@@ -1656,9 +1761,31 @@ function load_account_page() {
         });
         //$('div#content > div:nth-child(1) > a:nth-child(1)').on('click', load_account_page());
     });*/
-    for (i = 0; i < message.length; i += 1) {
+    $.ajax('php/request.php', {
+        dataType: 'json',
+        data: (function () {
+            var request = {};
+            request.name = 'GET_MY_MESSAGE';
+            request.content = {};
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            for (i = 0; i < obj.content.length; i += 1) {
+                if (Number(obj.content[i].type) === 0) {
+                    $('div#content > div:nth-child(3)').append(
+                        '<div class="alert alert-info" value="' + obj.content[i].message_serial + '">' +
+                            ALERT_DISMISS_STR +
+                            'user' + ('0000' + obj.content[i].sender).slice(-4) + '借了您' + obj.content[i].content + '元' +
+                            '</div>'
+                    );
+                }
+            }
+        }
+    });
+    /*for (i = 0; i < message.length; i += 1) {
         $('div#content > div:nth-child(3)').append('<div class="alert alert-' + message[i].type + '">' + ALERT_DISMISS_STR + message[i].content + '</div>');
-    }
+    }*/
     $('div#content > div:nth-child(2)').html(ACCOUNT_PAGE_STR);
     new Chart(document.getElementById("radar-chart").getContext("2d")).Radar({
         labels: ["個人信息", "線上數據", "還款紀錄", "負債能力", "信用歷史"],
@@ -1695,6 +1822,74 @@ function load_account_page() {
     }, {
         responsive: true
     });*/
+}
+
+function load_invest_manage_page() {
+    'use strict';
+    var i;
+    clear_all_without_left_nav();
+    $('div#content > div:nth-child(1) > a').removeClass('active');
+    $('div#content > div:nth-child(1) > a:nth-child(2)').addClass('active');
+    $('div#content > div:nth-child(2)').html(INVEST_MANAGE_PAGE_STR);
+    $.ajax('php/request.php', {
+        dataType: 'json',
+        data: (function () {
+            var request = {};
+            request.name = 'GET_MY_INVEST';
+            request.content = {};
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            for (i = 0; i < obj.content.length; i += 1) {
+                $('table#invest-manage > tbody').append('<tr></tr>');
+                $('table#invest-manage > tbody > tr:last').append('<td>' + obj.content[i].last_name + obj.content[i].first_name + '</td>');
+                $('table#invest-manage > tbody > tr:last').append('<td>' + obj.content[i].rate + '</td>');
+                $('table#invest-manage > tbody > tr:last').append('<td>' + obj.content[i].amount + '</td>');
+                $('table#invest-manage > tbody > tr:last').append('<td>' + obj.content[i].time + '</td>');
+            }
+        }
+    });
+}
+
+function load_borrow_manage_page() {
+    'use strict';
+    var i;
+    clear_all_without_left_nav();
+    $('div#content > div:nth-child(1) > a').removeClass('active');
+    $('div#content > div:nth-child(1) > a:nth-child(3)').addClass('active');
+    $('div#content > div:nth-child(2)').html(BORROW_MANAGE_PAGE_STR);
+    $.ajax('php/request.php', {
+        dataType: 'json',
+        data: (function () {
+            var request = {};
+            request.name = 'GET_MY_BORROW';
+            request.content = {};
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            for (i = 0; i < obj.content.length; i += 1) {
+                if (Number(obj.content[i].complete) < Number(obj.content[i].amount)) {
+                    $('table#borrowing > tbody').append('<tr></tr>');
+                    $('table#borrowing > tbody > tr:last').append('<td>' + obj.content[i].name + '</td>');
+                    $('table#borrowing > tbody > tr:last').append('<td>' + obj.content[i].complete + '</td>');
+                    $('table#borrowing > tbody > tr:last').append('<td>' + obj.content[i].amount + '</td>');
+                    $('table#borrowing > tbody > tr:last').append('<td>' + obj.content[i].view + '</td>');
+                } else {
+                    var tmp;
+                    tmp = Date.parse((obj.content[i].time).slice(0, 10));
+                    tmp += Number(obj.content[i].term) * 2592000000;
+                    tmp = ((new Date(tmp)).toISOString()).slice(0, 10);
+                    $('table#complete > tbody').append('<tr></tr>');
+                    $('table#complete > tbody > tr:last').append('<td>' + obj.content[i].name + '</td>');
+                    $('table#complete > tbody > tr:last').append('<td>' + obj.content[i].amount + '</td>');
+                    $('table#complete > tbody > tr:last').append('<td>' + tmp + '</td>');
+                    $('table#complete > tbody > tr:last').append('<td>' + obj.content[i].rate + '</td>');
+                }
+            }
+        }
+    });
 }
 
 function load_product_info_page() {
@@ -2135,6 +2330,7 @@ function submit_invest() {
             var request = {}, content = {};
             content.amount = $('#invest-modal h2 > strong').html();
             content.product_serial = tmp_product.product_serial;
+            content.borrower = tmp_product.borrower;
             content.rate = tmp_product.rate;
             request.name = 'INVEST';
             request.content = content;
