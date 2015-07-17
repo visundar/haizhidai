@@ -242,7 +242,7 @@ var PRODUCT_DETAIL_STR = function () {
     <div class="form-group">
         <label for="source" class="col-md-2 control-label">*还款来源</label>
         <div class="col-md-6">
-          <input type="text" class="form-control" name="source" placeholder="">
+          <input type="text" class="form-control" name="source">
         </div>
     </div>
     <div class="form-group">
@@ -254,7 +254,7 @@ var PRODUCT_DETAIL_STR = function () {
     <div class="form-group">
         <label for="ps" class="col-md-2 control-label">其他</label>
         <div class="col-md-6">
-          <textarea name="ps" class="form-control" rows="3"></textarea>
+          <textarea name="ps" class="form-control" rows="3" placeholder="如有其他说明事项请于此输入"></textarea>
         </div>
     </div>
     <div class="form-group">
@@ -292,6 +292,15 @@ var PROFILE_STR = function () {
             <label for="cellphone" class="col-md-2 control-label">*手机号</label>
             <div class="col-md-5">
               <input type="text" class="form-control" name="cellphone" placeholder="手机号">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="authen" class="col-md-2 control-label">*验证码</label>
+            <div class="col-md-5">
+                <input type="text" class="form-control" id="authen" disabled>
+            </div>
+            <div class="col-md-4">
+                <input type="button" class="btn" value="获取验证码" onclick="$('input#authen').val((Math.random().toString()).slice(-4))">
             </div>
         </div>
         <div class="form-group">
@@ -788,12 +797,29 @@ var AUTHEN_MODAL_STR = function () {
                         </div>
                     </div>
                     <div class="form-group">
+                       <label for="gender" class="col-md-offset-1 col-md-2 control-label">*性別</label>
+                        <div class="col-md-8">
+                            <label class="radio-inline">
+                              <input type="radio" name="gender" value="1"> 男
+                            </label>
+                            <label class="radio-inline">
+                              <input type="radio" name="gender" value="0"> 女
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="birth" class="col-md-offset-1 col-md-2 control-label">*生日</label>
+                        <div class="col-md-8">
+                          <input type="text" class="form-control" name="birth" placeholder="1990-01-01">
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label for="authen" class="col-md-offset-1 col-md-2 control-label">*验证码</label>
                         <div class="col-md-4">
-                            <input type="text" class="form-control">
+                            <input type="text" class="form-control" id="authen" disabled>
                         </div>
                         <div class="col-md-4">
-                            <input type="button" class="btn" value="获取验证码">
+                            <input type="button" class="btn" value="获取验证码" onclick="$('input#authen').val((Math.random().toString()).slice(-4))">
                         </div>
                     </div>
                 </form>
@@ -859,10 +885,10 @@ var CHARGE_MODAL_STR = function () {
                     <div class="form-group">
                         <label for="authen" class="col-md-offset-1 col-md-2 control-label">*手機验证</label>
                         <div class="col-md-4">
-                            <input type="text" class="form-control">
+                            <input type="text" class="form-control" id="authen" disabled>
                         </div>
                         <div class="col-md-4">
-                            <input type="button" class="btn" value="获取验证码">
+                            <input type="button" class="btn" value="获取验证码" onclick="$('input#authen').val((Math.random().toString()).slice(-4))">
                         </div>
                     </div>
                 </form>
@@ -966,15 +992,9 @@ var ACCOUNT_PAGE_STR = function () {
 <div class="row">
     <div class="panel panel-default">
         <div class="panel-heading">
-            資產情況
-            <div class="navbar-right">
-                帳戶總資產&nbsp;&yen;<strong class="font-size-larger">0.00</strong>&nbsp;&nbsp;
-            </div>
+            用戶分析
         </div>
-        <div class="panel-body"></div>
-        <div class="panel-footer">
-            <pre>投標中 &yen;<u>0.00</u> (投標中 <u>0</u> 筆) | 取現中 &yen;<u>0.00</u> | 待還 &yen;<u>0.00</u></pre>
-        </div>
+        <div class="panel-body"><canvas id="radar-chart"></canvas></div>
     </div>
 </div>
 <hr>
@@ -1031,7 +1051,21 @@ var ACCOUNT_PAGE_STR = function () {
         </div>
     </div>
 </div>
-}.toString().slice(38, -4);*/
+}.toString().slice(38, -4);
+<div class="row">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            資產情況
+            <div class="navbar-right">
+                帳戶總資產&nbsp;&yen;<strong class="font-size-larger">0.00</strong>&nbsp;&nbsp;
+            </div>
+        </div>
+        <div class="panel-body"></div>
+        <div class="panel-footer">
+            <pre>投標中 &yen;<u>0.00</u> (投標中 <u>0</u> 筆) | 取現中 &yen;<u>0.00</u> | 待還 &yen;<u>0.00</u></pre>
+        </div>
+    </div>
+</div>*/
 var member, product, product_list, where_you_upload, my_images,
     message = [{
         type: 'warning',
@@ -1198,8 +1232,8 @@ function filter_slider_init() {
         max: 999999,
         values: [0, 999999],
         slide: function (event, ui) {
-            $("#amount-lower").html(ui.values[0] + "天");
-            $("#amount-upper").html(ui.values[1] + "天");
+            $("#amount-lower").html(ui.values[0] + "元");
+            $("#amount-upper").html(ui.values[1] + "元");
         }
     });
     $("#amount-lower").html($("#amount-slider").slider("values", 0) + "元");
@@ -1274,6 +1308,7 @@ function product_sort(th) {
         });
     }
     generate_product_table(a);
+    filter_slider_init();
 }
 
 function filter() {
@@ -1305,6 +1340,7 @@ function filter() {
         }
     }
     generate_product_table(a);
+    $('span.sort').remove();
 }
 
 function searcher() {
@@ -1376,7 +1412,7 @@ function display_product_modal(a) {
             break;
         }
     }
-    $('#product-modal h4 > u').html(tmp);
+    $('#product-modal h4 > u').html(('0000' + tmp).slice(-4));
     $('div#product-info > div.panel > div.panel-body').html(product_list[i].descript);
     $('div#product-info > table > tbody td:eq(0)').html(product_list[i].usage);
     $('div#product-info > table > tbody td:eq(1)').html(product_list[i].source);
@@ -1554,6 +1590,7 @@ function load_borrow_detail_page(btn) {
                         $('input[name="' + name + '"]').val(obj.content[name]);
                     }
                 }
+                $('div.form-group:has(label[for="authen"])').remove();
                 $('input, select').attr('disabled', true);
             }
         });
@@ -1580,7 +1617,7 @@ function load_account_page() {
         $('div#content > div:nth-child(1)').append('<a class="list-group-item">' + ACCOUNT_NAV[i] + '</a>');
     }
     $('div#content > div:nth-child(1) > a:nth-child(1)').addClass('active');
-    $('div#content > div:nth-child(1) > a:nth-child(2)').on('click', function () {
+    /*$('div#content > div:nth-child(1) > a:nth-child(2)').on('click', function () {
         $('div#content > div:nth-child(1) > a:nth-child(1)').removeClass('active');
         $('div#content > div:nth-child(1) > a:nth-child(2)').addClass('active');
         $('div#content > div:nth-child(2)').html('<canvas id="radar-chart"></canvas>');
@@ -1596,11 +1633,22 @@ function load_account_page() {
             responsive: true
         });
         //$('div#content > div:nth-child(1) > a:nth-child(1)').on('click', load_account_page());
-    });
+    });*/
     for (i = 0; i < message.length; i += 1) {
         $('div#content > div:nth-child(3)').append('<div class="alert alert-' + message[i].type + '">' + ALERT_DISMISS_STR + message[i].content + '</div>');
     }
-    $('div#content > div:nth-child(2)').append(ACCOUNT_PAGE_STR);
+    $('div#content > div:nth-child(2)').html(ACCOUNT_PAGE_STR);
+    new Chart(document.getElementById("radar-chart").getContext("2d")).Radar({
+        labels: ["個人信息", "線上數據", "還款紀錄", "負債能力", "信用歷史"],
+        datasets: [
+            {
+                fillColor: "rgba(220,220,220,0.2)",
+                data: [65, 59, 90, 81, 56]
+            }
+        ]
+    }, {
+        responsive: true
+    });
     $('div#content > div:nth-child(2) h2:eq(0) > span').html(member.last_name);
     $('div#content > div:nth-child(2) h3:eq(1) > span').html(member.latest_sign_in);
     $('div#content > div:nth-child(2) h3:eq(2) > span').html(member.remain + '.00');
@@ -1822,11 +1870,15 @@ function submit_borrow_detail() {
     if (!(/^\d+$/.test($('input[name="uid"]').val()))) {
         warning += '身份证 ';
     }
+    if ($('input[name="uid"]').val().length !== 18) {
+        alert('身份证須等于18字');
+        return;
+    }
     if (!(/^\d+$/.test($('input[name="cellphone"]').val()))) {
         warning += '手机号 ';
     }
-    if ($('input[name="cellphone"]').val().length < 11) {
-        alert('手机号須大於11字');
+    if ($('input[name="cellphone"]').val().length !== 11) {
+        alert('手机号須等于11字');
         return;
     }
     if ($('input[name="gender"]:checked').val() === undefined) {
@@ -1904,6 +1956,9 @@ function submit_borrow_detail() {
     if (warning !== '') {
         alert('请检查' + warning);
         return;
+    } else if ($('input#authen').val() === '') {
+        alert('请获取验证码');
+        return;
     }
     $.ajax('php/request.php', {
         dataType: 'json',
@@ -1936,11 +1991,23 @@ function submit_authen() {
     } else if (!(/^\d+$/.test($('input[name="uid"]').val()))) {
         alert('请检查身份证');
         return;
+    } else if ($('input[name="uid"]').val().length !== 18) {
+        alert('身份证須等于18字');
+        return;
     } else if (!(/^\d+$/.test($('input[name="cellphone"]').val()))) {
         alert('请检查手机号');
         return;
-    } else if ($('input[name="cellphone"]').val().length < 11) {
-        alert('请检查手机号须大于11字');
+    } else if ($('input[name="cellphone"]').val().length !== 11) {
+        alert('请检查手机号须等于11字');
+        return;
+    } else if ($('input#authen').val() === '') {
+        alert('请获取验证码');
+        return;
+    } else if ($('input[name="gender"]:checked').val() === undefined) {
+        alert('请检查性別');
+        return;
+    } else if (!(/^\d{4}-(1[0-2]|0[1-9])-(0[1-9]|[12]\d|3[01])$/.test($('input[name="birth"]').val()))) {
+        alert('请检查生日');
         return;
     }
     $.ajax('php/request.php', {
@@ -1955,6 +2022,7 @@ function submit_authen() {
         type: 'POST',
         success: function (obj) {
             member = obj.content;
+            $.cookie('first_name', obj.content.first_name, 30, '/');
             $('#authen-modal').modal('hide');
             $('#charge-modal').modal('show');
         }
@@ -1972,11 +2040,17 @@ function submit_charge() {
     } else if (!(/^\d+$/.test($('input#cellphone').val()))) {
         alert('请检查手机号');
         return;
+    } else if ($('input#cellphone').val().length !== 11) {
+        alert('请检查手机号须等于11字');
+        return;
     } else if (!(/^\d+$/.test($('input[name="remain"]').val()))) {
         alert('请检查充值金額');
         return;
     } else if (Number($('input[name="remain"]').val()) > 50000) {
         alert('充值金額应小于50000');
+        return;
+    } else if ($('input#authen').val() === '') {
+        alert('请获取验证码');
         return;
     }
     $.ajax('php/request.php', {
@@ -2004,6 +2078,9 @@ function submit_file_upload() {
 
 function submit_product_detail() {
     'use strict';
+    if (window.confirm('您确定将送交审核') === false) {
+        return;
+    }
     $.ajax('php/request.php', {
         dataType: 'json',
         data: (function () {
