@@ -1440,6 +1440,28 @@ function display_product_modal(a) {
             $('div#member-info > table > tbody td:eq(5)').html(((Number(obj.content.asset) & 4) === 0) ? '無' : '有');
         }
     });
+    $.ajax('php/request.php', {
+        dataType: 'json',
+        async: false,
+        data: (function () {
+            var request = {}, content = {};
+            content.product_serial = product_list[i].product_serial;
+            request.name = 'GET_PRODUCT_TRANSACTION';
+            request.content = content;
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            $('div#history > table > tbody').html('');
+            for (i = 0; i < obj.content.length; i += 1) {
+                $('div#history > table > tbody').append('<tr></tr>');
+                $('div#history > table > tbody > tr:last').append('<td>user' + ('0000' + obj.content[i].loaner).slice(-4) + '</td>');
+                $('div#history > table > tbody > tr:last').append('<td>' + obj.content[i].rate + '</td>');
+                $('div#history > table > tbody > tr:last').append('<td>' + obj.content[i].amount + '</td>');
+                $('div#history > table > tbody > tr:last').append('<td>' + obj.content[i].time + '</td>');
+            }
+        }
+    });
     $('#product-modal').modal('show');
     $.ajax('php/request.php', {
         dataType: 'json',
@@ -1921,7 +1943,7 @@ function submit_borrow_detail() {
             warning += '学校名称 ';
         }
     }
-    if ($('select#work-years').val() !== undefined && $('select#work-years').val() === '0') {
+    if ($('select#work-years').val() !== undefined && ($('select#work-years').val() === '0' || $('select#work-years').val() === null)) {
         warning += '工作年限 ';
     }
     if ($('select#work-state').val() !== undefined && $('select#work-state').val() === '0') {
@@ -2106,12 +2128,14 @@ function submit_product_detail() {
 
 function submit_invest() {
     'use strict';
+    var tmp_product = get_product_by_serial(Number($('#invest-modal h3:eq(0) > strong').html()));
     $.ajax('php/request.php', {
         dataType: 'json',
         data: (function () {
             var request = {}, content = {};
             content.amount = $('#invest-modal h2 > strong').html();
-            content.product_serial = $('#invest-modal h3:eq(0) > strong').html();
+            content.product_serial = tmp_product.product_serial;
+            content.rate = tmp_product.rate;
             request.name = 'INVEST';
             request.content = content;
             return 'request=' + JSON.stringify(request);
@@ -2294,7 +2318,6 @@ function invest_this(div) {
     } else if (Number(member.remain) < tmp) {
         charge();
     } else {
-        get_member_from_server();
         $('#invest-modal h2 > strong').html(tmp);
         $('#invest-modal h3:eq(0) > strong').html(serial);
         $('#invest-modal').modal('show');
