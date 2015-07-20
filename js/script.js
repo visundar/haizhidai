@@ -523,7 +523,7 @@ var RATE_MODAL_STR = function () {
       </div>
       <div class="modal-body">
           <table class="table table-bordered table-hover">
-              <tr><th>海智贷等级</th><th>预期平均年损率**</th></tr>
+              <tr><th>海智贷等级</th><th>年利率**</th></tr>
               <tr><th>AA</th><td>0.00~1.99%</td></tr>
               <tr><th>A</th><td>2.00~3.99%</td></tr>
               <tr><th>B</th><td>4.00~5.99%</td></tr>
@@ -554,39 +554,17 @@ var PRODUCT_MODAL_STR = function () {
             <div class="modal-body">
                 <div>
                   <ul class="nav nav-tabs" role="tablist" style="margin-bottom:25px">
-                    <li role="presentation" class="active"><a href="#product-info" aria-controls="product-info" role="tab" data-toggle="tab">借款详情</a></li>
-                    <li role="presentation"><a href="#member-info" aria-controls="member-info" role="tab" data-toggle="tab">借款人相关信息</a></li>
+                    <li role="presentation" class="active"><a href="#member-info" aria-controls="member-info" role="tab" data-toggle="tab">借款人相关信息</a></li>
+                    <li role="presentation"><a href="#product-info" aria-controls="product-info" role="tab" data-toggle="tab">借款详情</a></li>
                     <li role="presentation"><a href="#judge" aria-controls="judge" role="tab" data-toggle="tab">审核信息</a></li>
                     <li role="presentation"><a href="#history" aria-controls="history" role="tab" data-toggle="tab">投标记录</a></li>
                   </ul>
                   <div class="tab-content">
-                    <div role="tabpanel" class="tab-pane active" id="product-info">
+                    <div role="tabpanel" class="tab-pane active" id="member-info">
                         <div class="panel panel-default">
-                            <div class="panel-heading">借款详情</div>
-                            <div class="panel-body"></div>
+                            <div class="panel-heading">用戶分析</div>
+                            <div class="panel-body"><canvas id="radar-chart">test</canvas></div>
                         </div>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th class="col-md-3">借款目的</th>
-                                    <th class="col-md-3">还款来源</th>
-                                    <th class="col-md-1">利率</th>
-                                    <th class="col-md-2">刊登时间</th>
-                                    <th class="col-md-3">附注</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div role="tabpanel" class="tab-pane" id="member-info">
                         <table class="table table-hover">
                             <thead>
                                 <tr>
@@ -601,6 +579,32 @@ var PRODUCT_MODAL_STR = function () {
                             <tbody>
                                 <tr>
                                     <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="product-info">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">借款详情</div>
+                            <div class="panel-body"></div>
+                        </div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>借款目的</th>
+                                    <th>还款来源</th>
+                                    <th>年利率</th>
+                                    <th>刊登时间</th>
+                                    <th>附注</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
                                     <td></td>
                                     <td></td>
                                     <td></td>
@@ -969,7 +973,7 @@ var INVEST_MANAGE_PAGE_STR = function () {
                         <th>标题</th>
                         <th>投资金额</th>
                         <th>应收金额</th>
-                        <th>利率</th>
+                        <th>年利率</th>
                         <th>期数</th>
                         <th>类型</th>
                         <th>投标时间</th>
@@ -1046,7 +1050,7 @@ var BORROW_MANAGE_PAGE_STR = function () {
                         <th>期数</th>
                         <th>发标时间</th>
                         <th>发标总金额</th>
-                        <th>利率</th>
+                        <th>年利率</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -1128,13 +1132,13 @@ var ACCOUNT_PAGE_STR = function () {
 var ACCOUNT_NAV_STR = function () {
     'use strict';
     /*
-<a class="list-group-item pointer" onclick="load_account_page()">帳戶首頁</a>
-<a class="list-group-item pointer" onclick="load_invest_manage_page()">投資管理</a>
+<a class="list-group-item pointer" onclick="load_account_page()">帐户首页</a>
+<a class="list-group-item pointer" onclick="load_invest_manage_page()">投资管理</a>
 <a class="list-group-item pointer" onclick="load_borrow_manage_page()">借款管理</a>
 <a class="list-group-item pointer" onclick="load_friend_manage_page()">好友管理</a>
     */
 }.toString().slice(38, -4);
-var member, product, product_list, where_you_upload, my_images;
+var member, product, product_list, where_you_upload, my_images, rChart;
 
 (function ($) {
     'use strict';
@@ -1548,6 +1552,19 @@ function display_product_modal(a) {
         }
     });
     $('#product-modal').modal('show');
+    $('#product-modal').on('shown.bs.modal', function () {
+        new Chart(document.getElementById("radar-chart").getContext("2d")).Radar({
+            labels: ["個人信息", "線上數據", "還款紀錄", "負債能力", "信用歷史"],
+            datasets: [
+                {
+                    fillColor: "rgba(220,220,220,0.2)",
+                    data: [65, 59, 90, 81, 56]
+                }
+            ]
+        }, {
+            responsive: true
+        });
+    });
     $.ajax('php/request.php', {
         dataType: 'json',
         data: (function () {
@@ -1791,7 +1808,7 @@ function load_invest_manage_page() {
             for (i = 0; i < obj.content.length; i += 1) {
                 var t1 = Number(obj.content[i].complete), t2 = Number(obj.content[i].total), t3, tmp, times;
                 if (t1 < t2) {
-                    tmp = Number(obj.content[i].amount) * (1 + (Number(obj.content[i].rate) * 0.01));
+                    tmp = Number(obj.content[i].amount) * (1 + (Number(obj.content[i].rate) * 0.01 * Number(obj.content[i].term) / 12));
                     $('table#investing > tbody').append('<tr></tr>');
                     $('table#investing > tbody > tr:last').append('<td>' + obj.content[i].last_name + ' ' + obj.content[i].first_name + '</td>');
                     $('table#investing > tbody > tr:last').append('<td>' + obj.content[i].name + '</td>');
@@ -1808,7 +1825,7 @@ function load_invest_manage_page() {
                     tmp += t3 * 2592000000;
                     tmp = ((new Date(tmp)).toISOString()).slice(0, 10);
                     t1 = Number(obj.content[i].amount) / Number(obj.content[i].term);
-                    t2 = t1 * (Number(obj.content[i].rate) * 0.01 / Number(obj.content[i].term));
+                    t2 = t1 * (Number(obj.content[i].rate) * 0.01 / 12);
                     $('table#paying > tbody').append('<tr></tr>');
                     $('table#paying > tbody > tr:last').append('<td>' + t3 + '/' + times + '</td>');
                     $('table#paying > tbody > tr:last').append('<td>' + obj.content[i].last_name + ' ' + obj.content[i].first_name + '</td>');
@@ -1861,7 +1878,7 @@ function load_borrow_manage_page() {
                     tmp = Date.parse(obj.content[i].complete_date);
                     tmp += Number(obj.content[i].term) * 2592000000;
                     tmp = ((new Date(tmp)).toISOString()).slice(0, 10);
-                    t1 = Number(obj.content[i].amount) * Number(obj.content[i].rate) * 0.01;
+                    t1 = Number(obj.content[i].amount) * Number(obj.content[i].rate) * 0.01 * Number(obj.content[i].term) / 12;
                     $('table#complete > tbody').append('<tr></tr>');
                     $('table#complete > tbody > tr:last').append('<td>' + obj.content[i].name + '</td>');
                     $('table#complete > tbody > tr:last').append('<td>' + obj.content[i].product_serial + '</td>');
@@ -1877,6 +1894,13 @@ function load_borrow_manage_page() {
             }
         }
     });
+}
+
+function load_friend_manage_page() {
+    'use strict';
+    clear_all_without_left_nav();
+    $('div#content > div:nth-child(1) > a').removeClass('active');
+    $('div#content > div:nth-child(1) > a:nth-child(4)').addClass('active');
 }
 
 function load_product_info_page() {
