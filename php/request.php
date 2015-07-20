@@ -35,7 +35,7 @@ try {
             $response->content = $a;
             break;
         case 'GET_MY_BORROW':
-            $query = "SELECT `name`, `complete_date`, `amount`, `term`, `rate`, `complete`, `view` FROM `product` WHERE `borrower`=" . $_COOKIE['user_serial'];
+            $query = "SELECT * FROM `product` WHERE `borrower`=" . $_COOKIE['user_serial'];
             $result = mysql_query($query, $con) or throw_exception(mysql_error());
             $a = array();
             while ($o = mysql_fetch_object($result)) {
@@ -45,7 +45,7 @@ try {
             $response->content = $a;
             break;
         case 'GET_MY_INVEST':
-            $query = "SELECT `transaction`.*, `product`.`borrower`, `product`.`amount` AS `total`, `product`.`complete`, `product`.`complete_date`, `product`.`term`, `member`.`first_name`, `member`.`last_name` FROM `transaction` JOIN `product` ON `transaction`.`product_serial` = `product`.`product_serial` JOIN `member` ON `product`.`borrower` = `member`.`user_serial` WHERE `transaction`.`loaner` =" . $_COOKIE['user_serial'] . " ORDER BY `time` DESC";
+            $query = "SELECT `transaction`.*, `product`.`amount` AS `total`, `product`.`complete`, `product`.`complete_date`, `product`.`term`, `product`.`name`, `member`.`first_name`, `member`.`last_name`, `member`.`work_status` FROM `transaction` JOIN `product` ON `transaction`.`product_serial` = `product`.`product_serial` JOIN `member` ON `product`.`borrower` = `member`.`user_serial` WHERE `transaction`.`loaner` =" . $_COOKIE['user_serial'] . " ORDER BY `time` DESC";
             $result = mysql_query($query, $con) or throw_exception(mysql_error());
             $a = array();
             while ($o = mysql_fetch_object($result)) {

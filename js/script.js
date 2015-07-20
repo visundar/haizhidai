@@ -5,6 +5,7 @@ var STORES = ['', '淘宝网', '拍拍网', '阿里巴巴', '京东', '一号店
 var FILE_ATTR = ['身份证', '结婚证', '营业执照', '劳动合同', '工牌、名片、工作证', '社保', '工资卡/常用银行流水', '学生证/一卡通', '房产证', '行驶证', '支付宝截图', '个人信用报告', '信用卡对账单', '学历学位证书', '其他所有贷款协议/凭证'];
 var FILE_DESC = ['二代身份证正反面各一张，本人手持身份证合照一张，共3张。', '本人结婚证，包含结婚日期、本人及配偶所有信息。', '营业执照照片或工商网站截图，必须清晰显示法人、成立时间、经营范围、经营时间等关键信息。', '本人当前的有效劳动合同，从封面一页一页拍至最后一页。', '个人工作证或单位工牌、名片均可，必须完整显示单位信息及个人信息。', '社保/公积金网站截图，需完整显示本人姓名、身份证、缴费状态、缴费金额等关键信息。', '本人银行卡正反面照片各一张，以及近3个月完整流水打印单或网银流水截屏。工资卡需显示代发工资项。', '个人学生证信息页照片，需完整显示学校信息及个人信息', '房产证的基本信息页及盖章页各一张，共2张。', '正副本照片，需完整显示车辆登记信息及年检信息。', '支付宝账户基本信息页截图和上一年度个人年度对账单截图。', '仅接受人民银行征信中心网络查询的PDF版。', '用户本人信用卡正面照片及对应的近3 个月信用卡（电子或纸质）对账单。', '本人大专及以上学历或学位证书，接受结业证。', '本人其他金融机构的贷款协议或凭证证明。'];
 var FILE_IMG = [['uid_1.jpg', 'uid_2.jpg', 'uid_3.jpg'], 'jiehunzheng.jpg', 'yingyezhizhao.jpg', 'laodonghetong.jpg', 'gongpai.jpg', 'shebao.png', 'yinhangliushui.jpg', 'xueshengzheng.jpg', 'fangchanzheng.jpg', 'xingshizheng.jpg', 'zhifubao.jpg', 'xinyongbaogao.png', 'xinyongkazhangdan.bmp', 'xuelizhengshu.bmp', 'qitapingzheng.jpg'];
+var WORK_STATUS = ['工薪', '网商', '学生'];
 var EDUCATION = ['', '初中及以下', '中专', '高中', '大专', '本科', '研究生及以上'];
 var WORK_YEAR = ['', '1 年已內', '2 年已內', '3 年已內', '4 年(含)以上'];
 var UPLOAD_URL = '../upload/index.php';
@@ -39,7 +40,6 @@ var PRODUCT = [{
             '视频认证']
     }];
 var BORROW_PROGRESS = ['产品选择', '个人信息', '产品信息', '资料上传', '资料确认', '审核状况'];
-var ACCOUNT_NAV = ['帳戶首頁', '投資管理'];
 var NAVBAR_STR = function () {
     'use strict';
     /*
@@ -212,12 +212,12 @@ var PRODUCT_DETAIL_STR = function () {
         </div>
     </div>
     <div class="form-group">
-        <label for="term" class="col-md-2 control-label">*还款期限</label>
+        <label for="term" class="col-md-2 control-label">*还款期数</label>
         <div class="col-md-6">
             <div class="input-group">
                 <span class="input-group-addon pointer" onclick="change_term(this)" value="-"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></span>
                 <input class="form-control" type="text" name="term" value="3">
-                <span class="input-group-addon">月</span>
+                <span class="input-group-addon">期</span>
                 <span class="input-group-addon pointer" onclick="change_term(this)" value="+"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></span>
             </div>
         </div>
@@ -488,7 +488,7 @@ var FILTER_MODAL_STR = function () {
               </div>
               <div class="row">
                   <h4>
-                      <div class="col-md-2 text-right">期限</div>
+                      <div class="col-md-2 text-right">期数</div>
                       <div class="col-md-10">
                           <span class="label label-danger" id="term-lower"></span>
                           ~
@@ -555,17 +555,15 @@ var PRODUCT_MODAL_STR = function () {
                 <div>
                   <ul class="nav nav-tabs" role="tablist" style="margin-bottom:25px">
                     <li role="presentation" class="active"><a href="#product-info" aria-controls="product-info" role="tab" data-toggle="tab">借款详情</a></li>
-
                     <li role="presentation"><a href="#member-info" aria-controls="member-info" role="tab" data-toggle="tab">借款人相关信息</a></li>
                     <li role="presentation"><a href="#judge" aria-controls="judge" role="tab" data-toggle="tab">审核信息</a></li>
-                    <li role="presentation"><a href="#statistic" aria-controls="statistic" role="tab" data-toggle="tab">统计信息</a></li>
                     <li role="presentation"><a href="#history" aria-controls="history" role="tab" data-toggle="tab">投标记录</a></li>
                   </ul>
                   <div class="tab-content">
                     <div role="tabpanel" class="tab-pane active" id="product-info">
                         <div class="panel panel-default">
                             <div class="panel-heading">借款详情</div>
-                            <div class="panel-body">...</div>
+                            <div class="panel-body"></div>
                         </div>
                         <table class="table">
                             <thead>
@@ -624,9 +622,6 @@ var PRODUCT_MODAL_STR = function () {
                             <tbody>
                             </tbody>
                         </table>
-                    </div>
-                    <div role="tabpanel" class="tab-pane" id="statistic">
-
                     </div>
                     <div role="tabpanel" class="tab-pane" id="history">
                         <table class="table table-hover">
@@ -755,7 +750,7 @@ var INVEST_PAGE_STR = function () {
         <th class="col-md-1 pointer" name="amount" onclick="product_sort(this)">金额</th>
         <th class="col-md-1 pointer" name="view" onclick="product_sort(this)">浏览</th>
         <th class="col-md-1 pointer" name="level" onclick="product_sort(this)">等级</th>
-        <th class="col-md-1 pointer" name="term" onclick="product_sort(this)">期限</th>
+        <th class="col-md-1 pointer" name="term" onclick="product_sort(this)">期数</th>
         <th class="col-md-3">投标</th>
     </tr>
 </table>
@@ -970,10 +965,13 @@ var INVEST_MANAGE_PAGE_STR = function () {
             <table class="table table-default" id="investing">
                 <thead>
                     <tr>
-                        <th>借入者</th>
+                        <th>借款者</th>
+                        <th>标题</th>
+                        <th>投资金额</th>
+                        <th>应收金额</th>
                         <th>利率</th>
-                        <th>投标金额</th>
-                        <th>列表进度</th>
+                        <th>期数</th>
+                        <th>类型</th>
                         <th>投标时间</th>
                     </tr>
                 </thead>
@@ -987,16 +985,19 @@ var INVEST_MANAGE_PAGE_STR = function () {
 <div class="row">
     <div class="panel panel-default">
         <div class="panel-heading">
-            收款中
+            待收款
         </div>
         <div class="panel-body">
             <table class="table table-default" id="paying">
                 <thead>
                     <tr>
-                        <th>还款日</th>
-                        <th>借入者</th>
-                        <th>期数/总期数</th>
-                        <th>本金/本息</th>
+                        <th>期/总</th>
+                        <th>借款者</th>
+                        <th>借款标题</th>
+                        <th>待收日期</th>
+                        <th>待收本息</th>
+                        <th>待收本金</th>
+                        <th>待收利息</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -1034,16 +1035,18 @@ var BORROW_MANAGE_PAGE_STR = function () {
 <div class="row">
     <div class="panel panel-default">
         <div class="panel-heading">
-            投標中
+            投标中
         </div>
         <div class="panel-body">
             <table class="table table-default" id="borrowing">
                 <thead>
                     <tr>
-                        <th>借款名稱</th>
-                        <th>已收金额</th>
-                        <th>總金额</th>
-                        <th>瀏覽人次</th>
+                        <th>标题</th>
+                        <th>编号</th>
+                        <th>期数</th>
+                        <th>发标时间</th>
+                        <th>发标总金额</th>
+                        <th>利率</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -1055,16 +1058,22 @@ var BORROW_MANAGE_PAGE_STR = function () {
 <div class="row">
     <div class="panel panel-default">
         <div class="panel-heading">
-            已完標
+            待还款
         </div>
         <div class="panel-body">
             <table class="table table-default" id="complete">
                 <thead>
                     <tr>
-                        <th>借款名稱</th>
-                        <th>金额</th>
-                        <th>還款日</th>
-                        <th>利率</th>
+                        <th>标题</th>
+                        <th>借款编号</th>
+                        <th>期数</th>
+                        <th>发标时间</th>
+                        <th>应还日期</th>
+                        <th>应还总额</th>
+                        <th>应还本金</th>
+                        <th>应还利息</th>
+                        <th>逾期天数</th>
+                        <th>还款状态</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -1090,7 +1099,7 @@ var ACCOUNT_PAGE_STR = function () {
     <div class="col-md-2 head-photo">
     </div>
     <div class="col-md-5">
-        <h2>您好，<span>x</span>先生</h2>
+        <h2>您好，<span>x</span>先生<small></small></h2>
     </div>
     <div class="col-md-5">
         <h2><small>已有<u>0</u>人瀏覽您的資料</small?</h2>
@@ -1122,19 +1131,10 @@ var ACCOUNT_NAV_STR = function () {
 <a class="list-group-item pointer" onclick="load_account_page()">帳戶首頁</a>
 <a class="list-group-item pointer" onclick="load_invest_manage_page()">投資管理</a>
 <a class="list-group-item pointer" onclick="load_borrow_manage_page()">借款管理</a>
+<a class="list-group-item pointer" onclick="load_friend_manage_page()">好友管理</a>
     */
 }.toString().slice(38, -4);
-var member, product, product_list, where_you_upload, my_images,
-    message = [{
-        type: 'warning',
-        content: '提醒您，帳戶餘額為<u>xxx</u>元，請儘速充值'
-    }, {
-        type: 'danger',
-        content: '管理員送來訊息：xxxxxxxxx'
-    }, {
-        type: 'info',
-        content: '收入：&yen;xxx，支出：&yen;xxx'
-    }];
+var member, product, product_list, where_you_upload, my_images;
 
 (function ($) {
     'use strict';
@@ -1303,12 +1303,12 @@ function filter_slider_init() {
         max: 24,
         values: [0, 24],
         slide: function (event, ui) {
-            $("#term-lower").html(ui.values[0] + "月");
-            $("#term-upper").html(ui.values[1] + "月");
+            $("#term-lower").html(ui.values[0] + "期");
+            $("#term-upper").html(ui.values[1] + "期");
         }
     });
-    $("#term-lower").html($("#term-slider").slider("values", 0) + "月");
-    $("#term-upper").html($("#term-slider").slider("values", 1) + "月");
+    $("#term-lower").html($("#term-slider").slider("values", 0) + "期");
+    $("#term-upper").html($("#term-slider").slider("values", 1) + "期");
     
     $("#amount-slider").slider({
         range: true,
@@ -1333,7 +1333,7 @@ function generate_product_row(para0, para1, para2, para3, para4, para5, para6) {
     row += '<td class="text-center">' + para3 + '</td>';
     row += '<td class="text-center">' + para4 + '</td>';
     row += '<td class="text-center">' + para5 + '</td>';
-    row += '<td class="text-center">' + para6 + '个月</td>';
+    row += '<td class="text-center">' + para6 + '期</td>';
     row += '<td>' + INVEST_COL_STR + '</td>';
     row += '</tr>';
     return row;
@@ -1789,26 +1789,34 @@ function load_invest_manage_page() {
         success: function (obj) {
             window.console.log(JSON.stringify(obj));
             for (i = 0; i < obj.content.length; i += 1) {
-                var t1 = Number(obj.content[i].complete), t2 = Number(obj.content[i].total), tmp;
+                var t1 = Number(obj.content[i].complete), t2 = Number(obj.content[i].total), t3, tmp, times;
                 if (t1 < t2) {
-                    tmp = Math.floor(t1 * 100 / t2);
+                    tmp = Number(obj.content[i].amount) * (1 + (Number(obj.content[i].rate) * 0.01));
                     $('table#investing > tbody').append('<tr></tr>');
-                    $('table#investing > tbody > tr:last').append('<td>' + obj.content[i].last_name + obj.content[i].first_name + '</td>');
-                    $('table#investing > tbody > tr:last').append('<td>' + obj.content[i].rate + '</td>');
+                    $('table#investing > tbody > tr:last').append('<td>' + obj.content[i].last_name + ' ' + obj.content[i].first_name + '</td>');
+                    $('table#investing > tbody > tr:last').append('<td>' + obj.content[i].name + '</td>');
                     $('table#investing > tbody > tr:last').append('<td>' + obj.content[i].amount + '</td>');
-                    $('table#investing > tbody > tr:last').append('<td>' + tmp + '%</td>');
+                    $('table#investing > tbody > tr:last').append('<td>' + tmp + '</td>');
+                    $('table#investing > tbody > tr:last').append('<td>' + obj.content[i].rate + '%</td>');
+                    $('table#investing > tbody > tr:last').append('<td>' + obj.content[i].term + '期</td>');
+                    $('table#investing > tbody > tr:last').append('<td>' + WORK_STATUS[Number(obj.content[i].work_status)] + '</td>');
                     $('table#investing > tbody > tr:last').append('<td>' + obj.content[i].time + '</td>');
                 } else {
+                    times = Number(obj.content[i].term);
+                    t3 = Math.floor(Math.random() * times) + 1;
                     tmp = Date.parse(obj.content[i].complete_date);
-                    tmp += Number(obj.content[i].term) * 2592000000;
+                    tmp += t3 * 2592000000;
                     tmp = ((new Date(tmp)).toISOString()).slice(0, 10);
-                    t1 = Number(obj.content[i].amount);
-                    t2 = t1 * Number(obj.content[i].rate) * 0.01;
+                    t1 = Number(obj.content[i].amount) / Number(obj.content[i].term);
+                    t2 = t1 * (Number(obj.content[i].rate) * 0.01 / Number(obj.content[i].term));
                     $('table#paying > tbody').append('<tr></tr>');
+                    $('table#paying > tbody > tr:last').append('<td>' + t3 + '/' + times + '</td>');
+                    $('table#paying > tbody > tr:last').append('<td>' + obj.content[i].last_name + ' ' + obj.content[i].first_name + '</td>');
+                    $('table#paying > tbody > tr:last').append('<td>' + obj.content[i].name + '</td>');
                     $('table#paying > tbody > tr:last').append('<td>' + tmp + '</td>');
-                    $('table#paying > tbody > tr:last').append('<td>' + obj.content[i].last_name + obj.content[i].first_name + '</td>');
-                    $('table#paying > tbody > tr:last').append('<td>' + '1/24' + '</td>');
-                    $('table#paying > tbody > tr:last').append('<td>' + t1 + '/' + t2 + '</td>');
+                    $('table#paying > tbody > tr:last').append('<td>' + (t1 + t2).toFixed(2) + '</td>');
+                    $('table#paying > tbody > tr:last').append('<td>' + t1.toFixed(2) + '</td>');
+                    $('table#paying > tbody > tr:last').append('<td>' + t2.toFixed(2) + '</td>');
                 }
             }
         }
@@ -1843,19 +1851,28 @@ function load_borrow_manage_page() {
                 if (Number(obj.content[i].complete) < Number(obj.content[i].amount)) {
                     $('table#borrowing > tbody').append('<tr></tr>');
                     $('table#borrowing > tbody > tr:last').append('<td>' + obj.content[i].name + '</td>');
-                    $('table#borrowing > tbody > tr:last').append('<td>' + obj.content[i].complete + '</td>');
+                    $('table#borrowing > tbody > tr:last').append('<td>' + obj.content[i].product_serial + '</td>');
+                    $('table#borrowing > tbody > tr:last').append('<td>' + obj.content[i].term + '</td>');
+                    $('table#borrowing > tbody > tr:last').append('<td>' + obj.content[i].time + '</td>');
                     $('table#borrowing > tbody > tr:last').append('<td>' + obj.content[i].amount + '</td>');
-                    $('table#borrowing > tbody > tr:last').append('<td>' + obj.content[i].view + '</td>');
+                    $('table#borrowing > tbody > tr:last').append('<td>' + obj.content[i].rate + '%</td>');
                 } else {
-                    var tmp;
+                    var tmp, t1;
                     tmp = Date.parse(obj.content[i].complete_date);
                     tmp += Number(obj.content[i].term) * 2592000000;
                     tmp = ((new Date(tmp)).toISOString()).slice(0, 10);
+                    t1 = Number(obj.content[i].amount) * Number(obj.content[i].rate) * 0.01;
                     $('table#complete > tbody').append('<tr></tr>');
                     $('table#complete > tbody > tr:last').append('<td>' + obj.content[i].name + '</td>');
-                    $('table#complete > tbody > tr:last').append('<td>' + obj.content[i].amount + '</td>');
+                    $('table#complete > tbody > tr:last').append('<td>' + obj.content[i].product_serial + '</td>');
+                    $('table#complete > tbody > tr:last').append('<td>' + obj.content[i].term + '</td>');
+                    $('table#complete > tbody > tr:last').append('<td>' + obj.content[i].time.slice(0, 10) + '</td>');
                     $('table#complete > tbody > tr:last').append('<td>' + tmp + '</td>');
-                    $('table#complete > tbody > tr:last').append('<td>' + obj.content[i].rate + '</td>');
+                    $('table#complete > tbody > tr:last').append('<td>' + (Number(obj.content[i].amount) + t1) + '</td>');
+                    $('table#complete > tbody > tr:last').append('<td>' + obj.content[i].amount + '</td>');
+                    $('table#complete > tbody > tr:last').append('<td>' + t1 + '</td>');
+                    $('table#complete > tbody > tr:last').append('<td>' + Math.floor(Math.random() * 30) + '</td>');
+                    $('table#complete > tbody > tr:last').append('<td>' + (Math.floor(Math.random() * 100) + 1) + '%</td>');
                 }
             }
         }
@@ -2281,9 +2298,9 @@ function submit_product_detail() {
         success: function (obj) {
             $('div#content > div:nth-child(1) > a:nth-child(5)').removeClass('active');
             $('div#content > div:nth-child(1) > a:nth-child(6)').addClass('active');
-            $('div#content > div:nth-child(2)').html('<table class="table table-hover"><tr><th>借款名称</th><th>还款期限</th><th>借款金额</th><th>审核状态</th></tr><tr id="test"><td></td><td></td><td></td><td></td></tr></table><div class="alert alert-success" role="alert">已送交审核，谢谢您！</div>');
+            $('div#content > div:nth-child(2)').html('<table class="table table-hover"><tr><th>借款名称</th><th>还款期数</th><th>借款金额</th><th>审核状态</th></tr><tr id="test"><td></td><td></td><td></td><td></td></tr></table><div class="alert alert-success" role="alert">已送交审核，谢谢您！</div>');
             $('tr#test > td:eq(0)').html(product.name);
-            $('tr#test > td:eq(1)').html(product.term + '个月');
+            $('tr#test > td:eq(1)').html(product.term + '期');
             $('tr#test > td:eq(2)').html(product.amount + '元');
             $('tr#test > td:eq(3)').html('審核中');
             product = null;
@@ -2322,7 +2339,7 @@ function save_product() {
         alert('请检查借款名称');
         return;
     } else if (!(/^\d+$/.test($('input[name="term"]').val()))) {
-        alert('请检查还款期限');
+        alert('请检查还款期数');
         return;
     } else if ($('select#usage').val() === '0') {
         alert('请检查借款用途');
@@ -2494,5 +2511,8 @@ $(document).ready(function () {
     'use strict';
     if ($.cookie('user_serial') !== undefined) {
         load_home_page();
+        $('nav.navbar-fixed-top div.navbar-header > a.navbar-brand').on('click', function () {
+            load_home_page();
+        });
     }
 });
