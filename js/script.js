@@ -555,13 +555,39 @@ var PRODUCT_MODAL_STR = function () {
             <div class="modal-body">
                 <div>
                   <ul class="nav nav-tabs" role="tablist" style="margin-bottom:25px">
-                    <li role="presentation" class="active"><a href="#member-info" aria-controls="member-info" role="tab" data-toggle="tab">借款人相关信息</a></li>
-                    <li role="presentation"><a href="#product-info" aria-controls="product-info" role="tab" data-toggle="tab">借款详情</a></li>
+                    <li role="presentation" class="active"><a href="#product-info" aria-controls="product-info" role="tab" data-toggle="tab">借款详情</a></li>
+                    <li role="presentation"><a href="#member-info" aria-controls="member-info" role="tab" data-toggle="tab">借款人相关信息</a></li>
                     <li role="presentation"><a href="#judge" aria-controls="judge" role="tab" data-toggle="tab">审核信息</a></li>
                     <li role="presentation"><a href="#history" aria-controls="history" role="tab" data-toggle="tab">投标记录</a></li>
                   </ul>
                   <div class="tab-content">
-                    <div role="tabpanel" class="tab-pane active" id="member-info">
+                    <div role="tabpanel" class="tab-pane active" id="product-info">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">借款详情</div>
+                            <div class="panel-body"></div>
+                        </div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>借款目的</th>
+                                    <th>还款来源</th>
+                                    <th>年利率</th>
+                                    <th>刊登时间</th>
+                                    <th>附注</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="member-info">
                         <div class="panel panel-default">
                             <div class="panel-heading">用戶分析</div>
                             <div class="panel-body"><canvas id="radar-chart">test</canvas></div>
@@ -580,32 +606,6 @@ var PRODUCT_MODAL_STR = function () {
                             <tbody>
                                 <tr>
                                     <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div role="tabpanel" class="tab-pane" id="product-info">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">借款详情</div>
-                            <div class="panel-body"></div>
-                        </div>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>借款目的</th>
-                                    <th>还款来源</th>
-                                    <th>年利率</th>
-                                    <th>刊登时间</th>
-                                    <th>附注</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
                                     <td></td>
                                     <td></td>
                                     <td></td>
@@ -1585,19 +1585,6 @@ function display_product_modal(a) {
         }
     });
     $('#product-modal').modal('show');
-    $('#product-modal').on('shown.bs.modal', function () {
-        new Chart(document.getElementById("radar-chart").getContext("2d")).Radar({
-            labels: ["個人信息", "線上數據", "還款紀錄", "負債能力", "信用歷史"],
-            datasets: [
-                {
-                    fillColor: "rgba(220,220,220,0.2)",
-                    data: [65, 59, 90, 81, 56]
-                }
-            ]
-        }, {
-            responsive: true
-        });
-    });
     $.ajax('php/request.php', {
         dataType: 'json',
         data: (function () {
@@ -1650,6 +1637,19 @@ function load_invest_page() {
         a.push(i);
     }
     generate_product_table(a);
+    $('a[href="#member-info"]').on('shown.bs.tab', function () {
+        new Chart(document.getElementById("radar-chart").getContext("2d")).Radar({
+            labels: ["個人信息", "線上數據", "還款紀錄", "負債能力", "信用歷史"],
+            datasets: [
+                {
+                    fillColor: "rgba(220,220,220,0.2)",
+                    data: [65, 59, 90, 81, 56]
+                }
+            ]
+        }, {
+            responsive: true
+        });
+    });
 }
 
 function load_borrow_page() {
