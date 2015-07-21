@@ -23,6 +23,9 @@ try {
         case 'INVITE_FRIEND':
             $query = "SELECT * FROM `member` WHERE `email`='" . $obj->content->email . "'";
             $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            if (mysql_num_rows($result) === 0) {
+                throw_exception('Friend not found');
+            }
             while ($o = mysql_fetch_object($result)) {
                 $query = "INSERT INTO `message` (`sender`, `receiver`, `type`, `content`) VALUES (" . $_COOKIE['user_serial'] . ", ";
                 $query .= $o->user_serial . ", 2, '" . $_COOKIE['first_name'] . "|" . $obj->content->relation . "')";
@@ -122,6 +125,14 @@ try {
         case 'VIEW_PRODUCT':
             $query = "UPDATE `product` SET `view`=`view`+1 WHERE `product_serial`=" . $obj->content->product_serial;
             mysql_query($query, $con) or throw_exception(mysql_error());
+            break;
+        case 'CASH':
+            $query = "UPDATE `member` SET `remain`=`remain`-" . $obj->content->remain . " WHERE `user_serial`=" . $_COOKIE['user_serial'];
+            mysql_query($query, $con) or throw_exception(mysql_error());
+            $query = "SELECT * FROM `member` WHERE `user_serial`='" . $_COOKIE['user_serial'] . "'";
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            $response->content = mysql_fetch_object($result);
+            mysql_free_result($result);
             break;
         case 'CHARGE':
             $query = "UPDATE `member` SET `remain`=`remain`+" . $obj->content->remain . " WHERE `user_serial`=" . $_COOKIE['user_serial'];

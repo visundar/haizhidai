@@ -79,3 +79,7 @@ div.panel-footer pre {
 textarea {
     resize: none;
 }
+
+.no-padding {
+    padding: 0;
+}

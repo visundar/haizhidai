@@ -47,6 +47,7 @@ var NAVBAR_STR = function () {
 <li><a href="javascript:void(0)" onclick="load_invest_page()">我要投资</a></li>
 <li><a href="javascript:void(0)" onclick="load_borrow_page()">我要借款</a></li>
 <li><a href="javascript:void(0)" onclick="load_account_page()">我的帐户</a></li>
+<li><a href="javascript:void(0)" onclick="load_forum_page()">会员社区</a></li>
     */
 }.toString().slice(38, -4);
 var SAMPLE_MODAL_STR = function () {
@@ -619,12 +620,27 @@ var PRODUCT_MODAL_STR = function () {
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th class="col-md-8">审核项目</th>
-                                    <th class="col-md-2">审核状态</th>
-                                    <th class="col-md-2">审核时间</th>
+                                    <th class="col-md-6">审核项目</th>
+                                    <th class="col-md-2 text-center">审核状态</th>
+                                    <th class="col-md-4 text-center">审核时间</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                <tr>
+                                    <td>实名认証</td>
+                                    <td class="text-center"><span class="glyphicon glyphicon-ok" aria-hidden="true" style="color:green"></span></td>
+                                    <td class="text-center">2015-04-22</td>
+                                </tr>
+                                <tr>
+                                    <td>身份认証</td>
+                                    <td class="text-center"><span class="glyphicon glyphicon-ok" aria-hidden="true" style="color:green"></span></td>
+                                    <td class="text-center">2015-06-15</td>
+                                </tr>
+                                <tr>
+                                    <td>学历认証</td>
+                                    <td class="text-center"><span class="glyphicon glyphicon-remove" aria-hidden="true" style="color:red"></span></td>
+                                    <td class="text-center">------</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -747,6 +763,7 @@ var INVEST_PAGE_STR = function () {
 <ul class="nav nav-tabs">
   <li role="presentation" class="active"><a href="javascript:void(0)">所有商品</a></li>
   <form class="form-inline navbar-right">
+      *点击栏位名称可进行排序
       <div class="btn btn-info" data-toggle="modal" data-target="#rate-modal">利率指标</div>
       <div class="btn btn-warning" data-toggle="modal" data-target="#filter-modal">过滤</div>
       <input type="text" class="form-control input-sm" placeholder="关键字" id="keyword">
@@ -866,9 +883,9 @@ var CHARGE_MODAL_STR = function () {
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="card_number" class="col-md-offset-1 col-md-2 control-label">*銀行卡號</label>
+                        <label for="card_number" class="col-md-offset-1 col-md-2 control-label">*银行卡号</label>
                         <div class="col-md-8">
-                            <input type="text" class="form-control" id="card-number" placeholder="請輸入銀行卡號">
+                            <input type="text" class="form-control" id="card-number" placeholder="请输入银行卡号">
                         </div>
                     </div>
                     <div class="form-group">
@@ -879,6 +896,69 @@ var CHARGE_MODAL_STR = function () {
                     </div>
                     <div class="form-group">
                         <label for="remain" class="col-md-offset-1 col-md-2 control-label">充值金額</label>
+                        <div class="col-md-8">
+                            <div class="input-group">
+                                <span class="input-group-addon">&yen;</span>
+                                <input class="form-control" type="text" placeholder="额度上限5万元/次" name="remain">
+                                <span class="input-group-addon">元</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="authen" class="col-md-offset-1 col-md-2 control-label">*手機验证</label>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" id="authen" disabled>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="button" class="btn" value="获取验证码" onclick="$('input#authen').val((Math.random().toString()).slice(-4))">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="submit_charge()">充值</button>
+            </div>
+        </div>
+    </div>
+</div>
+    */
+}.toString().slice(38, -4);
+var CASH_MODAL_STR = function () {
+    'use strict';
+    /*
+<div class="modal fade" id="cash-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">快速提现</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" id="cash">
+                    <div class="form-group">
+                        <label for="amount" class="col-md-offset-1 col-md-2 control-label">可用餘額</label>
+                        <div class="col-md-8">
+                            <div class="input-group">
+                                <span class="input-group-addon">&yen;</span>
+                                <input class="form-control" type="text" disabled id="amount">
+                                <span class="input-group-addon">元</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="account_number" class="col-md-offset-1 col-md-2 control-label">*銀行帐户</label>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control" id="account-number" placeholder="请输入銀行帐户">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="cellphone" class="col-md-offset-1 col-md-2 control-label">*手机号</label>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control" id="cellphone" placeholder="手机号">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="remain" class="col-md-offset-1 col-md-2 control-label">提现金額</label>
                         <div class="col-md-8">
                             <div class="input-group">
                                 <span class="input-group-addon">&yen;</span>
@@ -899,7 +979,7 @@ var CHARGE_MODAL_STR = function () {
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" onclick="submit_charge()">充值</button>
+                <button type="button" class="btn btn-primary" onclick="submit_cash()">提现</button>
             </div>
         </div>
     </div>
@@ -966,6 +1046,7 @@ var HOME_PANEL_STR = function () {
 var INVEST_MANAGE_PAGE_STR = function () {
     'use strict';
     /*
+<span style="color:#777;display:inline-block;padding-bottom:10px">投资统计：成功借出总额￥0.00 已收本金￥0.00 未收本金￥0.00 已收利息￥0.00 未收利息￥0.00</span>
 <div class="row">
     <div class="panel panel-default">
         <div class="panel-heading">
@@ -1129,6 +1210,57 @@ var ALERT_DISMISS_STR = function () {
 </button>
     */
 }.toString().slice(38, -4);
+var FORUM_PAGE_STR = function () {
+    'use strict';
+    /*
+<div class="row">
+    <div class="col-md-3 no-padding">
+        <div class="panel panel-default">
+            <div class="panel-heading">最新主题</div>
+            <div class="panel-body no-padding">
+                <ul class="list-group" style="margin-bottom:0">
+                    <a class="list-group-item"><span class="badge">0</span>手机无法投标</a>
+                    <a class="list-group-item"><span class="badge">12</span>海智贷的利率是不是太高了</a>
+                    <a class="list-group-item"><span class="badge">7</span>1月期限19%年化收益是什么意思？</a>
+                    <a class="list-group-item"><span class="badge">89</span>希望论坛能加上推荐回复。</a>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 no-padding">
+        <div class="panel panel-default">
+            <div class="panel-heading">最新回复</div>
+            <div class="panel-body no-padding">
+                <ul class="list-group" style="margin-bottom:0">
+                    <a class="list-group-item"><span class="badge">112</span>提现难吗?</a>
+                    <a class="list-group-item"><span class="badge">68</span>论坛改了很大的进步</a>
+                    <a class="list-group-item"><span class="badge">25</span>积分有什用途</a>
+                    <a class="list-group-item"><span class="badge">89</span>希望论坛能加上推荐回复。</a>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 no-padding">
+        <div class="panel panel-default">
+            <div class="panel-heading">热帖</div>
+            <div class="panel-body no-padding">
+                <ul class="list-group" style="margin-bottom:0">
+                    <a class="list-group-item"><span class="badge">112</span>提现难吗?</a>
+                    <a class="list-group-item"><span class="badge">89</span>希望论坛能加上推荐回复。</a>
+                    <a class="list-group-item"><span class="badge">68</span>论坛改了很大的进步</a>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 no-padding">
+        <div class="panel panel-default">
+            <div class="panel-heading">精华帖子</div>
+            <div class="panel-body"></div>
+        </div>
+    </div>
+</div>
+    */
+}.toString().slice(38, -4);
 var ACCOUNT_PAGE_STR = function () {
     'use strict';
     /*
@@ -1136,7 +1268,7 @@ var ACCOUNT_PAGE_STR = function () {
     <div class="col-md-2 head-photo">
     </div>
     <div class="col-md-5">
-        <h2>您好，<span>x</span>先生<small></small></h2>
+        <h2>您好，<span></span><small></small></h2>
     </div>
     <div class="col-md-5">
         <h2><small>已有<u>0</u>人瀏覽您的資料</small?</h2>
@@ -1148,7 +1280,7 @@ var ACCOUNT_PAGE_STR = function () {
     <div class="col-md-5">
         <h3><small>可用餘額</small>&nbsp;&nbsp;&nbsp;&nbsp;&yen;<span>0.00</span></h3>
         <button class="btn btn-warning col-md-offset-1 col-md-4" onclick="charge()">充值</button>
-        <button class="btn btn-primary col-md-offset-1 col-md-4">提現</button>
+        <button class="btn btn-primary col-md-offset-1 col-md-4" onclick="cash()">提現</button>
     </div>
 </div>
 <hr>
@@ -1205,7 +1337,6 @@ function clear_all() {
 
 function clear_all_without_left_nav() {
     'use strict';
-    $('div#navbar-collapse > ul > li').removeClass('active');
     $('div#modal').html('');
     $('div#content > div:nth-child(2)').html('');
     $('div#content > div:nth-child(3)').html('');
@@ -1765,6 +1896,17 @@ function charge() {
     }
 }
 
+function cash() {
+    'use strict';
+    get_member_from_server();
+    $('form#cash input#amount').val(member.remain);
+    if (member.first_name === null) {
+        $('#authen-modal').modal('show');
+    } else {
+        $('#cash-modal').modal('show');
+    }
+}
+
 function load_account_page() {
     'use strict';
     var i;
@@ -1830,9 +1972,21 @@ function load_account_page() {
         responsive: true
     });
     $('div#content > div:nth-child(2) h2:eq(0) > span').html(member.last_name);
+    if (member.gender === '0') {
+        $('div#content > div:nth-child(2) h2:eq(0) > span').append('女士');
+    } else {
+        $('div#content > div:nth-child(2) h2:eq(0) > span').append('先生');
+    }
     $('div#content > div:nth-child(2) h3:eq(1) > span').html(member.latest_sign_in);
     $('div#content > div:nth-child(2) h3:eq(2) > span').html(member.remain + '.00');
-    $('div#modal').append(CHARGE_MODAL_STR + AUTHEN_MODAL_STR);
+    $('div#modal').append(CHARGE_MODAL_STR + AUTHEN_MODAL_STR + CASH_MODAL_STR);
+}
+
+function load_forum_page() {
+    'use strict';
+    clear_all();
+    $('div#navbar-collapse > ul:first > li:nth-child(4)').addClass('active');
+    $('div#content > div:nth-child(2)').html(FORUM_PAGE_STR);
 }
 
 function add_friend(btn) {
@@ -1848,9 +2002,6 @@ function add_friend(btn) {
         }()),
         type: 'POST',
         success: function (obj) {
-        },
-        complete: function (obj) {
-            alert(JSON.stringify(obj));
         }
     });
 }
@@ -1872,7 +2023,6 @@ function load_invest_manage_page() {
         }()),
         type: 'POST',
         success: function (obj) {
-            window.console.log(JSON.stringify(obj));
             for (i = 0; i < obj.content.length; i += 1) {
                 var t1 = Number(obj.content[i].complete), t2 = Number(obj.content[i].total), t3, tmp, times;
                 if (t1 < t2) {
@@ -1881,7 +2031,7 @@ function load_invest_manage_page() {
                     $('table#investing > tbody > tr:last').append('<td>' + obj.content[i].last_name + ' ' + obj.content[i].first_name + '</td>');
                     $('table#investing > tbody > tr:last').append('<td>' + obj.content[i].name + '</td>');
                     $('table#investing > tbody > tr:last').append('<td>' + obj.content[i].amount + '</td>');
-                    $('table#investing > tbody > tr:last').append('<td>' + tmp + '</td>');
+                    $('table#investing > tbody > tr:last').append('<td>' + tmp.toFixed(2) + '</td>');
                     $('table#investing > tbody > tr:last').append('<td>' + obj.content[i].rate + '%</td>');
                     $('table#investing > tbody > tr:last').append('<td>' + obj.content[i].term + '期</td>');
                     $('table#investing > tbody > tr:last').append('<td>' + WORK_STATUS[Number(obj.content[i].work_status)] + '</td>');
@@ -1995,9 +2145,11 @@ function load_friend_manage_page() {
             }()),
             type: 'POST',
             success: function (obj) {
-            },
-            complete: function (obj) {
-                alert(JSON.stringify(obj));
+                if (obj.title === 'ERROR') {
+                    alert('无用户使用此信箱');
+                } else {
+                    alert('邀请已送出');
+                }
             }
         });
     });
@@ -2383,25 +2535,25 @@ function submit_authen() {
 
 function submit_charge() {
     'use strict';
-    if (!(/^\S[\s\S]*$/.test($('input#name').val()))) {
+    if (!(/^\S[\s\S]*$/.test($('form#charge input#name').val()))) {
         alert('请检查持卡人姓名');
         return;
-    } else if (!(/^\d+$/.test($('input#card-number').val()))) {
-        alert('请检查銀行卡號');
+    } else if (!(/^\d+$/.test($('form#charge input#card-number').val()))) {
+        alert('请检查银行卡号');
         return;
-    } else if (!(/^\d+$/.test($('input#cellphone').val()))) {
+    } else if (!(/^\d+$/.test($('form#charge input#cellphone').val()))) {
         alert('请检查手机号');
         return;
-    } else if ($('input#cellphone').val().length !== 11) {
+    } else if ($('form#charge input#cellphone').val().length !== 11) {
         alert('请检查手机号须等于11字');
         return;
-    } else if (!(/^\d+$/.test($('input[name="remain"]').val()))) {
+    } else if (!(/^\d+$/.test($('form#charge input[name="remain"]').val()))) {
         alert('请检查充值金額');
         return;
-    } else if (Number($('input[name="remain"]').val()) > 50000) {
+    } else if (Number($('form#charge input[name="remain"]').val()) > 50000) {
         alert('充值金額应小于50000');
         return;
-    } else if ($('input#authen').val() === '') {
+    } else if ($('form#charge input#authen').val() === '') {
         alert('请获取验证码');
         return;
     }
@@ -2419,6 +2571,48 @@ function submit_charge() {
             member = obj.content;
             $('div#content > div:nth-child(2) h3:eq(2) > span').html(member.remain + '.00');
             $('#charge-modal').modal('hide');
+        }
+    });
+}
+
+function submit_cash() {
+    'use strict';
+    if (!(/^\d+$/.test($('form#cash input#account-number').val()))) {
+        alert('请检查銀行帐户');
+        return;
+    } else if (!(/^\d+$/.test($('form#cash input#cellphone').val()))) {
+        alert('请检查手机号');
+        return;
+    } else if ($('form#cash input#cellphone').val().length !== 11) {
+        alert('请检查手机号须等于11字');
+        return;
+    } else if (!(/^\d+$/.test($('form#cash input[name="remain"]').val()))) {
+        alert('请检查提现金額');
+        return;
+    } else if (Number($('form#cash input[name="remain"]').val()) > Number(member.remain)) {
+        alert('提现金额大于馀额');
+        return;
+    } else if (Number($('form#cash input[name="remain"]').val()) > 50000) {
+        alert('提现金額应小于50000');
+        return;
+    } else if ($('form#cash input#authen').val() === '') {
+        alert('请获取验证码');
+        return;
+    }
+    $.ajax('php/request.php', {
+        dataType: 'json',
+        async: false,
+        data: (function () {
+            var request = {};
+            request.name = 'CASH';
+            request.content = $('form#cash').serializeObject();
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            member = obj.content;
+            $('div#content > div:nth-child(2) h3:eq(2) > span').html(member.remain + '.00');
+            $('#cash-modal').modal('hide');
         }
     });
 }
@@ -2450,7 +2644,7 @@ function submit_product_detail() {
             $('tr#test > td:eq(0)').html(product.name);
             $('tr#test > td:eq(1)').html(product.term + '期');
             $('tr#test > td:eq(2)').html(product.amount + '元');
-            $('tr#test > td:eq(3)').html('審核中');
+            $('tr#test > td:eq(3)').html('审核中');
             product = null;
         }
     });
