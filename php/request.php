@@ -31,7 +31,7 @@ try {
             mysql_free_result($result);
             break;
         case 'ADD_FRIEND':
-            $query = "SELECT * FROM `message` WHERE `message_serial`=" . $obj->content->message_serial;
+            $query = "SELECT `message`.*, `member`.`first_name` FROM `message` JOIN `member` ON `message`.`receiver` = `member`.`user_serial` WHERE `message_serial`=" . $obj->content->message_serial;
             $result = mysql_query($query, $con) or throw_exception(mysql_error());
             $tmp = mysql_fetch_object($result);
             strtok($tmp->content, '|');
@@ -45,6 +45,8 @@ try {
                 $relation = '1';
             }
             $query = "UPDATE `member` set `friend`=CONCAT(`friend`, '" . $tmp->receiver . ":" . $relation . "|') WHERE `user_serial`=" . $tmp->sender;
+            mysql_query($query, $con) or throw_exception(mysql_error());
+            $query = "INSERT INTO `message` (`sender`, `receiver`, `type`, `content`) VALUES (0, " . $tmp->sender . ", 3, '" . $tmp->first_name . "')";
             mysql_query($query, $con) or throw_exception(mysql_error());
         case 'DELETE_MESSAGE':
             $query = "DELETE FROM `message` WHERE `message_serial`=" . $obj->content->message_serial;

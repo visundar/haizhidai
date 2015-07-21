@@ -555,13 +555,39 @@ var PRODUCT_MODAL_STR = function () {
             <div class="modal-body">
                 <div>
                   <ul class="nav nav-tabs" role="tablist" style="margin-bottom:25px">
-                    <li role="presentation" class="active"><a href="#member-info" aria-controls="member-info" role="tab" data-toggle="tab">借款人相关信息</a></li>
-                    <li role="presentation"><a href="#product-info" aria-controls="product-info" role="tab" data-toggle="tab">借款详情</a></li>
+                    <li role="presentation" class="active"><a href="#product-info" aria-controls="product-info" role="tab" data-toggle="tab">借款详情</a></li>
+                    <li role="presentation"><a href="#member-info" aria-controls="member-info" role="tab" data-toggle="tab">借款人相关信息</a></li>
                     <li role="presentation"><a href="#judge" aria-controls="judge" role="tab" data-toggle="tab">审核信息</a></li>
                     <li role="presentation"><a href="#history" aria-controls="history" role="tab" data-toggle="tab">投标记录</a></li>
                   </ul>
                   <div class="tab-content">
-                    <div role="tabpanel" class="tab-pane active" id="member-info">
+                    <div role="tabpanel" class="tab-pane active" id="product-info">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">借款详情</div>
+                            <div class="panel-body"></div>
+                        </div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>借款目的</th>
+                                    <th>还款来源</th>
+                                    <th>年利率</th>
+                                    <th>刊登时间</th>
+                                    <th>附注</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="member-info">
                         <div class="panel panel-default">
                             <div class="panel-heading">用戶分析</div>
                             <div class="panel-body"><canvas id="radar-chart">test</canvas></div>
@@ -580,32 +606,6 @@ var PRODUCT_MODAL_STR = function () {
                             <tbody>
                                 <tr>
                                     <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div role="tabpanel" class="tab-pane" id="product-info">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">借款详情</div>
-                            <div class="panel-body"></div>
-                        </div>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>借款目的</th>
-                                    <th>还款来源</th>
-                                    <th>年利率</th>
-                                    <th>刊登时间</th>
-                                    <th>附注</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
                                     <td></td>
                                     <td></td>
                                     <td></td>
@@ -694,23 +694,28 @@ var CONFIRM_PAGE_STR = function () {
     'use strict';
     /*
 <table class="table">
-    <tr><th class="col-md-2">個人信息</th><td class="col-md-8"></td><td class="col-md-2"></td></tr>
+    <tr><th class="col-md-2">个人信息</th><td class="col-md-8"></td><td class="col-md-2"></td></tr>
     <tr>
        <th></th>
        <td>
            <ul id="member">
            </ul>
         </td>
-        <td><button class="btn btn-info" onclick="load_borrow_detail_page()">編輯</button></td>
+        <td><button class="btn btn-info" onclick="load_borrow_detail_page()">编辑</button></td>
     </tr>
-    <tr><th>產品信息</th><td></td><td></td></tr>
+    <tr><th>产品信息</th><td></td><td></td></tr>
     <tr>
        <th></th>
        <td>
            <ul id="product">
            </ul>
         </td>
-        <td><button class="btn btn-info" onclick="load_product_info_page()">編輯</button></td>
+        <td><button class="btn btn-info" onclick="load_product_info_page()">编辑</button></td>
+    </tr>
+    <tr><th>好友数量</th><td id="friend-number"></td><td></td></tr>
+    <tr>
+       <th></th>
+       <td id="friend-alert"></td><td></td>
     </tr>
     <tr><th>上传资料</th><td></td><td></td></tr>
     <tr>
@@ -719,7 +724,7 @@ var CONFIRM_PAGE_STR = function () {
            <ul id="image">
            </ul>
         </td>
-        <td><button class="btn btn-info" onclick="load_upload_page()">編輯</button></td>
+        <td><button class="btn btn-info" onclick="load_upload_page()">编辑</button></td>
     </tr>
     <tr>
         <th>借贷条款</th>
@@ -732,7 +737,7 @@ var CONFIRM_PAGE_STR = function () {
         </td>
         <td></td>
     </tr>
-    <tr><th></th><td colspan="2" class="text-right"><button class="btn btn-warning" onclick="submit_product_detail()" disabled>我已閱讀且同意</button></td></tr>
+    <tr><th></th><td colspan="2" class="text-right"><button class="btn btn-warning" onclick="submit_product_detail()" disabled>我已阅读且同意</button></td></tr>
 </table>
     */
 }.toString().slice(38, -4);
@@ -1580,19 +1585,6 @@ function display_product_modal(a) {
         }
     });
     $('#product-modal').modal('show');
-    $('#product-modal').on('shown.bs.modal', function () {
-        new Chart(document.getElementById("radar-chart").getContext("2d")).Radar({
-            labels: ["個人信息", "線上數據", "還款紀錄", "負債能力", "信用歷史"],
-            datasets: [
-                {
-                    fillColor: "rgba(220,220,220,0.2)",
-                    data: [65, 59, 90, 81, 56]
-                }
-            ]
-        }, {
-            responsive: true
-        });
-    });
     $.ajax('php/request.php', {
         dataType: 'json',
         data: (function () {
@@ -1645,6 +1637,19 @@ function load_invest_page() {
         a.push(i);
     }
     generate_product_table(a);
+    $('a[href="#member-info"]').on('shown.bs.tab', function () {
+        new Chart(document.getElementById("radar-chart").getContext("2d")).Radar({
+            labels: ["個人信息", "線上數據", "還款紀錄", "負債能力", "信用歷史"],
+            datasets: [
+                {
+                    fillColor: "rgba(220,220,220,0.2)",
+                    data: [65, 59, 90, 81, 56]
+                }
+            ]
+        }, {
+            responsive: true
+        });
+    });
 }
 
 function load_borrow_page() {
@@ -1799,6 +1804,13 @@ function load_account_page() {
                             ALERT_DISMISS_STR +
                             '您的 ' +  RELATION[Number(obj.content[i].content.split('|')[1])] + ' ' + obj.content[i].content.split('|')[0] +
                             ' 想加您为好友<hr><div class="text-right"><button class="btn btn-success btn-sm" onclick="add_friend(this)" data-dismiss="alert">确认</button></div>' +
+                            '</div>'
+                    );
+                } else if (Number(obj.content[i].type) === 3) {
+                    $('div#content > div:nth-child(3)').append(
+                        '<div class="alert alert-success" value="' + obj.content[i].message_serial + '">' +
+                            ALERT_DISMISS_STR +
+                            '您和 ' +  obj.content[i].content + ' 已成为好友' +
                             '</div>'
                     );
                 }
@@ -2016,7 +2028,8 @@ function load_product_info_page() {
 
 function load_product_confirm_page() {
     'use strict';
-    var name, tmp, obj, i;
+    var name, tmp, obj, i, patt = /(?:\S*?):(\S*?)\|/g, match, friend_count, has_parents;
+    get_member_from_server();
     $('div#content > div:nth-child(1) > a:nth-child(4)').removeClass('active');
     $('div#content > div:nth-child(1) > a:nth-child(5)').addClass('active');
     $('div#content > div:nth-child(2)').html(CONFIRM_PAGE_STR);
@@ -2084,21 +2097,21 @@ function load_product_confirm_page() {
     for (name in product) {
         if (product[name] !== null) {
             if (name === 'name') {
-                $('ul#product').append('<li>借款名稱:' + product[name] + '</li>');
+                $('ul#product').append('<li>借款名称:' + product[name] + '</li>');
             } else if (name === 'term') {
-                $('ul#product').append('<li>還款期限:' + product[name] + '个月</li>');
+                $('ul#product').append('<li>还款期数:' + product[name] + '期</li>');
             } else if (name === 'usage') {
                 $('ul#product').append('<li>借款用途:' + USAGE[Number(product[name])] + '</li>');
             } else if (name === 'amount') {
-                $('ul#product').append('<li>借款金額:' + product[name] + '</li>');
+                $('ul#product').append('<li>借款金额:' + product[name] + '</li>');
             } else if (name === 'source') {
-                $('ul#product').append('<li>還款來源:' + product[name] + '</li>');
+                $('ul#product').append('<li>还款来源:' + product[name] + '</li>');
             } else if (name === 'descript') {
-                $('ul#product').append('<li>借款簡介:' + product[name] + '</li>');
+                $('ul#product').append('<li>借款简介:' + product[name] + '</li>');
             } else if (name === 'ps') {
-                $('ul#product').append('<li>附註:' + product[name] + '</li>');
+                $('ul#product').append('<li>附注:' + product[name] + '</li>');
             } else if (name === 'level') {
-                $('ul#product').append('<li>借款等級:' + LEVEL[Number(product[name])] + '</li>');
+                $('ul#product').append('<li>借款等级:' + LEVEL[Number(product[name])] + '</li>');
             } else if (name === 'rate') {
                 $('ul#product').append('<li>借款利率:' + product[name] + '</li>');
             }
@@ -2115,6 +2128,29 @@ function load_product_confirm_page() {
         if (tmp[i] > 0) {
             $('ul#image').append('<li>' + FILE_ATTR[i] + ': ' + tmp[i] + '张&nbsp;<a value="' + i + '" data-toggle="modal" data-target="#sample-modal" onclick="display_my_image(this)">查看</a>' + '</li>');
         }
+    }
+    match = patt.exec(member.friend);
+    friend_count = 0;
+    has_parents = false;
+    while (match !== null) {
+        friend_count += 1;
+        if (match[1] === '1') {
+            has_parents = true;
+        }
+        match = patt.exec(member.friend);
+    }
+    $('td#friend-number').html('您有<u>' + friend_count + '</u>位好友');
+    if (has_parents) {
+        $('td#friend-number').append('(含父母)');
+    }
+    if ($.cookie('work_status') === '2' && has_parents === false) {
+        $('td#friend-alert').html('<div class="alert alert-danger" role="alert">学生借款必须邀请父(母)亲成为好友</div>');
+        $('input[type="checkbox"]').prop('disabled', true);
+    } else if (friend_count < 2) {
+        $('td#friend-alert').html('<div class="alert alert-warning" role="alert">您的好友數不足，請再邀請<u>' + (2 - friend_count) + '</u>位好友</div>');
+        $('input[type="checkbox"]').prop('disabled', true);
+    } else {
+        $('td#friend-alert').html('<div class="alert alert-success" role="alert">您的好友数已经足够，请前往下一步</div>');
     }
 }
 
