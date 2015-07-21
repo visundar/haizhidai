@@ -1268,7 +1268,7 @@ var ACCOUNT_PAGE_STR = function () {
     <div class="col-md-2 head-photo">
     </div>
     <div class="col-md-5">
-        <h2>您好，<span>x</span>先生<small></small></h2>
+        <h2>您好，<span></span><small></small></h2>
     </div>
     <div class="col-md-5">
         <h2><small>已有<u>0</u>人瀏覽您的資料</small?</h2>
@@ -1337,7 +1337,6 @@ function clear_all() {
 
 function clear_all_without_left_nav() {
     'use strict';
-    $('div#navbar-collapse > ul > li').removeClass('active');
     $('div#modal').html('');
     $('div#content > div:nth-child(2)').html('');
     $('div#content > div:nth-child(3)').html('');
@@ -1973,6 +1972,11 @@ function load_account_page() {
         responsive: true
     });
     $('div#content > div:nth-child(2) h2:eq(0) > span').html(member.last_name);
+    if (member.gender === '0') {
+        $('div#content > div:nth-child(2) h2:eq(0) > span').append('女士');
+    } else {
+        $('div#content > div:nth-child(2) h2:eq(0) > span').append('先生');
+    }
     $('div#content > div:nth-child(2) h3:eq(1) > span').html(member.latest_sign_in);
     $('div#content > div:nth-child(2) h3:eq(2) > span').html(member.remain + '.00');
     $('div#modal').append(CHARGE_MODAL_STR + AUTHEN_MODAL_STR + CASH_MODAL_STR);
@@ -2143,6 +2147,8 @@ function load_friend_manage_page() {
             success: function (obj) {
                 if (obj.title === 'ERROR') {
                     alert('无用户使用此信箱');
+                } else {
+                    alert('邀请已送出');
                 }
             }
         });
