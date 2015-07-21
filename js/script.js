@@ -47,6 +47,7 @@ var NAVBAR_STR = function () {
 <li><a href="javascript:void(0)" onclick="load_invest_page()">我要投资</a></li>
 <li><a href="javascript:void(0)" onclick="load_borrow_page()">我要借款</a></li>
 <li><a href="javascript:void(0)" onclick="load_account_page()">我的帐户</a></li>
+<li><a href="javascript:void(0)" onclick="load_forum_page()">会员社区</a></li>
     */
 }.toString().slice(38, -4);
 var SAMPLE_MODAL_STR = function () {
@@ -762,6 +763,7 @@ var INVEST_PAGE_STR = function () {
 <ul class="nav nav-tabs">
   <li role="presentation" class="active"><a href="javascript:void(0)">所有商品</a></li>
   <form class="form-inline navbar-right">
+      *点击栏位名称可进行排序
       <div class="btn btn-info" data-toggle="modal" data-target="#rate-modal">利率指标</div>
       <div class="btn btn-warning" data-toggle="modal" data-target="#filter-modal">过滤</div>
       <input type="text" class="form-control input-sm" placeholder="关键字" id="keyword">
@@ -1044,6 +1046,7 @@ var HOME_PANEL_STR = function () {
 var INVEST_MANAGE_PAGE_STR = function () {
     'use strict';
     /*
+<span style="color:#777;display:inline-block;padding-bottom:10px">投资统计：成功借出总额￥0.00 已收本金￥0.00 未收本金￥0.00 已收利息￥0.00 未收利息￥0.00</span>
 <div class="row">
     <div class="panel panel-default">
         <div class="panel-heading">
@@ -1205,6 +1208,57 @@ var ALERT_DISMISS_STR = function () {
 <button type="button" class="close" data-dismiss="alert" aria-label="Close" onclick="delete_message(this)">
   <span aria-hidden="true">&times;</span>
 </button>
+    */
+}.toString().slice(38, -4);
+var FORUM_PAGE_STR = function () {
+    'use strict';
+    /*
+<div class="row">
+    <div class="col-md-3 no-padding">
+        <div class="panel panel-default">
+            <div class="panel-heading">最新主题</div>
+            <div class="panel-body no-padding">
+                <ul class="list-group" style="margin-bottom:0">
+                    <a class="list-group-item"><span class="badge">0</span>手机无法投标</a>
+                    <a class="list-group-item"><span class="badge">12</span>海智贷的利率是不是太高了</a>
+                    <a class="list-group-item"><span class="badge">7</span>1月期限19%年化收益是什么意思？</a>
+                    <a class="list-group-item"><span class="badge">89</span>希望论坛能加上推荐回复。</a>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 no-padding">
+        <div class="panel panel-default">
+            <div class="panel-heading">最新回复</div>
+            <div class="panel-body no-padding">
+                <ul class="list-group" style="margin-bottom:0">
+                    <a class="list-group-item"><span class="badge">112</span>提现难吗?</a>
+                    <a class="list-group-item"><span class="badge">68</span>论坛改了很大的进步</a>
+                    <a class="list-group-item"><span class="badge">25</span>积分有什用途</a>
+                    <a class="list-group-item"><span class="badge">89</span>希望论坛能加上推荐回复。</a>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 no-padding">
+        <div class="panel panel-default">
+            <div class="panel-heading">热帖</div>
+            <div class="panel-body no-padding">
+                <ul class="list-group" style="margin-bottom:0">
+                    <a class="list-group-item"><span class="badge">112</span>提现难吗?</a>
+                    <a class="list-group-item"><span class="badge">89</span>希望论坛能加上推荐回复。</a>
+                    <a class="list-group-item"><span class="badge">68</span>论坛改了很大的进步</a>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 no-padding">
+        <div class="panel panel-default">
+            <div class="panel-heading">精华帖子</div>
+            <div class="panel-body"></div>
+        </div>
+    </div>
+</div>
     */
 }.toString().slice(38, -4);
 var ACCOUNT_PAGE_STR = function () {
@@ -1922,6 +1976,13 @@ function load_account_page() {
     $('div#content > div:nth-child(2) h3:eq(1) > span').html(member.latest_sign_in);
     $('div#content > div:nth-child(2) h3:eq(2) > span').html(member.remain + '.00');
     $('div#modal').append(CHARGE_MODAL_STR + AUTHEN_MODAL_STR + CASH_MODAL_STR);
+}
+
+function load_forum_page() {
+    'use strict';
+    clear_all();
+    $('div#navbar-collapse > ul:first > li:nth-child(4)').addClass('active');
+    $('div#content > div:nth-child(2)').html(FORUM_PAGE_STR);
 }
 
 function add_friend(btn) {
