@@ -8,6 +8,7 @@ var FILE_IMG = [['uid_1.jpg', 'uid_2.jpg', 'uid_3.jpg'], 'jiehunzheng.jpg', 'yin
 var WORK_STATUS = ['工薪', '网商', '学生'];
 var EDUCATION = ['', '初中及以下', '中专', '高中', '大专', '本科', '研究生及以上'];
 var WORK_YEAR = ['', '1 年已內', '2 年已內', '3 年已內', '4 年(含)以上'];
+var RELATION = ['', '父母', '子女', '親戚', '朋友'];
 var UPLOAD_URL = '../upload/index.php';
 var RATE = [1.99, 3.99, 5.99, 8.99, 11.99, 14.99, 19.99];
 var INCOME = [500000, 250000, 125000, 62500, 31250, 15625];
@@ -1010,6 +1011,7 @@ var INVEST_MANAGE_PAGE_STR = function () {
         </div>
     </div>
 </div>
+<!--
 <hr>
 <div class="row">
     <div class="panel panel-default">
@@ -1031,6 +1033,7 @@ var INVEST_MANAGE_PAGE_STR = function () {
         </div>
     </div>
 </div>
+-->
     */
 }.toString().slice(38, -4);
 var BORROW_MANAGE_PAGE_STR = function () {
@@ -1086,6 +1089,31 @@ var BORROW_MANAGE_PAGE_STR = function () {
         </div>
     </div>
 </div>
+    */
+}.toString().slice(38, -4);
+var FRIEND_MANAGE_PAGE_STR = function () {
+    'use strict';
+    /*
+<form class="form-horizontal">
+    <div class="form-group">
+        <label for="email" class="col-md-2 control-label">*邮箱</label>
+        <div class="col-md-5">
+          <input type="text" class="form-control" name="email" placeholder="邮箱">
+        </div>
+    </div>
+    <div class="form-group">
+       <label for="relation" class="col-md-2 control-label">*关係<small>(为其)</small></label>
+        <div class="col-md-5">
+            <select class="form-control" id="relation" name="relation">
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+       <div class="col-md-offset-8">
+           <button type="button" class="btn btn-info" id="add-friend">加為好友</button>
+       </div>
+    </div>
+</form>
     */
 }.toString().slice(38, -4);
 var ALERT_DISMISS_STR = function () {
@@ -1765,6 +1793,14 @@ function load_account_page() {
                             '您的"' +  obj.content[i].content + '"已滿標, 借款已自動匯入您的戶頭' +
                             '</div>'
                     );
+                } else if (Number(obj.content[i].type) === 2) {
+                    $('div#content > div:nth-child(3)').append(
+                        '<div class="alert alert-warning" value="' + obj.content[i].message_serial + '">' +
+                            ALERT_DISMISS_STR +
+                            '您的 ' +  RELATION[Number(obj.content[i].content.split('|')[1])] + ' ' + obj.content[i].content.split('|')[0] +
+                            ' 想加您为好友<hr><div class="text-right"><button class="btn btn-success btn-sm" onclick="add_friend(this)" data-dismiss="alert">确认</button></div>' +
+                            '</div>'
+                    );
                 }
             }
         }
@@ -1785,6 +1821,26 @@ function load_account_page() {
     $('div#content > div:nth-child(2) h3:eq(1) > span').html(member.latest_sign_in);
     $('div#content > div:nth-child(2) h3:eq(2) > span').html(member.remain + '.00');
     $('div#modal').append(CHARGE_MODAL_STR + AUTHEN_MODAL_STR);
+}
+
+function add_friend(btn) {
+    'use strict';
+    $.ajax('php/request.php', {
+        dataType: 'json',
+        data: (function () {
+            var request = {}, content = {};
+            content.message_serial = Number($(btn).parents('div.alert').attr('value'));
+            request.name = 'ADD_FRIEND';
+            request.content = content;
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+        },
+        complete: function (obj) {
+            alert(JSON.stringify(obj));
+        }
+    });
 }
 
 function load_invest_manage_page() {
@@ -1898,9 +1954,41 @@ function load_borrow_manage_page() {
 
 function load_friend_manage_page() {
     'use strict';
+    var i;
     clear_all_without_left_nav();
     $('div#content > div:nth-child(1) > a').removeClass('active');
     $('div#content > div:nth-child(1) > a:nth-child(4)').addClass('active');
+    $('div#content > div:nth-child(2)').html(FRIEND_MANAGE_PAGE_STR);
+    for (i = 0; i < RELATION.length; i += 1) {
+        $('select[name="relation"]').append('<option value="' + i + '">' + RELATION[i] + '</option>');
+    }
+    $('button#add-friend').on('click', function () {
+        var reg = /^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z]+$/;
+        if (!(reg.test($('input[name="email"]').val()))) {
+            alert('请检查邮箱');
+            return;
+        } else if ($('select#relation').val() === '0') {
+            alert('请检查关係');
+            return;
+        }
+        $.ajax('php/request.php', {
+            dataType: 'json',
+            data: (function () {
+                var request = {}, content = {};
+                content.email = $('input[name="email"]').val();
+                content.relation = $('select#relation').val();
+                request.name = 'INVITE_FRIEND';
+                request.content = content;
+                return 'request=' + JSON.stringify(request);
+            }()),
+            type: 'POST',
+            success: function (obj) {
+            },
+            complete: function (obj) {
+                alert(JSON.stringify(obj));
+            }
+        });
+    });
 }
 
 function load_product_info_page() {

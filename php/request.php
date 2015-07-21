@@ -20,6 +20,32 @@ try {
     mysql_select_db('haizhidai', $con);
 
     switch ($obj->name) {
+        case 'INVITE_FRIEND':
+            $query = "SELECT * FROM `member` WHERE `email`='" . $obj->content->email . "'";
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            while ($o = mysql_fetch_object($result)) {
+                $query = "INSERT INTO `message` (`sender`, `receiver`, `type`, `content`) VALUES (" . $_COOKIE['user_serial'] . ", ";
+                $query .= $o->user_serial . ", 2, '" . $_COOKIE['first_name'] . "|" . $obj->content->relation . "')";
+                mysql_query($query, $con) or throw_exception(mysql_error());
+            }
+            mysql_free_result($result);
+            break;
+        case 'ADD_FRIEND':
+            $query = "SELECT * FROM `message` WHERE `message_serial`=" . $obj->content->message_serial;
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            $tmp = mysql_fetch_object($result);
+            strtok($tmp->content, '|');
+            $relation = strtok('|');
+            $response->content = array();
+            $query = "UPDATE `member` set `friend`=CONCAT(`friend`, '" . $tmp->sender . ":" . $relation . "|') WHERE `user_serial`=" . $tmp->receiver;
+            mysql_query($query, $con) or throw_exception(mysql_error());
+            if ($relation === '1') {
+                $relation = '2';
+            } else if ($relation === '2') {
+                $relation = '1';
+            }
+            $query = "UPDATE `member` set `friend`=CONCAT(`friend`, '" . $tmp->receiver . ":" . $relation . "|') WHERE `user_serial`=" . $tmp->sender;
+            mysql_query($query, $con) or throw_exception(mysql_error());
         case 'DELETE_MESSAGE':
             $query = "DELETE FROM `message` WHERE `message_serial`=" . $obj->content->message_serial;
             mysql_query($query, $con) or throw_exception(mysql_error());
