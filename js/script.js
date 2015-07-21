@@ -619,12 +619,27 @@ var PRODUCT_MODAL_STR = function () {
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th class="col-md-8">审核项目</th>
-                                    <th class="col-md-2">审核状态</th>
-                                    <th class="col-md-2">审核时间</th>
+                                    <th class="col-md-6">审核项目</th>
+                                    <th class="col-md-2 text-center">审核状态</th>
+                                    <th class="col-md-4 text-center">审核时间</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                <tr>
+                                    <td>实名认証</td>
+                                    <td class="text-center"><span class="glyphicon glyphicon-ok" aria-hidden="true" style="color:green"></span></td>
+                                    <td class="text-center">2015-04-22</td>
+                                </tr>
+                                <tr>
+                                    <td>身份认証</td>
+                                    <td class="text-center"><span class="glyphicon glyphicon-ok" aria-hidden="true" style="color:green"></span></td>
+                                    <td class="text-center">2015-06-15</td>
+                                </tr>
+                                <tr>
+                                    <td>学历认証</td>
+                                    <td class="text-center"><span class="glyphicon glyphicon-remove" aria-hidden="true" style="color:red"></span></td>
+                                    <td class="text-center">------</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
