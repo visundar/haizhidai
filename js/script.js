@@ -694,23 +694,28 @@ var CONFIRM_PAGE_STR = function () {
     'use strict';
     /*
 <table class="table">
-    <tr><th class="col-md-2">個人信息</th><td class="col-md-8"></td><td class="col-md-2"></td></tr>
+    <tr><th class="col-md-2">个人信息</th><td class="col-md-8"></td><td class="col-md-2"></td></tr>
     <tr>
        <th></th>
        <td>
            <ul id="member">
            </ul>
         </td>
-        <td><button class="btn btn-info" onclick="load_borrow_detail_page()">編輯</button></td>
+        <td><button class="btn btn-info" onclick="load_borrow_detail_page()">编辑</button></td>
     </tr>
-    <tr><th>產品信息</th><td></td><td></td></tr>
+    <tr><th>产品信息</th><td></td><td></td></tr>
     <tr>
        <th></th>
        <td>
            <ul id="product">
            </ul>
         </td>
-        <td><button class="btn btn-info" onclick="load_product_info_page()">編輯</button></td>
+        <td><button class="btn btn-info" onclick="load_product_info_page()">编辑</button></td>
+    </tr>
+    <tr><th>好友数量</th><td id="friend-number"></td><td></td></tr>
+    <tr>
+       <th></th>
+       <td id="friend-alert"></td><td></td>
     </tr>
     <tr><th>上传资料</th><td></td><td></td></tr>
     <tr>
@@ -719,7 +724,7 @@ var CONFIRM_PAGE_STR = function () {
            <ul id="image">
            </ul>
         </td>
-        <td><button class="btn btn-info" onclick="load_upload_page()">編輯</button></td>
+        <td><button class="btn btn-info" onclick="load_upload_page()">编辑</button></td>
     </tr>
     <tr>
         <th>借贷条款</th>
@@ -732,7 +737,7 @@ var CONFIRM_PAGE_STR = function () {
         </td>
         <td></td>
     </tr>
-    <tr><th></th><td colspan="2" class="text-right"><button class="btn btn-warning" onclick="submit_product_detail()" disabled>我已閱讀且同意</button></td></tr>
+    <tr><th></th><td colspan="2" class="text-right"><button class="btn btn-warning" onclick="submit_product_detail()" disabled>我已阅读且同意</button></td></tr>
 </table>
     */
 }.toString().slice(38, -4);
@@ -1801,6 +1806,13 @@ function load_account_page() {
                             ' 想加您为好友<hr><div class="text-right"><button class="btn btn-success btn-sm" onclick="add_friend(this)" data-dismiss="alert">确认</button></div>' +
                             '</div>'
                     );
+                } else if (Number(obj.content[i].type) === 3) {
+                    $('div#content > div:nth-child(3)').append(
+                        '<div class="alert alert-success" value="' + obj.content[i].message_serial + '">' +
+                            ALERT_DISMISS_STR +
+                            '您和 ' +  obj.content[i].content + ' 已成为好友' +
+                            '</div>'
+                    );
                 }
             }
         }
@@ -2016,7 +2028,8 @@ function load_product_info_page() {
 
 function load_product_confirm_page() {
     'use strict';
-    var name, tmp, obj, i;
+    var name, tmp, obj, i, patt = /(?:\S*?):(\S*?)\|/g, match, friend_count, has_parents;
+    get_member_from_server();
     $('div#content > div:nth-child(1) > a:nth-child(4)').removeClass('active');
     $('div#content > div:nth-child(1) > a:nth-child(5)').addClass('active');
     $('div#content > div:nth-child(2)').html(CONFIRM_PAGE_STR);
@@ -2084,21 +2097,21 @@ function load_product_confirm_page() {
     for (name in product) {
         if (product[name] !== null) {
             if (name === 'name') {
-                $('ul#product').append('<li>借款名稱:' + product[name] + '</li>');
+                $('ul#product').append('<li>借款名称:' + product[name] + '</li>');
             } else if (name === 'term') {
-                $('ul#product').append('<li>還款期限:' + product[name] + '个月</li>');
+                $('ul#product').append('<li>还款期数:' + product[name] + '期</li>');
             } else if (name === 'usage') {
                 $('ul#product').append('<li>借款用途:' + USAGE[Number(product[name])] + '</li>');
             } else if (name === 'amount') {
-                $('ul#product').append('<li>借款金額:' + product[name] + '</li>');
+                $('ul#product').append('<li>借款金额:' + product[name] + '</li>');
             } else if (name === 'source') {
-                $('ul#product').append('<li>還款來源:' + product[name] + '</li>');
+                $('ul#product').append('<li>还款来源:' + product[name] + '</li>');
             } else if (name === 'descript') {
-                $('ul#product').append('<li>借款簡介:' + product[name] + '</li>');
+                $('ul#product').append('<li>借款简介:' + product[name] + '</li>');
             } else if (name === 'ps') {
-                $('ul#product').append('<li>附註:' + product[name] + '</li>');
+                $('ul#product').append('<li>附注:' + product[name] + '</li>');
             } else if (name === 'level') {
-                $('ul#product').append('<li>借款等級:' + LEVEL[Number(product[name])] + '</li>');
+                $('ul#product').append('<li>借款等级:' + LEVEL[Number(product[name])] + '</li>');
             } else if (name === 'rate') {
                 $('ul#product').append('<li>借款利率:' + product[name] + '</li>');
             }
@@ -2115,6 +2128,29 @@ function load_product_confirm_page() {
         if (tmp[i] > 0) {
             $('ul#image').append('<li>' + FILE_ATTR[i] + ': ' + tmp[i] + '张&nbsp;<a value="' + i + '" data-toggle="modal" data-target="#sample-modal" onclick="display_my_image(this)">查看</a>' + '</li>');
         }
+    }
+    match = patt.exec(member.friend);
+    friend_count = 0;
+    has_parents = false;
+    while (match !== null) {
+        friend_count += 1;
+        if (match[1] === '1') {
+            has_parents = true;
+        }
+        match = patt.exec(member.friend);
+    }
+    $('td#friend-number').html('您有<u>' + friend_count + '</u>位好友');
+    if (has_parents) {
+        $('td#friend-number').append('(含父母)');
+    }
+    if ($.cookie('work_status') === '2' && has_parents === false) {
+        $('td#friend-alert').html('<div class="alert alert-danger" role="alert">学生借款必须邀请父(母)亲成为好友</div>');
+        $('input[type="checkbox"]').prop('disabled', true);
+    } else if (friend_count < 2) {
+        $('td#friend-alert').html('<div class="alert alert-warning" role="alert">您的好友數不足，請再邀請<u>' + (2 - friend_count) + '</u>位好友</div>');
+        $('input[type="checkbox"]').prop('disabled', true);
+    } else {
+        $('td#friend-alert').html('<div class="alert alert-success" role="alert">您的好友数已经足够，请前往下一步</div>');
     }
 }
 
