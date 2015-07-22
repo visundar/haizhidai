@@ -87,3 +87,8 @@ textarea {
 img#cover {
     max-height: 500px;
 }
+
+.ps {
+    color: #777;
+    font-size: 80%;
+}
