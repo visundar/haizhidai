@@ -20,6 +20,35 @@ try {
     mysql_select_db('haizhidai', $con);
 
     switch ($obj->name) {
+        case 'GET_AUTHEN':
+            $query = "SELECT `what`, `time` FROM `image` WHERE `user_serial`=" . $obj->content->user_serial;
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            $response->content = (object) array('credit'=>false, 'identity'=>false, 'work'=>false, 'income'=>false, 'building'=>false, 'car'=>false, 'marriage'=>false);
+            while ($o = mysql_fetch_object($result)) {
+                if ($o->what === '11') {
+                    $response->content->credit = true;
+                    $response->content->credit_time = $o->time;
+                } else if ($o->what === '0') {
+                    $response->content->identity = true;
+                    $response->content->identity_time = $o->time;
+                } else if ($o->what === '4') {
+                    $response->content->work = true;
+                    $response->content->work_time = $o->time;
+                } else if ($o->what === '6') {
+                    $response->content->income = true;
+                    $response->content->income_time = $o->time;
+                } else if ($o->what === '8') {
+                    $response->content->building = true;
+                    $response->content->building_time = $o->time;
+                } else if ($o->what === '9') {
+                    $response->content->car = true;
+                    $response->content->car_time = $o->time;
+                } else if ($o->what === '1') {
+                    $response->content->marriage = true;
+                    $response->content->marriage_time = $o->time;
+                }
+            }
+            break;
         case 'INVITE_FRIEND':
             $query = "SELECT * FROM `member` WHERE `email`='" . $obj->content->email . "'";
             $result = mysql_query($query, $con) or throw_exception(mysql_error());
@@ -95,6 +124,17 @@ try {
             mysql_free_result($result);
             $response->content = $a;
             break;
+        case 'GET_NUM_BORROW':
+            $query = "SELECT * FROM `product` WHERE `borrower`='" . $obj->content->borrower . "'";
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            $response->content = (object) array('total'=>0, 'complete'=>0);
+            while ($o = mysql_fetch_object($result)) {
+                $response->content->total += 1;
+                if (((int) $o->amount) === ((int)$o->complete)) {
+                    $response->content->complete += 1;
+                }
+            }
+            break;
         case 'GET_BORROWER':
             $query = "SELECT * FROM `member` WHERE `user_serial`='" . $obj->content->borrower . "'";
             $result = mysql_query($query, $con) or throw_exception(mysql_error());
@@ -111,6 +151,8 @@ try {
             $names = substr($names, 0, -2);
             $values = substr($values, 0, -2);
             $query = "INSERT INTO `image` (" . $names . ") VALUES (" . $values . ")";
+            mysql_query($query, $con) or throw_exception(mysql_error());
+            $query = "UPDATE `member` set `has_photo`=1 WHERE `user_serial`=" . $_COOKIE['user_serial'];
             mysql_query($query, $con) or throw_exception(mysql_error());
         case 'GET_MY_IMAGE':
             $query = "SELECT `name`, `what` FROM `image` WHERE `user_serial`=". $_COOKIE['user_serial'];

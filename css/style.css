@@ -83,3 +83,12 @@ textarea {
 .no-padding {
     padding: 0;
 }
+
+img#cover {
+    max-height: 500px;
+}
+
+.ps {
+    color: #777;
+    font-size: 80%;
+}
