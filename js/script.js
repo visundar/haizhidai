@@ -2421,10 +2421,14 @@ function load_product_confirm_page() {
         $('td#friend-number').append('(含父母)');
     }
     if ($.cookie('work_status') === '2' && has_parents === false) {
-        $('td#friend-alert').html('<div class="alert alert-danger" role="alert">学生借款必须邀请父(母)亲成为好友</div>');
+        $('td#friend-alert').html('<div class="alert alert-danger" role="alert">学生借款必须邀请父(母)亲成为好友' +
+                                  '<small>&nbsp;请至:我的帐户 > 好友管理<small></div>'
+                                 );
         $('input[type="checkbox"]').prop('disabled', true);
     } else if (friend_count < 2) {
-        $('td#friend-alert').html('<div class="alert alert-warning" role="alert">您的好友數不足，請再邀請<u>' + (2 - friend_count) + '</u>位好友</div>');
+        $('td#friend-alert').html('<div class="alert alert-warning" role="alert">您的好友數不足，請再邀請<u>' + (2 - friend_count) + '</u>位好友' +
+                                  '<small>&nbsp;请至:我的帐户 > 好友管理<small></div>'
+                                 );
         $('input[type="checkbox"]').prop('disabled', true);
     } else {
         $('td#friend-alert').html('<div class="alert alert-success" role="alert">您的好友数已经足够，请前往下一步</div>');
