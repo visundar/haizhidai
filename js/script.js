@@ -1249,6 +1249,11 @@ var FORUM_PAGE_STR = function () {
     'use strict';
     /*
 <div class="row">
+    <samp>今日: 6|昨日: 37|帖子: 1148|会员: 21885|欢迎新会员: <a>焦全喜</a></samp>
+    <button class="btn btn-default" style="position:absolute;right:50px;color:orange" data-toggle="modal" data-target="#post-modal">发新帖</button>
+</div>
+<hr>
+<div class="row">
     <div class="col-md-3 no-padding">
         <div class="panel panel-default">
             <div class="panel-heading">最新主题</div>
@@ -1290,7 +1295,277 @@ var FORUM_PAGE_STR = function () {
     <div class="col-md-3 no-padding">
         <div class="panel panel-default">
             <div class="panel-heading">精华帖子</div>
-            <div class="panel-body"></div>
+            <div class="panel-body no-padding"></div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="panel panel-default">
+        <div class="panel-heading">借贷讨论区</div>
+        <div class="panel-body">
+            <div class="col-md-1">
+                <img src="img/brand_icon.png" alt="">
+            </div>
+            <div class="col-md-7">
+                【借款讨论区】
+                <br>
+                <span class="ps">借款人之间心得交流，如何更快更安全的借款，维护借款人利益。</span>
+            </div>
+            <div class="col-md-1">
+                <span style="color:red">13</span>/55
+            </div>
+            <div class="col-md-3">
+                <a data-toggle="modal" data-target="#discuss-modal">如何申请贷五万呢？</a>
+                <br>
+                <span class="ps">3 分钟前 <a>焦全喜</a></span>
+            </div>
+        </div>
+    </div>
+</div>
+    */
+}.toString().slice(38, -4);
+var FORUM_MODAL_STR = function () {
+    'use strict';
+    /*
+<div class="modal fade" id="post-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4>发表帖子</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label for="title" class="col-md-2 control-label">标题</label>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control" id="title" placeholder="请输入标题">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="content" class="col-md-2 control-label">内容</label>
+                        <div class="col-md-8">
+                            <textarea class="form-control" id="content" rows="3" placeholder="请输入内容"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal">发表帖子</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="discuss-modal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 style="color:brown">如何申请贷五万呢？</h4>
+            </div>
+            <div class="modal-body" style="overflow-y: auto;max-height: calc(100vh - 210px)">
+                <div class="row">
+                    <div class="col-md-offset-1 col-md-10 thumbnail">
+                        <div class="col-md-3" style="border-right: 1px solid #EEE">
+                            <div class="row">
+                                <div style="padding: 10px 0 0 20px">
+                                    <label for="member-name">LXB159197</label>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row text-center">
+                                <img src="img/avatar.gif" alt="" style="max-width:120px;box-shadow:4px 4px 3px rgba(20%,20%,40%,0.5)">
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-4" style="border-right: 1px solid #EEE">
+                                    <span style="color:red">1</span>
+                                    <br>
+                                    主题
+                                </div>
+                                <div class="col-md-4" style="border-right: 1px solid #EEE">
+                                    <span style="color:red">16</span>
+                                    <br>
+                                    帖子
+                                </div>
+                                <div class="col-md-4">
+                                    <span style="color:red">141</span>
+                                    <br>
+                                    积分
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div style="padding: 0 0 10px 20px">
+                                    <span class="glyphicon glyphicon-envelope text-info" aria-hidden="true"></span>发消息
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="row">
+                                <div style="padding: 10px 0 0 20px">
+                                    <span class="glyphicon glyphicon-user text-success" aria-hidden="true"></span>
+                                    发表于 昨天 16:32
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div style="padding: 0 10px">
+                                    <p>
+                                        拜托大家帮忙告诉我如何申请贷款？
+                                    </p>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div style="padding: 0 0 0 20px">
+                                    <span class="glyphicon glyphicon-comment text-warning" aria-hidden="true"></span>
+                                    回复
+                                    <span class="glyphicon glyphicon-thumbs-up text-success" aria-hidden="true"></span>
+                                    支持
+                                    <span class="glyphicon glyphicon-thumbs-down text-danger" aria-hidden="true"></span>
+                                    反对
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-offset-1 col-md-10 thumbnail">
+                        <div class="col-md-3" style="border-right: 1px solid #EEE">
+                            <div class="row">
+                                <div style="padding: 10px 0 0 20px">
+                                    <label for="member-name">我是130640</label>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row text-center">
+                                <img src="img/avatar.gif" alt="" style="max-width:120px;box-shadow:4px 4px 3px rgba(20%,20%,40%,0.5)">
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-4" style="border-right: 1px solid #EEE">
+                                    <span style="color:red">0</span>
+                                    <br>
+                                    主题
+                                </div>
+                                <div class="col-md-4" style="border-right: 1px solid #EEE">
+                                    <span style="color:red">4</span>
+                                    <br>
+                                    帖子
+                                </div>
+                                <div class="col-md-4">
+                                    <span style="color:red">30</span>
+                                    <br>
+                                    积分
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div style="padding: 0 0 10px 20px">
+                                    <span class="glyphicon glyphicon-envelope text-info" aria-hidden="true"></span>发消息
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="row">
+                                <div style="padding: 10px 0 0 20px">
+                                    <span class="glyphicon glyphicon-user text-success" aria-hidden="true"></span>
+                                    发表于 昨天 16:34
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div style="padding: 0 10px">
+                                    <p>
+                                        你要贷款，可以联系客服啊，他会告诉你需要些社么
+                                    </p>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div style="padding: 0 0 0 20px">
+                                    <span class="glyphicon glyphicon-comment text-warning" aria-hidden="true"></span>
+                                    回复
+                                    <span class="glyphicon glyphicon-thumbs-up text-success" aria-hidden="true"></span>
+                                    支持
+                                    <span class="glyphicon glyphicon-thumbs-down text-danger" aria-hidden="true"></span>
+                                    反对
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-offset-1 col-md-10 thumbnail">
+                        <div class="col-md-3" style="border-right: 1px solid #EEE">
+                            <div class="row">
+                                <div style="padding: 10px 0 0 20px">
+                                    <label for="member-name">IBCASLIKE</label>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row text-center">
+                                <img src="img/avatar.gif" alt="" style="max-width:120px;box-shadow:4px 4px 3px rgba(20%,20%,40%,0.5)">
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-4" style="border-right: 1px solid #EEE">
+                                    <span style="color:red">1</span>
+                                    <br>
+                                    主题
+                                </div>
+                                <div class="col-md-4" style="border-right: 1px solid #EEE">
+                                    <span style="color:red">66</span>
+                                    <br>
+                                    帖子
+                                </div>
+                                <div class="col-md-4">
+                                    <span style="color:red">173</span>
+                                    <br>
+                                    积分
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div style="padding: 0 0 10px 20px">
+                                    <span class="glyphicon glyphicon-envelope text-info" aria-hidden="true"></span>发消息
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="row">
+                                <div style="padding: 10px 0 0 20px">
+                                    <span class="glyphicon glyphicon-user text-success" aria-hidden="true"></span>
+                                    发表于 昨天 16:39
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div style="padding: 0 10px">
+                                    <p>
+                                        您好，贷款的话这个要看您想贷款的种类，以及您的待收或抵押情况，具体的请联系网站首页右侧的在线客服，详细说下您的个人情况，谢谢
+                                    </p>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div style="padding: 0 0 0 20px">
+                                    <span class="glyphicon glyphicon-comment text-warning" aria-hidden="true"></span>
+                                    回复
+                                    <span class="glyphicon glyphicon-thumbs-up text-success" aria-hidden="true"></span>
+                                    支持
+                                    <span class="glyphicon glyphicon-thumbs-down text-danger" aria-hidden="true"></span>
+                                    反对
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal">离开</button>
+            </div>
         </div>
     </div>
 </div>
@@ -1876,7 +2151,7 @@ function load_invest_page() {
     clear_all();
     $('div#navbar-collapse > ul:first > li:nth-child(1)').addClass('active');
     $('div#content > div:nth-child(2)').html(INVEST_PAGE_STR);
-    $('div#modal').append(RATE_MODAL_STR + FILTER_MODAL_STR + PRODUCT_MODAL_STR);
+    $('div#modal').html(RATE_MODAL_STR + FILTER_MODAL_STR + PRODUCT_MODAL_STR);
     $('div#modal').append(CHARGE_MODAL_STR + AUTHEN_MODAL_STR + INVEST_MODAL_STR);
     $('form').submit(function () {
         return false;
@@ -2104,7 +2379,7 @@ function load_account_page() {
     }
     $('div#content > div:nth-child(2) h3:eq(1) > span').html(member.latest_sign_in);
     $('div#content > div:nth-child(2) h3:eq(2) > span').html(member.remain + '.00');
-    $('div#modal').append(CHARGE_MODAL_STR + AUTHEN_MODAL_STR + CASH_MODAL_STR);
+    $('div#modal').html(CHARGE_MODAL_STR + AUTHEN_MODAL_STR + CASH_MODAL_STR);
 }
 
 function load_forum_page() {
@@ -2112,6 +2387,7 @@ function load_forum_page() {
     clear_all();
     $('div#navbar-collapse > ul:first > li:nth-child(4)').addClass('active');
     $('div#content > div:nth-child(2)').html(FORUM_PAGE_STR);
+    $('div#modal').html(FORUM_MODAL_STR);
 }
 
 function add_friend(btn) {
