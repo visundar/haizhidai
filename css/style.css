@@ -33,7 +33,10 @@ div.slider {
 }
 
 .index-cover {
-    background-image: url(../img/Financial.jpg);
+    background-image: url(../img/cover.jpg);
+    background-repeat: no-repeat;
+    background-size: 100vw calc(100vh - 50px);
+    background-position: center 50px;
 }
 
 div#home-invest-panel, div#home-borrow-panel {
