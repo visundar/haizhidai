@@ -18,7 +18,7 @@ var MARRIAGE = ['未婚', '已婚', '離異'];
 var PRODUCT = [{
         name: '普通借款标',
         suit: '工薪族',
-        panel: 'danger',
+        panel: 'success',
         condition: [
             '21-55周岁中国大陆公民',
             '手机绑定',
@@ -1222,6 +1222,7 @@ var FRIEND_MANAGE_PAGE_STR = function () {
     'use strict';
     /*
 <form class="form-horizontal">
+    <div class="alert alert-warning" role="alert"><strong>温馨提示</strong>： 邀请的好友须为本平台用户</div>
     <div class="form-group">
         <label for="email" class="col-md-2 control-label">*邮箱</label>
         <div class="col-md-5">
@@ -1267,53 +1268,53 @@ var FORUM_PAGE_STR = function () {
     'use strict';
     /*
 <div class="row">
-    <samp>今日: 6|昨日: 37|帖子: 1148|会员: 21885|欢迎新会员: <a>焦全喜</a></samp>
+    <samp>今日: 6|昨日: 37|帖子: 1148|会员: 21885</samp>
     <button class="btn btn-default" style="position:absolute;right:50px;color:orange" data-toggle="modal" data-target="#post-modal">发新帖</button>
 </div>
 <hr>
 <div class="row">
-    <div class="col-md-3 no-padding">
+    <div class="col-md-4 no-padding">
         <div class="panel panel-default">
             <div class="panel-heading">最新主题</div>
             <div class="panel-body no-padding">
-                <ul class="list-group" style="margin-bottom:0">
+                <ul class="list-group" style="margin-bottom:0" id="latest-post-list">
+                <!--
                     <a class="list-group-item"><span class="badge">0</span>手机无法投标</a>
                     <a class="list-group-item"><span class="badge">12</span>海智贷的利率是不是太高了</a>
                     <a class="list-group-item"><span class="badge">7</span>1月期限19%年化收益是什么意思？</a>
                     <a class="list-group-item"><span class="badge">89</span>希望论坛能加上推荐回复。</a>
+                -->
                 </ul>
             </div>
         </div>
     </div>
-    <div class="col-md-3 no-padding">
+    <div class="col-md-4 no-padding">
         <div class="panel panel-default">
             <div class="panel-heading">最新回复</div>
             <div class="panel-body no-padding">
-                <ul class="list-group" style="margin-bottom:0">
+                <ul class="list-group" style="margin-bottom:0" id="latest-reply-list">
+                <!--
                     <a class="list-group-item"><span class="badge">112</span>提现难吗?</a>
                     <a class="list-group-item"><span class="badge">68</span>论坛改了很大的进步</a>
                     <a class="list-group-item"><span class="badge">25</span>积分有什用途</a>
                     <a class="list-group-item"><span class="badge">89</span>希望论坛能加上推荐回复。</a>
+                -->
                 </ul>
             </div>
         </div>
     </div>
-    <div class="col-md-3 no-padding">
+    <div class="col-md-4 no-padding">
         <div class="panel panel-default">
             <div class="panel-heading">热帖</div>
             <div class="panel-body no-padding">
-                <ul class="list-group" style="margin-bottom:0">
+                <ul class="list-group" style="margin-bottom:0" id="most-reply-list">
+                <!--
                     <a class="list-group-item"><span class="badge">112</span>提现难吗?</a>
                     <a class="list-group-item"><span class="badge">89</span>希望论坛能加上推荐回复。</a>
                     <a class="list-group-item"><span class="badge">68</span>论坛改了很大的进步</a>
+                -->
                 </ul>
             </div>
-        </div>
-    </div>
-    <div class="col-md-3 no-padding">
-        <div class="panel panel-default">
-            <div class="panel-heading">精华帖子</div>
-            <div class="panel-body no-padding"></div>
         </div>
     </div>
 </div>
@@ -1353,23 +1354,23 @@ var FORUM_MODAL_STR = function () {
                 <h4>发表帖子</h4>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal">
+                <form class="form-horizontal" id="post">
                     <div class="form-group">
                         <label for="title" class="col-md-2 control-label">标题</label>
                         <div class="col-md-8">
-                            <input type="text" class="form-control" id="title" placeholder="请输入标题">
+                            <input type="text" class="form-control" id="title" placeholder="请输入标题" name="title">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="content" class="col-md-2 control-label">内容</label>
                         <div class="col-md-8">
-                            <textarea class="form-control" id="content" rows="3" placeholder="请输入内容"></textarea>
+                            <textarea class="form-control" id="content" rows="3" placeholder="请输入内容" name="content"></textarea>
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-default" data-dismiss="modal">发表帖子</button>
+                <button class="btn btn-default" data-dismiss="modal" onclick="submit_post()">发表帖子</button>
             </div>
         </div>
     </div>
@@ -1582,6 +1583,7 @@ var FORUM_MODAL_STR = function () {
                 </div>
             </div>
             <div class="modal-footer">
+                <button class="btn btn-info">回复</button>
                 <button class="btn btn-default" data-dismiss="modal">离开</button>
             </div>
         </div>
@@ -2079,6 +2081,19 @@ function display_product_modal(a) {
             borrower = obj.content.user_serial;
         }
     });
+    $('a[href="#member-info"]').on('shown.bs.tab', function () {
+        new Chart(document.getElementById("radar-chart").getContext("2d")).Radar({
+            labels: ["身份特质", "信用评分", "徵信资料", "人脉关係", "信用历史"],
+            datasets: [
+                {
+                    fillColor: "rgba(220,220,220,0.2)",
+                    data: [65, 59, 90, 81, 56]
+                }
+            ]
+        }, {
+            responsive: true
+        });
+    });
     $.ajax('php/request.php', {
         dataType: 'json',
         async: false,
@@ -2145,6 +2160,25 @@ function display_product_modal(a) {
     });
 }
 
+function display_post(a) {
+    'use strict';
+    var serial = Number($(a).attr('value'));
+    $.ajax('php/request.php', {
+        dataType: 'json',
+        async: false,
+        data: (function () {
+            var request = {}, content = {};
+            content.post_serial = serial;
+            request.name = 'GET_POST_AND_REPLY';
+            request.content = content;
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+        }
+    });
+}
+
 function change_sample_modal(a) {
     'use strict';
     var i, tmp = $(a).parent().prev().html();
@@ -2182,19 +2216,6 @@ function load_invest_page() {
         a.push(i);
     }
     generate_product_table(a);
-    $('a[href="#member-info"]').on('shown.bs.tab', function () {
-        new Chart(document.getElementById("radar-chart").getContext("2d")).Radar({
-            labels: ["個人信息", "線上數據", "還款紀錄", "負債能力", "信用歷史"],
-            datasets: [
-                {
-                    fillColor: "rgba(220,220,220,0.2)",
-                    data: [65, 59, 90, 81, 56]
-                }
-            ]
-        }, {
-            responsive: true
-        });
-    });
 }
 
 function load_borrow_page() {
@@ -2206,6 +2227,7 @@ function load_borrow_page() {
         $('div#content > div:nth-child(1)').append('<a class="list-group-item">' + BORROW_PROGRESS[i] + '</a>');
     }
     $('div#content > div:nth-child(1) > a:nth-child(1)').addClass('active');
+    $('div#content > div:nth-child(2)').html('<div class="alert alert-danger" role="alert"><strong>温馨提示</strong>：借款须具有两位以上的朋友，若为学生则须包含父母，请确认朋友数量足够后再进行借款，谢谢您！</div>');
     for (i = 0; i < PRODUCT.length; i += 1) {
         $('div#content > div:nth-child(2)').append(PRODUCT_PANEL_STR);
         $('div#content > div:nth-child(2) div.panel:last').addClass('panel-' + PRODUCT[i].panel);
@@ -2375,7 +2397,7 @@ function load_account_page() {
     });
     $('div#content > div:nth-child(2)').html(ACCOUNT_PAGE_STR);
     new Chart(document.getElementById("radar-chart").getContext("2d")).Radar({
-        labels: ["個人信息", "線上數據", "還款紀錄", "負債能力", "信用歷史"],
+        labels: ["身份特质", "信用评分", "徵信资料", "人脉关係", "信用历史"],
         datasets: [
             {
                 fillColor: "rgba(220,220,220,0.2)",
@@ -2403,10 +2425,56 @@ function load_account_page() {
 
 function load_forum_page() {
     'use strict';
+    var i;
     clear_all();
     $('div#navbar-collapse > ul:first > li:nth-child(4)').addClass('active');
     $('div#content > div:nth-child(2)').html(FORUM_PAGE_STR);
     $('div#modal').html(FORUM_MODAL_STR);
+    $.ajax('php/request.php', {
+        dataType: 'json',
+        async: false,
+        data: (function () {
+            var request = {}, content = {};
+            request.name = 'GET_POPULAR_POST';
+            request.content = content;
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            obj.content.sort(function (x, y) {
+                var tx = x.time.split(/[: \-]/g).map(Number),
+                    ty = y.time.split(/[: \-]/g).map(Number);
+                return ((new Date(ty[0], ty[1], ty[2], ty[3], ty[4], ty[5], 0)).getTime()) - ((new Date(tx[0], tx[1], tx[2], tx[3], tx[4], tx[5], 0)).getTime());
+            });
+            for (i = 0; i < 5 && i < obj.content.length; i += 1) {
+                $('ul#latest-post-list').append('<a class="list-group-item" onclick="display_post(this)" href="javascript:void(0)"' +
+                                                 ' value="' + obj.content[i].post_serial + '">' +
+                                                '<span class="badge">' + obj.content[i].num_replies + '</span>' +
+                                                obj.content[i].title + '</a>'
+                                                );
+            }
+            obj.content.sort(function (x, y) {
+                return (new Date(y.last_reply).getTime()) - (new Date(x.last_reply).getTime());
+            });
+            for (i = 0; i < 5 && i < obj.content.length; i += 1) {
+                $('ul#latest-reply-list').append('<a class="list-group-item" onclick="display_post(this)" href="javascript:void(0)"' +
+                                                 ' value="' + obj.content[i].post_serial + '">' +
+                                                '<span class="badge">' + obj.content[i].num_replies + '</span>' +
+                                                obj.content[i].title + '</a>'
+                                                );
+            }
+            obj.content.sort(function (x, y) {
+                return Number(y.num_replies) - Number(x.num_replies);
+            });
+            for (i = 0; i < 5 && i < obj.content.length; i += 1) {
+                $('ul#most-reply-list').append('<a class="list-group-item" onclick="display_post(this)" href="javascript:void(0)"' +
+                                                 ' value="' + obj.content[i].post_serial + '">' +
+                                                '<span class="badge">' + obj.content[i].num_replies + '</span>' +
+                                                obj.content[i].title + '</a>'
+                                                );
+            }
+        }
+    });
 }
 
 function add_friend(btn) {
@@ -3107,6 +3175,24 @@ function submit_product_detail() {
             $('tr#test > td:eq(2)').html(product.amount + '元');
             $('tr#test > td:eq(3)').html('审核中');
             product = null;
+        }
+    });
+}
+
+function submit_post() {
+    'use strict';
+    $.ajax('php/request.php', {
+        dataType: 'json',
+        async: false,
+        data: (function () {
+            var request = {};
+            request.name = 'SUBMIT_POST';
+            request.content = $('form#post').serializeObject();
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            alert('发帖成功');
         }
     });
 }

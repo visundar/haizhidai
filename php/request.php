@@ -20,6 +20,29 @@ try {
     mysql_select_db('haizhidai', $con);
 
     switch ($obj->name) {
+        case 'GET_POPULAR_POST':
+            $query = "SELECT * FROM `post` ORDER BY `latest_reply` DESC LIMIT 50";
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            $response->content = array();
+            while ($o = mysql_fetch_object($result)) {
+                array_push($response->content, $o);
+            }
+            $query = "SELECT `post_serial`, COUNT(*) AS num FROM `reply` GROUP BY `post_serial`";
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            $map = array();
+            while ($o = mysql_fetch_object($result)) {
+                $map[(int) $o->post_serial] = (int) $o->num;
+            }
+            for ($i = 0; $i < count($response->content); $i += 1) {
+                $response->content[$i]->num_replies = (isset($map[(int) $response->content[$i]->post_serial]) ? $map[(int) $response->content[$i]->post_serial] : 0);
+            }
+            break;
+        case 'SUBMIT_POST':
+            $query = "INSERT INTO `post` (`title`, `user_serial`, `content`, `latest_reply`) VALUES ('";
+            $query .= $obj->content->title . "', " . $_COOKIE['user_serial'] . ", '" . $obj->content->content;
+            $query .= "', NOW())";
+            mysql_query($query, $con) or throw_exception(mysql_error());
+            break;
         case 'GET_MY_FRIEND':
             $response->content = array();
             $query = "SELECT `content`, `receiver` FROM `message` WHERE `type`=2 && `sender`=" . $_COOKIE['user_serial'];
