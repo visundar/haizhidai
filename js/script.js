@@ -980,6 +980,12 @@ var CASH_MODAL_STR = function () {
                         </div>
                     </div>
                     <div class="form-group">
+                        <label for="confirm_account_number" class="col-md-offset-1 col-md-2 control-label">*确认 銀行帐户</label>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control" id="confirm-account-number" placeholder="请重新输入銀行帐户">
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label for="cellphone" class="col-md-offset-1 col-md-2 control-label">*手机号</label>
                         <div class="col-md-8">
                             <input type="text" class="form-control" id="cellphone" placeholder="手机号">
@@ -1074,13 +1080,13 @@ var HOME_PANEL_STR = function () {
 var INVEST_MANAGE_PAGE_STR = function () {
     'use strict';
     /*
-<span style="color:#777;display:inline-block;padding-bottom:10px">
+<span style="color:#777;display:inline-block;padding-bottom:10px" id="statistic-info">
     投资统计：&nbsp;&nbsp;
-        成功借出总额￥0.00&nbsp;&nbsp;
-        已收本金￥0.00&nbsp;&nbsp;
-        未收本金￥0.00&nbsp;&nbsp;
-        已收利息￥0.00&nbsp;&nbsp;
-        未收利息￥0.00&nbsp;&nbsp;
+        成功借出总额&nbsp;&yen;<span></span>元&nbsp;&nbsp;
+        已收本金&nbsp;&yen;<span></span>元&nbsp;&nbsp;
+        未收本金&nbsp;&yen;<span></span>元&nbsp;&nbsp;
+        已收利息&nbsp;&yen;<span></span>元&nbsp;&nbsp;
+        未收利息&nbsp;&yen;<span></span>元&nbsp;&nbsp;
 </span>
 <div class="row">
     <div class="panel panel-default">
@@ -1195,7 +1201,7 @@ var BORROW_MANAGE_PAGE_STR = function () {
                         <th>标题</th>
                         <th>借款编号</th>
                         <th>期数</th>
-                        <th>发标时间</th>
+                        <th>完标时间</th>
                         <th>应还日期</th>
                         <th>应还总额</th>
                         <th>应还本金</th>
@@ -1235,6 +1241,18 @@ var FRIEND_MANAGE_PAGE_STR = function () {
        </div>
     </div>
 </form>
+<hr>
+<table class="table" id="friend-list">
+    <thead>
+        <tr>
+            <th>姓名</th>
+            <th>关係</th>
+            <th>状态</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
     */
 }.toString().slice(38, -4);
 var ALERT_DISMISS_STR = function () {
@@ -1979,6 +1997,7 @@ function load_home_page() {
     clear_all();
     get_member_from_server();
     $('body').removeClass('index-cover');
+    $('div#content').html('<div class="col-md-2"></div><div class="col-md-8 thumbnail"></div><div class="col-md-2"></div>');
     $('div#content > div:eq(1)').html(HOME_PANEL_STR);
     $('div#navbar-collapse > ul:eq(0)').html(NAVBAR_STR);
     $('div#navbar-collapse > .navbar-right').remove();
@@ -2424,8 +2443,11 @@ function load_invest_manage_page() {
         }()),
         type: 'POST',
         success: function (obj) {
+            var total_invest = 0, t1, t2, t3, tmp, times;
             for (i = 0; i < obj.content.length; i += 1) {
-                var t1 = Number(obj.content[i].complete), t2 = Number(obj.content[i].total), t3, tmp, times;
+                t1 = Number(obj.content[i].complete);
+                t2 = Number(obj.content[i].total);
+                total_invest += Number(obj.content[i].amount);
                 if (t1 < t2) {
                     tmp = Number(obj.content[i].amount) * (1 + (Number(obj.content[i].rate) * 0.01 * Number(obj.content[i].term) / 12));
                     $('table#investing > tbody').append('<tr></tr>');
@@ -2455,6 +2477,7 @@ function load_invest_manage_page() {
                     $('table#paying > tbody > tr:last').append('<td>' + t2.toFixed(2) + '</td>');
                 }
             }
+            $('span#statistic-info > span:nth-child(1)').html(total_invest);
         }
     });
     $('div#calendar').calendar({
@@ -2493,22 +2516,25 @@ function load_borrow_manage_page() {
                     $('table#borrowing > tbody > tr:last').append('<td>' + obj.content[i].amount + '</td>');
                     $('table#borrowing > tbody > tr:last').append('<td>' + obj.content[i].rate + '%</td>');
                 } else {
-                    var tmp, t1;
+                    var tmp, t1, t2, t3;
                     tmp = Date.parse(obj.content[i].complete_date);
-                    tmp += Number(obj.content[i].term) * 2592000000;
+                    t2 = Math.floor(Math.random() * Number(obj.content[i].term) + 1);
+                    tmp += Number(t2) * 2592000000;
                     tmp = ((new Date(tmp)).toISOString()).slice(0, 10);
                     t1 = Number(obj.content[i].amount) * Number(obj.content[i].rate) * 0.01 * Number(obj.content[i].term) / 12;
+                    t3 = ((new Date()).getTime() - (new Date(tmp)).getTime());
+                    t3 = t3 < 0 ? 0 : (t3 / 86400000);
                     $('table#complete > tbody').append('<tr></tr>');
                     $('table#complete > tbody > tr:last').append('<td>' + obj.content[i].name + '</td>');
                     $('table#complete > tbody > tr:last').append('<td>' + obj.content[i].product_serial + '</td>');
-                    $('table#complete > tbody > tr:last').append('<td>' + obj.content[i].term + '</td>');
-                    $('table#complete > tbody > tr:last').append('<td>' + obj.content[i].time.slice(0, 10) + '</td>');
+                    $('table#complete > tbody > tr:last').append('<td>' + t2 + '/' + obj.content[i].term + '</td>');
+                    $('table#complete > tbody > tr:last').append('<td>' + obj.content[i].complete_date + '</td>');
                     $('table#complete > tbody > tr:last').append('<td>' + tmp + '</td>');
-                    $('table#complete > tbody > tr:last').append('<td>' + (Number(obj.content[i].amount) + t1) + '</td>');
+                    $('table#complete > tbody > tr:last').append('<td>' + (Number(obj.content[i].amount) + t1).toFixed(2) + '</td>');
                     $('table#complete > tbody > tr:last').append('<td>' + obj.content[i].amount + '</td>');
                     $('table#complete > tbody > tr:last').append('<td>' + t1.toFixed(2) + '</td>');
-                    $('table#complete > tbody > tr:last').append('<td>' + Math.floor(Math.random() * 30) + '</td>');
-                    $('table#complete > tbody > tr:last').append('<td>' + (Math.floor(Math.random() * 100) + 1) + '%</td>');
+                    $('table#complete > tbody > tr:last').append('<td>' + t3 + '</td>');
+                    $('table#complete > tbody > tr:last').append('<td>' + ((t2 - 1) * 100 / Number(obj.content[i].term)).toFixed(1) + '%</td>');
                 }
             }
         }
@@ -2550,9 +2576,36 @@ function load_friend_manage_page() {
                     alert('无用户使用此信箱');
                 } else {
                     alert('邀请已送出');
+                    $('a.list-group-item:eq(3)').click();
                 }
             }
         });
+    });
+    $.ajax('php/request.php', {
+        dataType: 'json',
+        data: (function () {
+            var request = {}, content = {};
+            request.name = 'GET_MY_FRIEND';
+            request.content = content;
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            var j;
+            if (obj.title === 'ERROR') {
+                return;
+            }
+            for (i = 0; i < obj.content.length; i += 1) {
+                $('table#friend-list > tbody').append('<tr></tr>');
+                $('table#friend-list > tbody > tr:last').append('<td>' + obj.content[i][1] + '</td>');
+                $('table#friend-list > tbody > tr:last').append('<td>' + RELATION[obj.content[i][2]] + '</td>');
+                if (obj.content[i][3]) {
+                    $('table#friend-list > tbody > tr:last').append('<td>朋友</td>');
+                } else {
+                    $('table#friend-list > tbody > tr:last').append('<td>邀请中</td>');
+                }
+            }
+        }
     });
 }
 
@@ -2698,12 +2751,12 @@ function load_product_confirm_page() {
     }
     if ($.cookie('work_status') === '2' && has_parents === false) {
         $('td#friend-alert').html('<div class="alert alert-danger" role="alert">学生借款必须邀请父(母)亲成为好友' +
-                                  '<small>&nbsp;请至:我的帐户 > 好友管理<small></div>'
+                                  '<a class="ps" onclick="link_to_add_friend()">&nbsp;请至:我的帐户 > 好友管理</a></div>'
                                  );
         $('input[type="checkbox"]').prop('disabled', true);
     } else if (friend_count < 2) {
         $('td#friend-alert').html('<div class="alert alert-warning" role="alert">您的好友數不足，請再邀請<u>' + (2 - friend_count) + '</u>位好友' +
-                                  '<small>&nbsp;请至:我的帐户 > 好友管理<small></div>'
+                                  '<a class="ps" onclick="link_to_add_friend()">&nbsp;请至:我的帐户 > 好友管理</a></div>'
                                  );
         $('input[type="checkbox"]').prop('disabled', true);
     } else {
@@ -2985,6 +3038,9 @@ function submit_cash() {
     if (!(/^\d+$/.test($('form#cash input#account-number').val()))) {
         alert('请检查銀行帐户');
         return;
+    } else if ($('form#cash input#account-number').val() !== $('form#cash input#confirm-account-number').val()) {
+        alert('銀行帐户不一致');
+        return;
     } else if (!(/^\d+$/.test($('form#cash input#cellphone').val()))) {
         alert('请检查手机号');
         return;
@@ -3149,7 +3205,6 @@ function sign_up() {
         type: 'POST',
         success: function (obj) {
             if (obj.title === 'ERROR') {
-                alert(JSON.stringify(obj));
                 alert('此帐户已被使用');
                 return;
             }
@@ -3252,6 +3307,12 @@ function invest_this(div) {
         $('#invest-modal h3:eq(0) > strong').html(serial);
         $('#invest-modal').modal('show');
     }
+}
+
+function link_to_add_friend() {
+    'use strict';
+    load_account_page();
+    $('a.list-group-item:eq(3)').click();
 }
 
 $(document).ready(function () {

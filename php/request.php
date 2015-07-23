@@ -20,6 +20,46 @@ try {
     mysql_select_db('haizhidai', $con);
 
     switch ($obj->name) {
+        case 'GET_MY_FRIEND':
+            $response->content = array();
+            $query = "SELECT `content`, `receiver` FROM `message` WHERE `type`=2 && `sender`=" . $_COOKIE['user_serial'];
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            while ($o = mysql_fetch_object($result)) {
+                ereg('.*\|([0-9]+)', $o->content, $regs);
+                if ($regs[1] === '1') {
+                    $regs[1] = '2';
+                } else if ($regs[1] === '2') {
+                    $regs[1] = '1';
+                }
+                array_push($response->content, array((int) $o->receiver, '', (int) $regs[1], false));
+            }
+            $query = "SELECT `friend` FROM `member` WHERE `user_serial`=" . $_COOKIE['user_serial'];
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            $o = mysql_fetch_object($result);
+            $tok = strtok($o->friend, '|');
+            while ($tok) {
+                ereg('([0-9]+):([0-9]+)', $tok, $regs);
+                array_push($response->content, array((int) $regs[1], '', (int) $regs[2], true));
+                $tok = strtok('|');
+            }
+            $serial_list = '';
+            foreach ($response->content as $user) {
+                $serial_list .= $user[0] . ", ";
+            }
+            if ($serial_list === '') {
+                throw_exception('You have no friend');
+            }
+            $serial_list = substr($serial_list, 0, -2);
+            $query = "SELECT `first_name`, `last_name`, `user_serial` FROM `member` WHERE `user_serial` IN (" . $serial_list . ")";
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            while ($o = mysql_fetch_object($result)) {
+                for ($i = 0; $i < count($response->content); $i += 1) {
+                    if ($response->content[$i][0] === (int) $o->user_serial) {
+                        $response->content[$i][1] = $o->last_name . $o->first_name;
+                    }
+                }
+            }
+            break;
         case 'GET_AUTHEN':
             $query = "SELECT `what`, `time` FROM `image` WHERE `user_serial`=" . $obj->content->user_serial;
             $result = mysql_query($query, $con) or throw_exception(mysql_error());
@@ -55,11 +95,15 @@ try {
             if (mysql_num_rows($result) === 0) {
                 throw_exception('Friend not found');
             }
-            while ($o = mysql_fetch_object($result)) {
-                $query = "INSERT INTO `message` (`sender`, `receiver`, `type`, `content`) VALUES (" . $_COOKIE['user_serial'] . ", ";
-                $query .= $o->user_serial . ", 2, '" . $_COOKIE['first_name'] . "|" . $obj->content->relation . "')";
-                mysql_query($query, $con) or throw_exception(mysql_error());
+            $o = mysql_fetch_object($result);
+            $query = "SELECT * FROM `message` WHERE `type`=2 && `receiver`=" . $o->user_serial;
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            if (mysql_num_rows($result) > 0) {
+                throw_exception('Friend has been invited');
             }
+            $query = "INSERT INTO `message` (`sender`, `receiver`, `type`, `content`) VALUES (" . $_COOKIE['user_serial'] . ", ";
+            $query .= $o->user_serial . ", 2, '" . $_COOKIE['first_name'] . "|" . $obj->content->relation . "')";
+            mysql_query($query, $con) or throw_exception(mysql_error());
             mysql_free_result($result);
             break;
         case 'ADD_FRIEND':
