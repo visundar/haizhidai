@@ -20,6 +20,14 @@ try {
     mysql_select_db('haizhidai', $con);
 
     switch ($obj->name) {
+        case 'GET_NUM_FOCUS_MY_PRODUCT':
+        $query = "SELECT `view` FROM `product` WHERE `borrower`=" . $_COOKIE['user_serial'];
+        $result = mysql_query($query, $con) or throw_exception(mysql_error());
+        $response->content = 0;
+        while ($o = mysql_fetch_object($result)) {
+            $response->content += (int) $o->view;
+        }
+        break;
         case 'GET_FORUM_GLOBAL':
             $query = "SELECT COUNT(*) AS total_member FROM `member`";
             $result = mysql_query($query, $con) or throw_exception(mysql_error());
@@ -77,9 +85,11 @@ try {
             mysql_query($query, $con) or throw_exception(mysql_error());
             $query = "UPDATE `member` SET `num_reply`=`num_reply`+1 WHERE `user_serial`=" . $_COOKIE['user_serial'];
             mysql_query($query, $con) or throw_exception(mysql_error());
+            $query = "UPDATE `post` SET `latest_reply`=NOW() WHERE `post_serial`=" . $obj->content->post_serial;
+            mysql_query($query, $con) or throw_exception(mysql_error());
             break;
         case 'SUBMIT_POST':
-            $query = "INSERT INTO `post` (`title`, `user_serial`, `content`, `latest_reply`) VALUES ('";
+            $query = "INSERT INTO `post` (`time`, `title`, `user_serial`, `content`, `latest_reply`) VALUES (NOW(), '";
             $query .= $obj->content->title . "', " . $_COOKIE['user_serial'] . ", '" . $obj->content->content;
             $query .= "', NOW())";
             mysql_query($query, $con) or throw_exception(mysql_error());

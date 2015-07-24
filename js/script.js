@@ -1501,7 +1501,7 @@ var ACCOUNT_PAGE_STR = function () {
                 <canvas id="radar-chart"></canvas>
             </div>
             <div class="col-md-6">
-                <table class="table table-bordered table-hover">
+                <table class="table table-bordered table-hover" id="member-statistic">
                     <thead>
                         <tr>
                             <th>社群数据</th>
@@ -1511,27 +1511,27 @@ var ACCOUNT_PAGE_STR = function () {
                     <tbody>
                         <tr>
                             <td>标的关注</td>
-                            <td>1024人</td>
+                            <td><span></span>人</td>
                         </tr>
                         <tr>
                             <td>评价</td>
-                            <td>好</td>
+                            <td><span>好</span></td>
                         </tr>
                         <tr>
                             <td>论坛发文</td>
-                            <td>76篇</td>
+                            <td><span></span>篇</td>
                         </tr>
                         <tr>
                             <td>论坛留言</td>
-                            <td>108则</td>
+                            <td><span></span>则</td>
                         </tr>
                         <tr>
                             <td>背书(赞)</td>
-                            <td>998</td>
+                            <td><span></span></td>
                         </tr>
                         <tr>
                             <td>好友数</td>
-                            <td>150</td>
+                            <td><span></span></td>
                         </tr>
                     </tbody>
                 </table>
@@ -2123,7 +2123,7 @@ function load_borrow_page() {
         $('div#content > div:nth-child(1)').append('<a class="list-group-item">' + BORROW_PROGRESS[i] + '</a>');
     }
     $('div#content > div:nth-child(1) > a:nth-child(1)').addClass('active');
-    $('div#content > div:nth-child(2)').html('<div class="alert alert-danger" role="alert"><strong>温馨提示</strong>：借款须具有两位以上的朋友，若为学生则须包含父母，请确认朋友数量足够后再进行借款，谢谢您！</div>');
+    $('div#content > div:nth-child(2)').html('');
     for (i = 0; i < PRODUCT.length; i += 1) {
         $('div#content > div:nth-child(2)').append(PRODUCT_PANEL_STR);
         $('div#content > div:nth-child(2) div.panel:last').addClass('panel-' + PRODUCT[i].panel);
@@ -2317,6 +2317,23 @@ function load_account_page() {
     $('div#content > div:nth-child(2) h3:eq(1) > span').html(member.latest_sign_in);
     $('div#content > div:nth-child(2) h3:eq(2) > span').html(member.remain + '.00');
     $('div#modal').html(CHARGE_MODAL_STR + AUTHEN_MODAL_STR + CASH_MODAL_STR);
+    $.ajax('php/request.php', {
+        dataType: 'json',
+        async: false,
+        data: (function () {
+            var request = {};
+            request.name = 'GET_NUM_FOCUS_MY_PRODUCT';
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            $('table#member-statistic > tbody > tr:nth-child(1) > td:nth-child(2) > span').html(obj.content);
+        }
+    });
+    $('table#member-statistic > tbody > tr:nth-child(3) > td:nth-child(2) > span').html(member.num_post);
+    $('table#member-statistic > tbody > tr:nth-child(4) > td:nth-child(2) > span').html(member.num_reply);
+    $('table#member-statistic > tbody > tr:nth-child(5) > td:nth-child(2) > span').html(member.like);
+    $('table#member-statistic > tbody > tr:nth-child(6) > td:nth-child(2) > span').html(member.friend.split(/\|/).length - 1);
 }
 
 function load_forum_page() {
@@ -2326,6 +2343,22 @@ function load_forum_page() {
     $('div#navbar-collapse > ul:first > li:nth-child(4)').addClass('active');
     $('div#content > div:nth-child(2)').html(FORUM_PAGE_STR);
     $('div#modal').html(FORUM_MODAL_STR);
+    $.ajax('php/request.php', {
+        dataType: 'json',
+        async: false,
+        data: (function () {
+            var request = {};
+            request.name = 'GET_FORUM_GLOBAL';
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            $('span[name="today_member"]').html(Math.ceil(Number(obj.content.total_member) * Math.random()));
+            $('span[name="yesterday_member"]').html(Math.ceil(Number(obj.content.total_member) * Math.random()));
+            $('span[name="total_post"]').html(obj.content.total_post);
+            $('span[name="total_member"]').html(obj.content.total_member);
+        }
+    });
     $.ajax('php/request.php', {
         dataType: 'json',
         async: false,
@@ -2350,7 +2383,9 @@ function load_forum_page() {
                                                 );
             }
             obj.content.sort(function (x, y) {
-                return (new Date(y.last_reply).getTime()) - (new Date(x.last_reply).getTime());
+                var tx = x.latest_reply.split(/[: \-]/g).map(Number),
+                    ty = y.latest_reply.split(/[: \-]/g).map(Number);
+                return ((new Date(ty[0], ty[1], ty[2], ty[3], ty[4], ty[5], 0)).getTime()) - ((new Date(tx[0], tx[1], tx[2], tx[3], tx[4], tx[5], 0)).getTime());
             });
             for (i = 0; i < 5 && i < obj.content.length; i += 1) {
                 $('ul#latest-reply-list').append('<a class="list-group-item" onclick="display_post(this)" href="javascript:void(0)"' +
@@ -2373,22 +2408,6 @@ function load_forum_page() {
                                                 obj.content[i].title + '</span></a>'
                                                 );
             }
-        }
-    });
-    $.ajax('php/request.php', {
-        dataType: 'json',
-        async: false,
-        data: (function () {
-            var request = {};
-            request.name = 'GET_FORUM_GLOBAL';
-            return 'request=' + JSON.stringify(request);
-        }()),
-        type: 'POST',
-        success: function (obj) {
-            $('span[name="today_member"]').html(Math.ceil(Number(obj.content.total_member) * Math.random()));
-            $('span[name="yesterday_member"]').html(Math.ceil(Number(obj.content.total_member) * Math.random()));
-            $('span[name="total_post"]').html(obj.content.total_post);
-            $('span[name="total_member"]').html(obj.content.total_member);
         }
     });
 }
@@ -2603,7 +2622,18 @@ function load_product_info_page() {
     for (i = 0; i < USAGE.length; i += 1) {
         $('select[name="usage"]').append('<option value="' + i + '">' + USAGE[i] + '</option>');
     }
-    if (product !== null) {
+    if (product !== null && product !== undefined) {
+        for (name in product) {
+            if (name === 'usage') {
+                $('select#' + name.replace('_', '-')).val(product[name]);
+            } else if (name === 'descript' || name === 'ps') {
+                $('textarea[name="' + name + '"]').val(product[name]);
+            } else {
+                $('input[name="' + name + '"]').val(product[name]);
+            }
+        }
+    } else if ($.cookie('product_buffer') !== undefined) {
+        product = JSON.parse($.cookie('product_buffer'));
         for (name in product) {
             if (name === 'usage') {
                 $('select#' + name.replace('_', '-')).val(product[name]);
@@ -3210,6 +3240,7 @@ function save_product() {
     }
     product.level = i;
     product.rate = RATE[i];
+    $.cookie('product_buffer', JSON.stringify(product), 30, '/');
     load_upload_page();
 }
 
