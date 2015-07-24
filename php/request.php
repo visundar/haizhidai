@@ -20,6 +20,122 @@ try {
     mysql_select_db('haizhidai', $con);
 
     switch ($obj->name) {
+        case 'GET_NUM_FOCUS_MY_PRODUCT':
+        $query = "SELECT `view` FROM `product` WHERE `borrower`=" . $_COOKIE['user_serial'];
+        $result = mysql_query($query, $con) or throw_exception(mysql_error());
+        $response->content = 0;
+        while ($o = mysql_fetch_object($result)) {
+            $response->content += (int) $o->view;
+        }
+        break;
+        case 'GET_FORUM_GLOBAL':
+            $query = "SELECT COUNT(*) AS total_member FROM `member`";
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            $response->content = mysql_fetch_object($result);
+            $query = "SELECT COUNT(*) AS total_post FROM `post`";
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            $o = mysql_fetch_object($result);
+            $response->content->total_post = $o->total_post;
+            break;
+        case 'SUBMIT_LIKE':
+            $query = "UPDATE `member` SET `like`=`like`+(" . $obj->content->like . ") WHERE `user_serial`=" . $obj->content->user_serial;
+            mysql_query($query, $con) or throw_exception(mysql_error());
+            break;
+        case 'GET_POST_AND_REPLY':
+            $response->content = array();
+            $query = "SELECT `content`, `time`, `user_serial` FROM `post` WHERE `post_serial`=" . $obj->content->post_serial;
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            array_push($response->content, mysql_fetch_object($result));
+            $query = "SELECT `content`, `time`, `user_serial` FROM `reply` WHERE `post_serial`=" . $obj->content->post_serial;
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            while ($o = mysql_fetch_object($result)) {
+                array_push($response->content, $o);
+            }
+            for ($i = 0; $i < count($response->content); $i += 1) {
+                $query = "SELECT `first_name`, `last_name`, `num_post`, `num_reply`, `like` FROM `member` WHERE `user_serial`=" . $response->content[$i]->user_serial;
+                $result = mysql_query($query, $con) or throw_exception(mysql_error());
+                $o = mysql_fetch_object($result);
+                $response->content[$i]->first_name = $o->first_name;
+                $response->content[$i]->last_name = $o->last_name;
+                $response->content[$i]->num_post = $o->num_post;
+                $response->content[$i]->num_reply = $o->num_reply;
+                $response->content[$i]->like = $o->like;
+            }
+            break;
+        case 'GET_POPULAR_POST':
+            $query = "SELECT * FROM `post` ORDER BY `latest_reply` DESC LIMIT 50";
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            $response->content = array();
+            while ($o = mysql_fetch_object($result)) {
+                array_push($response->content, $o);
+            }
+            $query = "SELECT `post_serial`, COUNT(*) AS num FROM `reply` GROUP BY `post_serial`";
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            $map = array();
+            while ($o = mysql_fetch_object($result)) {
+                $map[(int) $o->post_serial] = (int) $o->num;
+            }
+            for ($i = 0; $i < count($response->content); $i += 1) {
+                $response->content[$i]->num_replies = (isset($map[(int) $response->content[$i]->post_serial]) ? $map[(int) $response->content[$i]->post_serial] : 0);
+            }
+            break;
+        case 'SUBMIT_REPLY':
+            $query = "INSERT INTO `reply` (`user_serial`, `content`, `post_serial`) VALUES (" . $_COOKIE['user_serial'];
+            $query .= ", '" . $obj->content->content . "', " . $obj->content->post_serial . ")";
+            mysql_query($query, $con) or throw_exception(mysql_error());
+            $query = "UPDATE `member` SET `num_reply`=`num_reply`+1 WHERE `user_serial`=" . $_COOKIE['user_serial'];
+            mysql_query($query, $con) or throw_exception(mysql_error());
+            $query = "UPDATE `post` SET `latest_reply`=NOW() WHERE `post_serial`=" . $obj->content->post_serial;
+            mysql_query($query, $con) or throw_exception(mysql_error());
+            break;
+        case 'SUBMIT_POST':
+            $query = "INSERT INTO `post` (`time`, `title`, `user_serial`, `content`, `latest_reply`) VALUES (NOW(), '";
+            $query .= $obj->content->title . "', " . $_COOKIE['user_serial'] . ", '" . $obj->content->content;
+            $query .= "', NOW())";
+            mysql_query($query, $con) or throw_exception(mysql_error());
+            $query = "UPDATE `member` SET `num_post`=`num_post`+1 WHERE `user_serial`=" . $_COOKIE['user_serial'];
+            mysql_query($query, $con) or throw_exception(mysql_error());
+            break;
+        case 'GET_MY_FRIEND':
+            $response->content = array();
+            $query = "SELECT `content`, `receiver` FROM `message` WHERE `type`=2 && `sender`=" . $_COOKIE['user_serial'];
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            while ($o = mysql_fetch_object($result)) {
+                ereg('.*\|([0-9]+)', $o->content, $regs);
+                if ($regs[1] === '1') {
+                    $regs[1] = '2';
+                } else if ($regs[1] === '2') {
+                    $regs[1] = '1';
+                }
+                array_push($response->content, array((int) $o->receiver, '', (int) $regs[1], false));
+            }
+            $query = "SELECT `friend` FROM `member` WHERE `user_serial`=" . $_COOKIE['user_serial'];
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            $o = mysql_fetch_object($result);
+            $tok = strtok($o->friend, '|');
+            while ($tok) {
+                ereg('([0-9]+):([0-9]+)', $tok, $regs);
+                array_push($response->content, array((int) $regs[1], '', (int) $regs[2], true));
+                $tok = strtok('|');
+            }
+            $serial_list = '';
+            foreach ($response->content as $user) {
+                $serial_list .= $user[0] . ", ";
+            }
+            if ($serial_list === '') {
+                throw_exception('You have no friend');
+            }
+            $serial_list = substr($serial_list, 0, -2);
+            $query = "SELECT `first_name`, `last_name`, `user_serial` FROM `member` WHERE `user_serial` IN (" . $serial_list . ")";
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            while ($o = mysql_fetch_object($result)) {
+                for ($i = 0; $i < count($response->content); $i += 1) {
+                    if ($response->content[$i][0] === (int) $o->user_serial) {
+                        $response->content[$i][1] = $o->last_name . $o->first_name;
+                    }
+                }
+            }
+            break;
         case 'GET_AUTHEN':
             $query = "SELECT `what`, `time` FROM `image` WHERE `user_serial`=" . $obj->content->user_serial;
             $result = mysql_query($query, $con) or throw_exception(mysql_error());
@@ -55,11 +171,15 @@ try {
             if (mysql_num_rows($result) === 0) {
                 throw_exception('Friend not found');
             }
-            while ($o = mysql_fetch_object($result)) {
-                $query = "INSERT INTO `message` (`sender`, `receiver`, `type`, `content`) VALUES (" . $_COOKIE['user_serial'] . ", ";
-                $query .= $o->user_serial . ", 2, '" . $_COOKIE['first_name'] . "|" . $obj->content->relation . "')";
-                mysql_query($query, $con) or throw_exception(mysql_error());
+            $o = mysql_fetch_object($result);
+            $query = "SELECT * FROM `message` WHERE `type`=2 && `receiver`=" . $o->user_serial;
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            if (mysql_num_rows($result) > 0) {
+                throw_exception('Friend has been invited');
             }
+            $query = "INSERT INTO `message` (`sender`, `receiver`, `type`, `content`) VALUES (" . $_COOKIE['user_serial'] . ", ";
+            $query .= $o->user_serial . ", 2, '" . $_COOKIE['first_name'] . "|" . $obj->content->relation . "')";
+            mysql_query($query, $con) or throw_exception(mysql_error());
             mysql_free_result($result);
             break;
         case 'ADD_FRIEND':

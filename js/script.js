@@ -18,7 +18,7 @@ var MARRIAGE = ['未婚', '已婚', '離異'];
 var PRODUCT = [{
         name: '普通借款标',
         suit: '工薪族',
-        panel: 'danger',
+        panel: 'success',
         condition: [
             '21-55周岁中国大陆公民',
             '手机绑定',
@@ -980,6 +980,12 @@ var CASH_MODAL_STR = function () {
                         </div>
                     </div>
                     <div class="form-group">
+                        <label for="confirm_account_number" class="col-md-offset-1 col-md-2 control-label">*确认 銀行帐户</label>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control" id="confirm-account-number" placeholder="请重新输入銀行帐户">
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label for="cellphone" class="col-md-offset-1 col-md-2 control-label">*手机号</label>
                         <div class="col-md-8">
                             <input type="text" class="form-control" id="cellphone" placeholder="手机号">
@@ -1074,13 +1080,13 @@ var HOME_PANEL_STR = function () {
 var INVEST_MANAGE_PAGE_STR = function () {
     'use strict';
     /*
-<span style="color:#777;display:inline-block;padding-bottom:10px">
+<span style="color:#777;display:inline-block;padding-bottom:10px" id="statistic-info">
     投资统计：&nbsp;&nbsp;
-        成功借出总额￥0.00&nbsp;&nbsp;
-        已收本金￥0.00&nbsp;&nbsp;
-        未收本金￥0.00&nbsp;&nbsp;
-        已收利息￥0.00&nbsp;&nbsp;
-        未收利息￥0.00&nbsp;&nbsp;
+        成功借出总额&nbsp;&yen;<span></span>元&nbsp;&nbsp;
+        已收本金&nbsp;&yen;<span></span>元&nbsp;&nbsp;
+        未收本金&nbsp;&yen;<span></span>元&nbsp;&nbsp;
+        已收利息&nbsp;&yen;<span></span>元&nbsp;&nbsp;
+        未收利息&nbsp;&yen;<span></span>元&nbsp;&nbsp;
 </span>
 <div class="row">
     <div class="panel panel-default">
@@ -1195,7 +1201,7 @@ var BORROW_MANAGE_PAGE_STR = function () {
                         <th>标题</th>
                         <th>借款编号</th>
                         <th>期数</th>
-                        <th>发标时间</th>
+                        <th>完标时间</th>
                         <th>应还日期</th>
                         <th>应还总额</th>
                         <th>应还本金</th>
@@ -1216,6 +1222,7 @@ var FRIEND_MANAGE_PAGE_STR = function () {
     'use strict';
     /*
 <form class="form-horizontal">
+    <div class="alert alert-warning" role="alert"><strong>温馨提示</strong>： 邀请的好友须为本平台用户</div>
     <div class="form-group">
         <label for="email" class="col-md-2 control-label">*邮箱</label>
         <div class="col-md-5">
@@ -1235,6 +1242,18 @@ var FRIEND_MANAGE_PAGE_STR = function () {
        </div>
     </div>
 </form>
+<hr>
+<table class="table" id="friend-list">
+    <thead>
+        <tr>
+            <th>姓名</th>
+            <th>关係</th>
+            <th>状态</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
     */
 }.toString().slice(38, -4);
 var ALERT_DISMISS_STR = function () {
@@ -1249,48 +1268,201 @@ var FORUM_PAGE_STR = function () {
     'use strict';
     /*
 <div class="row">
-    <div class="col-md-3 no-padding">
+    <samp>今日: <span name="today_member"></span>|昨日: <span name="yesterday_member"></span>|帖子: <span name="total_post"></span>|会员: <span name="total_member"></span></samp>
+    <button class="btn btn-default" style="position:absolute;right:50px;color:orange" data-toggle="modal" data-target="#post-modal">发新帖</button>
+</div>
+<hr>
+<div class="row">
+    <div class="col-md-4 no-padding">
         <div class="panel panel-default">
             <div class="panel-heading">最新主题</div>
             <div class="panel-body no-padding">
-                <ul class="list-group" style="margin-bottom:0">
-                    <a class="list-group-item"><span class="badge">0</span>手机无法投标</a>
-                    <a class="list-group-item"><span class="badge">12</span>海智贷的利率是不是太高了</a>
-                    <a class="list-group-item"><span class="badge">7</span>1月期限19%年化收益是什么意思？</a>
-                    <a class="list-group-item"><span class="badge">89</span>希望论坛能加上推荐回复。</a>
+                <ul class="list-group" style="margin-bottom:0" id="latest-post-list">
                 </ul>
             </div>
         </div>
     </div>
-    <div class="col-md-3 no-padding">
+    <div class="col-md-4 no-padding">
         <div class="panel panel-default">
             <div class="panel-heading">最新回复</div>
             <div class="panel-body no-padding">
-                <ul class="list-group" style="margin-bottom:0">
-                    <a class="list-group-item"><span class="badge">112</span>提现难吗?</a>
-                    <a class="list-group-item"><span class="badge">68</span>论坛改了很大的进步</a>
-                    <a class="list-group-item"><span class="badge">25</span>积分有什用途</a>
-                    <a class="list-group-item"><span class="badge">89</span>希望论坛能加上推荐回复。</a>
+                <ul class="list-group" style="margin-bottom:0" id="latest-reply-list">
                 </ul>
             </div>
         </div>
     </div>
-    <div class="col-md-3 no-padding">
+    <div class="col-md-4 no-padding">
         <div class="panel panel-default">
             <div class="panel-heading">热帖</div>
             <div class="panel-body no-padding">
-                <ul class="list-group" style="margin-bottom:0">
-                    <a class="list-group-item"><span class="badge">112</span>提现难吗?</a>
-                    <a class="list-group-item"><span class="badge">89</span>希望论坛能加上推荐回复。</a>
-                    <a class="list-group-item"><span class="badge">68</span>论坛改了很大的进步</a>
+                <ul class="list-group" style="margin-bottom:0" id="most-reply-list">
                 </ul>
             </div>
         </div>
     </div>
-    <div class="col-md-3 no-padding">
-        <div class="panel panel-default">
-            <div class="panel-heading">精华帖子</div>
-            <div class="panel-body"></div>
+</div>
+<div class="row">
+    <div class="panel panel-default">
+        <div class="panel-heading">借贷讨论区</div>
+        <div class="panel-body">
+            <div class="col-md-1">
+                <img src="img/brand_icon.png" alt="">
+            </div>
+            <div class="col-md-7">
+                【借款讨论区】
+                <br>
+                <span class="ps">借款人之间心得交流，如何更快更安全的借款，维护借款人利益。</span>
+            </div>
+            <div class="col-md-1">
+                <!--<span style="color:red">13</span>/55-->
+            </div>
+            <div class="col-md-3" id="just-reply">
+            </div>
+        </div>
+    </div>
+</div>
+    */
+}.toString().slice(38, -4);
+var FORUM_MODAL_STR = function () {
+    'use strict';
+    /*
+<div class="modal fade" id="post-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4>发表帖子</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" id="post">
+                    <div class="form-group">
+                        <label for="title" class="col-md-2 control-label">标题</label>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control" id="title" placeholder="请输入标题" name="title">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="content" class="col-md-2 control-label">内容</label>
+                        <div class="col-md-8">
+                            <textarea class="form-control" id="content" rows="3" placeholder="请输入内容" name="content"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal" onclick="submit_post()">发表帖子</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="discuss-modal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 style="color:brown"></h4>
+            </div>
+            <div class="modal-body" style="overflow-y: auto;max-height: calc(100vh - 210px)">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-info" data-toggle="modal" data-target="#reply-modal">回复帖子</button>
+                <button class="btn btn-default" data-dismiss="modal">离开</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="reply-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4>回复帖子</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" id="reply">
+                    <div class="form-group">
+                        <label for="content" class="col-md-2 control-label">内容</label>
+                        <div class="col-md-8">
+                            <textarea class="form-control rows="3" placeholder="请输入内容" name="content"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal" onclick="submit_reply(this)" id="submit-reply">回复</button>
+            </div>
+        </div>
+    </div>
+</div>
+    */
+}.toString().slice(38, -4);
+var FORUM_ROW_STR = function () {
+    'use strict';
+    /*
+<div class="row forum-row">
+    <div class="col-md-offset-1 col-md-10 thumbnail">
+        <div class="col-md-3" style="border-right: 1px solid #EEE">
+            <div class="row">
+                <div style="padding: 10px 0 0 20px">
+                    <label for="member-name"></label>
+                </div>
+            </div>
+            <hr>
+            <div class="row text-center">
+                <img src="img/avatar.gif" alt="" style="max-width:120px;box-shadow:4px 4px 3px rgba(20%,20%,40%,0.5)">
+            </div>
+            <hr>
+            <div class="row" name="para">
+                <div class="col-md-4" style="border-right: 1px solid #EEE">
+                    <span style="color:red"></span>
+                    <br>
+                    帖子
+                </div>
+                <div class="col-md-4" style="border-right: 1px solid #EEE">
+                    <span style="color:red"></span>
+                    <br>
+                    回复
+                </div>
+                <div class="col-md-4">
+                    <span style="color:red"></span>
+                    <br>
+                    积分
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div style="padding: 0 0 10px 20px">
+                    <span class="glyphicon glyphicon-envelope text-info" aria-hidden="true"></span>发消息
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="row">
+                <div style="padding: 10px 0 0 20px" name="time">
+                    <span class="glyphicon glyphicon-user text-success" aria-hidden="true"></span>
+                    发表于
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div style="padding: 0 10px">
+                    <p>
+                    </p>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div style="padding: 0 0 0 20px">
+                    <a href="javascript:void(0)" onclick="submit_like(this, 1)">
+                        <span class="glyphicon glyphicon-thumbs-up text-success" aria-hidden="true"></span>
+                        支持
+                    </a>
+                    <a href="javascript:void(0)" onclick="submit_like(this, -1)">
+                        <span class="glyphicon glyphicon-thumbs-down text-danger" aria-hidden="true"></span>
+                        反对
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -1329,7 +1501,7 @@ var ACCOUNT_PAGE_STR = function () {
                 <canvas id="radar-chart"></canvas>
             </div>
             <div class="col-md-6">
-                <table class="table table-bordered table-hover">
+                <table class="table table-bordered table-hover" id="member-statistic">
                     <thead>
                         <tr>
                             <th>社群数据</th>
@@ -1339,27 +1511,27 @@ var ACCOUNT_PAGE_STR = function () {
                     <tbody>
                         <tr>
                             <td>标的关注</td>
-                            <td>1024人</td>
+                            <td><span></span>人</td>
                         </tr>
                         <tr>
                             <td>评价</td>
-                            <td>好</td>
+                            <td><span>好</span></td>
                         </tr>
                         <tr>
                             <td>论坛发文</td>
-                            <td>76篇</td>
+                            <td><span></span>篇</td>
                         </tr>
                         <tr>
                             <td>论坛留言</td>
-                            <td>108则</td>
+                            <td><span></span>则</td>
                         </tr>
                         <tr>
                             <td>背书(赞)</td>
-                            <td>998</td>
+                            <td><span></span></td>
                         </tr>
                         <tr>
                             <td>好友数</td>
-                            <td>150</td>
+                            <td><span></span></td>
                         </tr>
                     </tbody>
                 </table>
@@ -1704,6 +1876,7 @@ function load_home_page() {
     clear_all();
     get_member_from_server();
     $('body').removeClass('index-cover');
+    $('div#content').html('<div class="col-md-2"></div><div class="col-md-8 thumbnail"></div><div class="col-md-2"></div>');
     $('div#content > div:eq(1)').html(HOME_PANEL_STR);
     $('div#navbar-collapse > ul:eq(0)').html(NAVBAR_STR);
     $('div#navbar-collapse > .navbar-right').remove();
@@ -1785,6 +1958,19 @@ function display_product_modal(a) {
             borrower = obj.content.user_serial;
         }
     });
+    $('a[href="#member-info"]').on('shown.bs.tab', function () {
+        new Chart(document.getElementById("radar-chart").getContext("2d")).Radar({
+            labels: ["身份特质", "信用评分", "徵信资料", "人脉关係", "信用历史"],
+            datasets: [
+                {
+                    fillColor: "rgba(220,220,220,0.2)",
+                    data: [65, 59, 90, 81, 56]
+                }
+            ]
+        }, {
+            responsive: true
+        });
+    });
     $.ajax('php/request.php', {
         dataType: 'json',
         async: false,
@@ -1851,6 +2037,44 @@ function display_product_modal(a) {
     });
 }
 
+function display_post(a) {
+    'use strict';
+    var serial = Number($(a).attr('value')), i;
+    $.ajax('php/request.php', {
+        dataType: 'json',
+        async: false,
+        data: (function () {
+            var request = {}, content = {};
+            content.post_serial = serial;
+            request.name = 'GET_POST_AND_REPLY';
+            request.content = content;
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            $('div#discuss-modal h4').html($(a).children('span:nth-child(2)').text());
+            $('div#discuss-modal div.modal-body').html('');
+            for (i = 0; i < obj.content.length; i += 1) {
+                var credit = Number(obj.content[i].num_post) * 5 + Number(obj.content[i].num_reply) * 3 + Number(obj.content[i].like);
+                $('div#discuss-modal div.modal-body').append(FORUM_ROW_STR);
+                $('div#discuss-modal div.modal-body > div.row:last').attr('member', obj.content[i].user_serial);
+                $('div#discuss-modal div.modal-body > div.row:last label[for="member-name"]').html(obj.content[i].last_name + obj.content[i].first_name);
+                $('div#discuss-modal div.modal-body > div.row:last div[name="para"] span:eq(0)').html(obj.content[i].num_post);
+                $('div#discuss-modal div.modal-body > div.row:last div[name="para"] span:eq(1)').html(obj.content[i].num_reply);
+                $('div#discuss-modal div.modal-body > div.row:last div[name="para"] span:eq(2)').html(credit);
+                $('div#discuss-modal div.modal-body > div.row:last div[name="time"]').append(obj.content[i].time);
+                $('div#discuss-modal div.modal-body > div.row:last p').html(obj.content[i].content);
+            }
+            $('button#submit-reply').attr('post_serial', serial);
+            $('#discuss-modal').modal('show');
+        },
+        complete: function (obj) {
+            //alert(JSON.stringify(obj));
+            //alert($(a).children('span:nth-child(2)').text());
+        }
+    });
+}
+
 function change_sample_modal(a) {
     'use strict';
     var i, tmp = $(a).parent().prev().html();
@@ -1876,7 +2100,7 @@ function load_invest_page() {
     clear_all();
     $('div#navbar-collapse > ul:first > li:nth-child(1)').addClass('active');
     $('div#content > div:nth-child(2)').html(INVEST_PAGE_STR);
-    $('div#modal').append(RATE_MODAL_STR + FILTER_MODAL_STR + PRODUCT_MODAL_STR);
+    $('div#modal').html(RATE_MODAL_STR + FILTER_MODAL_STR + PRODUCT_MODAL_STR);
     $('div#modal').append(CHARGE_MODAL_STR + AUTHEN_MODAL_STR + INVEST_MODAL_STR);
     $('form').submit(function () {
         return false;
@@ -1888,19 +2112,6 @@ function load_invest_page() {
         a.push(i);
     }
     generate_product_table(a);
-    $('a[href="#member-info"]').on('shown.bs.tab', function () {
-        new Chart(document.getElementById("radar-chart").getContext("2d")).Radar({
-            labels: ["個人信息", "線上數據", "還款紀錄", "負債能力", "信用歷史"],
-            datasets: [
-                {
-                    fillColor: "rgba(220,220,220,0.2)",
-                    data: [65, 59, 90, 81, 56]
-                }
-            ]
-        }, {
-            responsive: true
-        });
-    });
 }
 
 function load_borrow_page() {
@@ -1912,6 +2123,7 @@ function load_borrow_page() {
         $('div#content > div:nth-child(1)').append('<a class="list-group-item">' + BORROW_PROGRESS[i] + '</a>');
     }
     $('div#content > div:nth-child(1) > a:nth-child(1)').addClass('active');
+    $('div#content > div:nth-child(2)').html('');
     for (i = 0; i < PRODUCT.length; i += 1) {
         $('div#content > div:nth-child(2)').append(PRODUCT_PANEL_STR);
         $('div#content > div:nth-child(2) div.panel:last').addClass('panel-' + PRODUCT[i].panel);
@@ -2081,7 +2293,7 @@ function load_account_page() {
     });
     $('div#content > div:nth-child(2)').html(ACCOUNT_PAGE_STR);
     new Chart(document.getElementById("radar-chart").getContext("2d")).Radar({
-        labels: ["個人信息", "線上數據", "還款紀錄", "負債能力", "信用歷史"],
+        labels: ["身份特质", "信用评分", "徵信资料", "人脉关係", "信用历史"],
         datasets: [
             {
                 fillColor: "rgba(220,220,220,0.2)",
@@ -2104,14 +2316,100 @@ function load_account_page() {
     }
     $('div#content > div:nth-child(2) h3:eq(1) > span').html(member.latest_sign_in);
     $('div#content > div:nth-child(2) h3:eq(2) > span').html(member.remain + '.00');
-    $('div#modal').append(CHARGE_MODAL_STR + AUTHEN_MODAL_STR + CASH_MODAL_STR);
+    $('div#modal').html(CHARGE_MODAL_STR + AUTHEN_MODAL_STR + CASH_MODAL_STR);
+    $.ajax('php/request.php', {
+        dataType: 'json',
+        async: false,
+        data: (function () {
+            var request = {};
+            request.name = 'GET_NUM_FOCUS_MY_PRODUCT';
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            $('table#member-statistic > tbody > tr:nth-child(1) > td:nth-child(2) > span').html(obj.content);
+        }
+    });
+    $('table#member-statistic > tbody > tr:nth-child(3) > td:nth-child(2) > span').html(member.num_post);
+    $('table#member-statistic > tbody > tr:nth-child(4) > td:nth-child(2) > span').html(member.num_reply);
+    $('table#member-statistic > tbody > tr:nth-child(5) > td:nth-child(2) > span').html(member.like);
+    $('table#member-statistic > tbody > tr:nth-child(6) > td:nth-child(2) > span').html(member.friend.split(/\|/).length - 1);
 }
 
 function load_forum_page() {
     'use strict';
+    var i;
     clear_all();
     $('div#navbar-collapse > ul:first > li:nth-child(4)').addClass('active');
     $('div#content > div:nth-child(2)').html(FORUM_PAGE_STR);
+    $('div#modal').html(FORUM_MODAL_STR);
+    $.ajax('php/request.php', {
+        dataType: 'json',
+        async: false,
+        data: (function () {
+            var request = {};
+            request.name = 'GET_FORUM_GLOBAL';
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            $('span[name="today_member"]').html(Math.ceil(Number(obj.content.total_member) * Math.random()));
+            $('span[name="yesterday_member"]').html(Math.ceil(Number(obj.content.total_member) * Math.random()));
+            $('span[name="total_post"]').html(obj.content.total_post);
+            $('span[name="total_member"]').html(obj.content.total_member);
+        }
+    });
+    $.ajax('php/request.php', {
+        dataType: 'json',
+        async: false,
+        data: (function () {
+            var request = {}, content = {};
+            request.name = 'GET_POPULAR_POST';
+            request.content = content;
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            obj.content.sort(function (x, y) {
+                var tx = x.time.split(/[: \-]/g).map(Number),
+                    ty = y.time.split(/[: \-]/g).map(Number);
+                return ((new Date(ty[0], ty[1], ty[2], ty[3], ty[4], ty[5], 0)).getTime()) - ((new Date(tx[0], tx[1], tx[2], tx[3], tx[4], tx[5], 0)).getTime());
+            });
+            for (i = 0; i < 5 && i < obj.content.length; i += 1) {
+                $('ul#latest-post-list').append('<a class="list-group-item" onclick="display_post(this)" href="javascript:void(0)"' +
+                                                 ' value="' + obj.content[i].post_serial + '">' +
+                                                '<span class="badge">' + obj.content[i].num_replies + '</span><span>' +
+                                                obj.content[i].title + '</span></a>'
+                                                );
+            }
+            obj.content.sort(function (x, y) {
+                var tx = x.latest_reply.split(/[: \-]/g).map(Number),
+                    ty = y.latest_reply.split(/[: \-]/g).map(Number);
+                return ((new Date(ty[0], ty[1], ty[2], ty[3], ty[4], ty[5], 0)).getTime()) - ((new Date(tx[0], tx[1], tx[2], tx[3], tx[4], tx[5], 0)).getTime());
+            });
+            for (i = 0; i < 5 && i < obj.content.length; i += 1) {
+                $('ul#latest-reply-list').append('<a class="list-group-item" onclick="display_post(this)" href="javascript:void(0)"' +
+                                                 ' value="' + obj.content[i].post_serial + '">' +
+                                                '<span class="badge">' + obj.content[i].num_replies + '</span><span>' +
+                                                obj.content[i].title + '</span></a>'
+                                                );
+            }
+            $('div#just-reply').html('<a onclick="display_post(this)" href="javascript:void(0)"' +
+                                     ' value="' + obj.content[0].post_serial + '"><span></span>' +
+                                     '<span>' + obj.content[0].title + '</span></a>' + '<br><span class="ps">刚刚</span>'
+                                    );
+            obj.content.sort(function (x, y) {
+                return Number(y.num_replies) - Number(x.num_replies);
+            });
+            for (i = 0; i < 5 && i < obj.content.length; i += 1) {
+                $('ul#most-reply-list').append('<a class="list-group-item" onclick="display_post(this)" href="javascript:void(0)"' +
+                                                 ' value="' + obj.content[i].post_serial + '">' +
+                                                '<span class="badge">' + obj.content[i].num_replies + '</span><span>' +
+                                                obj.content[i].title + '</span></a>'
+                                                );
+            }
+        }
+    });
 }
 
 function add_friend(btn) {
@@ -2148,8 +2446,11 @@ function load_invest_manage_page() {
         }()),
         type: 'POST',
         success: function (obj) {
+            var total_invest = 0, t1, t2, t3, tmp, times;
             for (i = 0; i < obj.content.length; i += 1) {
-                var t1 = Number(obj.content[i].complete), t2 = Number(obj.content[i].total), t3, tmp, times;
+                t1 = Number(obj.content[i].complete);
+                t2 = Number(obj.content[i].total);
+                total_invest += Number(obj.content[i].amount);
                 if (t1 < t2) {
                     tmp = Number(obj.content[i].amount) * (1 + (Number(obj.content[i].rate) * 0.01 * Number(obj.content[i].term) / 12));
                     $('table#investing > tbody').append('<tr></tr>');
@@ -2179,6 +2480,7 @@ function load_invest_manage_page() {
                     $('table#paying > tbody > tr:last').append('<td>' + t2.toFixed(2) + '</td>');
                 }
             }
+            $('span#statistic-info > span:nth-child(1)').html(total_invest);
         }
     });
     $('div#calendar').calendar({
@@ -2217,22 +2519,25 @@ function load_borrow_manage_page() {
                     $('table#borrowing > tbody > tr:last').append('<td>' + obj.content[i].amount + '</td>');
                     $('table#borrowing > tbody > tr:last').append('<td>' + obj.content[i].rate + '%</td>');
                 } else {
-                    var tmp, t1;
+                    var tmp, t1, t2, t3;
                     tmp = Date.parse(obj.content[i].complete_date);
-                    tmp += Number(obj.content[i].term) * 2592000000;
+                    t2 = Math.floor(Math.random() * Number(obj.content[i].term) + 1);
+                    tmp += Number(t2) * 2592000000;
                     tmp = ((new Date(tmp)).toISOString()).slice(0, 10);
                     t1 = Number(obj.content[i].amount) * Number(obj.content[i].rate) * 0.01 * Number(obj.content[i].term) / 12;
+                    t3 = ((new Date()).getTime() - (new Date(tmp)).getTime());
+                    t3 = t3 < 0 ? 0 : (t3 / 86400000);
                     $('table#complete > tbody').append('<tr></tr>');
                     $('table#complete > tbody > tr:last').append('<td>' + obj.content[i].name + '</td>');
                     $('table#complete > tbody > tr:last').append('<td>' + obj.content[i].product_serial + '</td>');
-                    $('table#complete > tbody > tr:last').append('<td>' + obj.content[i].term + '</td>');
-                    $('table#complete > tbody > tr:last').append('<td>' + obj.content[i].time.slice(0, 10) + '</td>');
+                    $('table#complete > tbody > tr:last').append('<td>' + t2 + '/' + obj.content[i].term + '</td>');
+                    $('table#complete > tbody > tr:last').append('<td>' + obj.content[i].complete_date + '</td>');
                     $('table#complete > tbody > tr:last').append('<td>' + tmp + '</td>');
-                    $('table#complete > tbody > tr:last').append('<td>' + (Number(obj.content[i].amount) + t1) + '</td>');
+                    $('table#complete > tbody > tr:last').append('<td>' + (Number(obj.content[i].amount) + t1).toFixed(2) + '</td>');
                     $('table#complete > tbody > tr:last').append('<td>' + obj.content[i].amount + '</td>');
                     $('table#complete > tbody > tr:last').append('<td>' + t1.toFixed(2) + '</td>');
-                    $('table#complete > tbody > tr:last').append('<td>' + Math.floor(Math.random() * 30) + '</td>');
-                    $('table#complete > tbody > tr:last').append('<td>' + (Math.floor(Math.random() * 100) + 1) + '%</td>');
+                    $('table#complete > tbody > tr:last').append('<td>' + t3 + '</td>');
+                    $('table#complete > tbody > tr:last').append('<td>' + ((t2 - 1) * 100 / Number(obj.content[i].term)).toFixed(1) + '%</td>');
                 }
             }
         }
@@ -2274,9 +2579,36 @@ function load_friend_manage_page() {
                     alert('无用户使用此信箱');
                 } else {
                     alert('邀请已送出');
+                    $('a.list-group-item:eq(3)').click();
                 }
             }
         });
+    });
+    $.ajax('php/request.php', {
+        dataType: 'json',
+        data: (function () {
+            var request = {}, content = {};
+            request.name = 'GET_MY_FRIEND';
+            request.content = content;
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            var j;
+            if (obj.title === 'ERROR') {
+                return;
+            }
+            for (i = 0; i < obj.content.length; i += 1) {
+                $('table#friend-list > tbody').append('<tr></tr>');
+                $('table#friend-list > tbody > tr:last').append('<td>' + obj.content[i][1] + '</td>');
+                $('table#friend-list > tbody > tr:last').append('<td>' + RELATION[obj.content[i][2]] + '</td>');
+                if (obj.content[i][3]) {
+                    $('table#friend-list > tbody > tr:last').append('<td>朋友</td>');
+                } else {
+                    $('table#friend-list > tbody > tr:last').append('<td>邀请中</td>');
+                }
+            }
+        }
     });
 }
 
@@ -2290,7 +2622,18 @@ function load_product_info_page() {
     for (i = 0; i < USAGE.length; i += 1) {
         $('select[name="usage"]').append('<option value="' + i + '">' + USAGE[i] + '</option>');
     }
-    if (product !== null) {
+    if (product !== null && product !== undefined) {
+        for (name in product) {
+            if (name === 'usage') {
+                $('select#' + name.replace('_', '-')).val(product[name]);
+            } else if (name === 'descript' || name === 'ps') {
+                $('textarea[name="' + name + '"]').val(product[name]);
+            } else {
+                $('input[name="' + name + '"]').val(product[name]);
+            }
+        }
+    } else if ($.cookie('product_buffer') !== undefined) {
+        product = JSON.parse($.cookie('product_buffer'));
         for (name in product) {
             if (name === 'usage') {
                 $('select#' + name.replace('_', '-')).val(product[name]);
@@ -2422,12 +2765,12 @@ function load_product_confirm_page() {
     }
     if ($.cookie('work_status') === '2' && has_parents === false) {
         $('td#friend-alert').html('<div class="alert alert-danger" role="alert">学生借款必须邀请父(母)亲成为好友' +
-                                  '<small>&nbsp;请至:我的帐户 > 好友管理<small></div>'
+                                  '<a class="ps" onclick="link_to_add_friend()">&nbsp;请至:我的帐户 > 好友管理</a></div>'
                                  );
         $('input[type="checkbox"]').prop('disabled', true);
     } else if (friend_count < 2) {
         $('td#friend-alert').html('<div class="alert alert-warning" role="alert">您的好友數不足，請再邀請<u>' + (2 - friend_count) + '</u>位好友' +
-                                  '<small>&nbsp;请至:我的帐户 > 好友管理<small></div>'
+                                  '<a class="ps" onclick="link_to_add_friend()">&nbsp;请至:我的帐户 > 好友管理</a></div>'
                                  );
         $('input[type="checkbox"]').prop('disabled', true);
     } else {
@@ -2709,6 +3052,9 @@ function submit_cash() {
     if (!(/^\d+$/.test($('form#cash input#account-number').val()))) {
         alert('请检查銀行帐户');
         return;
+    } else if ($('form#cash input#account-number').val() !== $('form#cash input#confirm-account-number').val()) {
+        alert('銀行帐户不一致');
+        return;
     } else if (!(/^\d+$/.test($('form#cash input#cellphone').val()))) {
         alert('请检查手机号');
         return;
@@ -2746,6 +3092,26 @@ function submit_cash() {
     });
 }
 
+function submit_like(a, num) {
+    'use strict';
+    $.ajax('php/request.php', {
+        dataType: 'json',
+        async: false,
+        data: (function () {
+            var request = {}, content = {};
+            content.user_serial = $(a).parents('div.row.forum-row').attr('member');
+            content.like = num;
+            request.name = 'SUBMIT_LIKE';
+            request.content = content;
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            $(a).fadeOut();
+        }
+    });
+}
+
 function submit_file_upload() {
     'use strict';
     load_product_confirm_page();
@@ -2775,6 +3141,43 @@ function submit_product_detail() {
             $('tr#test > td:eq(2)').html(product.amount + '元');
             $('tr#test > td:eq(3)').html('审核中');
             product = null;
+        }
+    });
+}
+
+function submit_post() {
+    'use strict';
+    $.ajax('php/request.php', {
+        dataType: 'json',
+        async: false,
+        data: (function () {
+            var request = {};
+            request.name = 'SUBMIT_POST';
+            request.content = $('form#post').serializeObject();
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            alert('发帖成功');
+        }
+    });
+}
+
+function submit_reply(btn) {
+    'use strict';
+    $.ajax('php/request.php', {
+        dataType: 'json',
+        async: false,
+        data: (function () {
+            var request = {};
+            request.name = 'SUBMIT_REPLY';
+            request.content = $('form#reply').serializeObject();
+            request.content.post_serial = $(btn).attr('post_serial');
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            alert('回复成功');
         }
     });
 }
@@ -2837,6 +3240,7 @@ function save_product() {
     }
     product.level = i;
     product.rate = RATE[i];
+    $.cookie('product_buffer', JSON.stringify(product), 30, '/');
     load_upload_page();
 }
 
@@ -2873,7 +3277,6 @@ function sign_up() {
         type: 'POST',
         success: function (obj) {
             if (obj.title === 'ERROR') {
-                alert(JSON.stringify(obj));
                 alert('此帐户已被使用');
                 return;
             }
@@ -2976,6 +3379,12 @@ function invest_this(div) {
         $('#invest-modal h3:eq(0) > strong').html(serial);
         $('#invest-modal').modal('show');
     }
+}
+
+function link_to_add_friend() {
+    'use strict';
+    load_account_page();
+    $('a.list-group-item:eq(3)').click();
 }
 
 $(document).ready(function () {
