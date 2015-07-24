@@ -1268,7 +1268,7 @@ var FORUM_PAGE_STR = function () {
     'use strict';
     /*
 <div class="row">
-    <samp>今日: 6|昨日: 37|帖子: 1148|会员: 21885</samp>
+    <samp>今日: <span name="today_member"></span>|昨日: <span name="yesterday_member"></span>|帖子: <span name="total_post"></span>|会员: <span name="total_member"></span></samp>
     <button class="btn btn-default" style="position:absolute;right:50px;color:orange" data-toggle="modal" data-target="#post-modal">发新帖</button>
 </div>
 <hr>
@@ -1278,12 +1278,6 @@ var FORUM_PAGE_STR = function () {
             <div class="panel-heading">最新主题</div>
             <div class="panel-body no-padding">
                 <ul class="list-group" style="margin-bottom:0" id="latest-post-list">
-                <!--
-                    <a class="list-group-item"><span class="badge">0</span>手机无法投标</a>
-                    <a class="list-group-item"><span class="badge">12</span>海智贷的利率是不是太高了</a>
-                    <a class="list-group-item"><span class="badge">7</span>1月期限19%年化收益是什么意思？</a>
-                    <a class="list-group-item"><span class="badge">89</span>希望论坛能加上推荐回复。</a>
-                -->
                 </ul>
             </div>
         </div>
@@ -1293,12 +1287,6 @@ var FORUM_PAGE_STR = function () {
             <div class="panel-heading">最新回复</div>
             <div class="panel-body no-padding">
                 <ul class="list-group" style="margin-bottom:0" id="latest-reply-list">
-                <!--
-                    <a class="list-group-item"><span class="badge">112</span>提现难吗?</a>
-                    <a class="list-group-item"><span class="badge">68</span>论坛改了很大的进步</a>
-                    <a class="list-group-item"><span class="badge">25</span>积分有什用途</a>
-                    <a class="list-group-item"><span class="badge">89</span>希望论坛能加上推荐回复。</a>
-                -->
                 </ul>
             </div>
         </div>
@@ -1308,11 +1296,6 @@ var FORUM_PAGE_STR = function () {
             <div class="panel-heading">热帖</div>
             <div class="panel-body no-padding">
                 <ul class="list-group" style="margin-bottom:0" id="most-reply-list">
-                <!--
-                    <a class="list-group-item"><span class="badge">112</span>提现难吗?</a>
-                    <a class="list-group-item"><span class="badge">89</span>希望论坛能加上推荐回复。</a>
-                    <a class="list-group-item"><span class="badge">68</span>论坛改了很大的进步</a>
-                -->
                 </ul>
             </div>
         </div>
@@ -1331,12 +1314,9 @@ var FORUM_PAGE_STR = function () {
                 <span class="ps">借款人之间心得交流，如何更快更安全的借款，维护借款人利益。</span>
             </div>
             <div class="col-md-1">
-                <span style="color:red">13</span>/55
+                <!--<span style="color:red">13</span>/55-->
             </div>
-            <div class="col-md-3">
-                <a data-toggle="modal" data-target="#discuss-modal">如何申请贷五万呢？</a>
-                <br>
-                <span class="ps">3 分钟前 <a>焦全喜</a></span>
+            <div class="col-md-3" id="just-reply">
             </div>
         </div>
     </div>
@@ -1380,211 +1360,108 @@ var FORUM_MODAL_STR = function () {
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 style="color:brown">如何申请贷五万呢？</h4>
+                <h4 style="color:brown"></h4>
             </div>
             <div class="modal-body" style="overflow-y: auto;max-height: calc(100vh - 210px)">
-                <div class="row">
-                    <div class="col-md-offset-1 col-md-10 thumbnail">
-                        <div class="col-md-3" style="border-right: 1px solid #EEE">
-                            <div class="row">
-                                <div style="padding: 10px 0 0 20px">
-                                    <label for="member-name">LXB159197</label>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row text-center">
-                                <img src="img/avatar.gif" alt="" style="max-width:120px;box-shadow:4px 4px 3px rgba(20%,20%,40%,0.5)">
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-md-4" style="border-right: 1px solid #EEE">
-                                    <span style="color:red">1</span>
-                                    <br>
-                                    主题
-                                </div>
-                                <div class="col-md-4" style="border-right: 1px solid #EEE">
-                                    <span style="color:red">16</span>
-                                    <br>
-                                    帖子
-                                </div>
-                                <div class="col-md-4">
-                                    <span style="color:red">141</span>
-                                    <br>
-                                    积分
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div style="padding: 0 0 10px 20px">
-                                    <span class="glyphicon glyphicon-envelope text-info" aria-hidden="true"></span>发消息
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-9">
-                            <div class="row">
-                                <div style="padding: 10px 0 0 20px">
-                                    <span class="glyphicon glyphicon-user text-success" aria-hidden="true"></span>
-                                    发表于 昨天 16:32
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div style="padding: 0 10px">
-                                    <p>
-                                        拜托大家帮忙告诉我如何申请贷款？
-                                    </p>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div style="padding: 0 0 0 20px">
-                                    <span class="glyphicon glyphicon-comment text-warning" aria-hidden="true"></span>
-                                    回复
-                                    <span class="glyphicon glyphicon-thumbs-up text-success" aria-hidden="true"></span>
-                                    支持
-                                    <span class="glyphicon glyphicon-thumbs-down text-danger" aria-hidden="true"></span>
-                                    反对
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-offset-1 col-md-10 thumbnail">
-                        <div class="col-md-3" style="border-right: 1px solid #EEE">
-                            <div class="row">
-                                <div style="padding: 10px 0 0 20px">
-                                    <label for="member-name">我是130640</label>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row text-center">
-                                <img src="img/avatar.gif" alt="" style="max-width:120px;box-shadow:4px 4px 3px rgba(20%,20%,40%,0.5)">
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-md-4" style="border-right: 1px solid #EEE">
-                                    <span style="color:red">0</span>
-                                    <br>
-                                    主题
-                                </div>
-                                <div class="col-md-4" style="border-right: 1px solid #EEE">
-                                    <span style="color:red">4</span>
-                                    <br>
-                                    帖子
-                                </div>
-                                <div class="col-md-4">
-                                    <span style="color:red">30</span>
-                                    <br>
-                                    积分
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div style="padding: 0 0 10px 20px">
-                                    <span class="glyphicon glyphicon-envelope text-info" aria-hidden="true"></span>发消息
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-9">
-                            <div class="row">
-                                <div style="padding: 10px 0 0 20px">
-                                    <span class="glyphicon glyphicon-user text-success" aria-hidden="true"></span>
-                                    发表于 昨天 16:34
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div style="padding: 0 10px">
-                                    <p>
-                                        你要贷款，可以联系客服啊，他会告诉你需要些社么
-                                    </p>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div style="padding: 0 0 0 20px">
-                                    <span class="glyphicon glyphicon-comment text-warning" aria-hidden="true"></span>
-                                    回复
-                                    <span class="glyphicon glyphicon-thumbs-up text-success" aria-hidden="true"></span>
-                                    支持
-                                    <span class="glyphicon glyphicon-thumbs-down text-danger" aria-hidden="true"></span>
-                                    反对
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-offset-1 col-md-10 thumbnail">
-                        <div class="col-md-3" style="border-right: 1px solid #EEE">
-                            <div class="row">
-                                <div style="padding: 10px 0 0 20px">
-                                    <label for="member-name">IBCASLIKE</label>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row text-center">
-                                <img src="img/avatar.gif" alt="" style="max-width:120px;box-shadow:4px 4px 3px rgba(20%,20%,40%,0.5)">
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-md-4" style="border-right: 1px solid #EEE">
-                                    <span style="color:red">1</span>
-                                    <br>
-                                    主题
-                                </div>
-                                <div class="col-md-4" style="border-right: 1px solid #EEE">
-                                    <span style="color:red">66</span>
-                                    <br>
-                                    帖子
-                                </div>
-                                <div class="col-md-4">
-                                    <span style="color:red">173</span>
-                                    <br>
-                                    积分
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div style="padding: 0 0 10px 20px">
-                                    <span class="glyphicon glyphicon-envelope text-info" aria-hidden="true"></span>发消息
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-9">
-                            <div class="row">
-                                <div style="padding: 10px 0 0 20px">
-                                    <span class="glyphicon glyphicon-user text-success" aria-hidden="true"></span>
-                                    发表于 昨天 16:39
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div style="padding: 0 10px">
-                                    <p>
-                                        您好，贷款的话这个要看您想贷款的种类，以及您的待收或抵押情况，具体的请联系网站首页右侧的在线客服，详细说下您的个人情况，谢谢
-                                    </p>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div style="padding: 0 0 0 20px">
-                                    <span class="glyphicon glyphicon-comment text-warning" aria-hidden="true"></span>
-                                    回复
-                                    <span class="glyphicon glyphicon-thumbs-up text-success" aria-hidden="true"></span>
-                                    支持
-                                    <span class="glyphicon glyphicon-thumbs-down text-danger" aria-hidden="true"></span>
-                                    反对
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-info">回复</button>
+                <button class="btn btn-info" data-toggle="modal" data-target="#reply-modal">回复帖子</button>
                 <button class="btn btn-default" data-dismiss="modal">离开</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="reply-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4>回复帖子</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" id="reply">
+                    <div class="form-group">
+                        <label for="content" class="col-md-2 control-label">内容</label>
+                        <div class="col-md-8">
+                            <textarea class="form-control rows="3" placeholder="请输入内容" name="content"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal" onclick="submit_reply(this)" id="submit-reply">回复</button>
+            </div>
+        </div>
+    </div>
+</div>
+    */
+}.toString().slice(38, -4);
+var FORUM_ROW_STR = function () {
+    'use strict';
+    /*
+<div class="row forum-row">
+    <div class="col-md-offset-1 col-md-10 thumbnail">
+        <div class="col-md-3" style="border-right: 1px solid #EEE">
+            <div class="row">
+                <div style="padding: 10px 0 0 20px">
+                    <label for="member-name"></label>
+                </div>
+            </div>
+            <hr>
+            <div class="row text-center">
+                <img src="img/avatar.gif" alt="" style="max-width:120px;box-shadow:4px 4px 3px rgba(20%,20%,40%,0.5)">
+            </div>
+            <hr>
+            <div class="row" name="para">
+                <div class="col-md-4" style="border-right: 1px solid #EEE">
+                    <span style="color:red"></span>
+                    <br>
+                    帖子
+                </div>
+                <div class="col-md-4" style="border-right: 1px solid #EEE">
+                    <span style="color:red"></span>
+                    <br>
+                    回复
+                </div>
+                <div class="col-md-4">
+                    <span style="color:red"></span>
+                    <br>
+                    积分
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div style="padding: 0 0 10px 20px">
+                    <span class="glyphicon glyphicon-envelope text-info" aria-hidden="true"></span>发消息
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="row">
+                <div style="padding: 10px 0 0 20px" name="time">
+                    <span class="glyphicon glyphicon-user text-success" aria-hidden="true"></span>
+                    发表于
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div style="padding: 0 10px">
+                    <p>
+                    </p>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div style="padding: 0 0 0 20px">
+                    <a href="javascript:void(0)" onclick="submit_like(this, 1)">
+                        <span class="glyphicon glyphicon-thumbs-up text-success" aria-hidden="true"></span>
+                        支持
+                    </a>
+                    <a href="javascript:void(0)" onclick="submit_like(this, -1)">
+                        <span class="glyphicon glyphicon-thumbs-down text-danger" aria-hidden="true"></span>
+                        反对
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -2162,7 +2039,7 @@ function display_product_modal(a) {
 
 function display_post(a) {
     'use strict';
-    var serial = Number($(a).attr('value'));
+    var serial = Number($(a).attr('value')), i;
     $.ajax('php/request.php', {
         dataType: 'json',
         async: false,
@@ -2175,6 +2052,25 @@ function display_post(a) {
         }()),
         type: 'POST',
         success: function (obj) {
+            $('div#discuss-modal h4').html($(a).children('span:nth-child(2)').text());
+            $('div#discuss-modal div.modal-body').html('');
+            for (i = 0; i < obj.content.length; i += 1) {
+                var credit = Number(obj.content[i].num_post) * 5 + Number(obj.content[i].num_reply) * 3 + Number(obj.content[i].like);
+                $('div#discuss-modal div.modal-body').append(FORUM_ROW_STR);
+                $('div#discuss-modal div.modal-body > div.row:last').attr('member', obj.content[i].user_serial);
+                $('div#discuss-modal div.modal-body > div.row:last label[for="member-name"]').html(obj.content[i].last_name + obj.content[i].first_name);
+                $('div#discuss-modal div.modal-body > div.row:last div[name="para"] span:eq(0)').html(obj.content[i].num_post);
+                $('div#discuss-modal div.modal-body > div.row:last div[name="para"] span:eq(1)').html(obj.content[i].num_reply);
+                $('div#discuss-modal div.modal-body > div.row:last div[name="para"] span:eq(2)').html(credit);
+                $('div#discuss-modal div.modal-body > div.row:last div[name="time"]').append(obj.content[i].time);
+                $('div#discuss-modal div.modal-body > div.row:last p').html(obj.content[i].content);
+            }
+            $('button#submit-reply').attr('post_serial', serial);
+            $('#discuss-modal').modal('show');
+        },
+        complete: function (obj) {
+            //alert(JSON.stringify(obj));
+            //alert($(a).children('span:nth-child(2)').text());
         }
     });
 }
@@ -2449,8 +2345,8 @@ function load_forum_page() {
             for (i = 0; i < 5 && i < obj.content.length; i += 1) {
                 $('ul#latest-post-list').append('<a class="list-group-item" onclick="display_post(this)" href="javascript:void(0)"' +
                                                  ' value="' + obj.content[i].post_serial + '">' +
-                                                '<span class="badge">' + obj.content[i].num_replies + '</span>' +
-                                                obj.content[i].title + '</a>'
+                                                '<span class="badge">' + obj.content[i].num_replies + '</span><span>' +
+                                                obj.content[i].title + '</span></a>'
                                                 );
             }
             obj.content.sort(function (x, y) {
@@ -2459,20 +2355,40 @@ function load_forum_page() {
             for (i = 0; i < 5 && i < obj.content.length; i += 1) {
                 $('ul#latest-reply-list').append('<a class="list-group-item" onclick="display_post(this)" href="javascript:void(0)"' +
                                                  ' value="' + obj.content[i].post_serial + '">' +
-                                                '<span class="badge">' + obj.content[i].num_replies + '</span>' +
-                                                obj.content[i].title + '</a>'
+                                                '<span class="badge">' + obj.content[i].num_replies + '</span><span>' +
+                                                obj.content[i].title + '</span></a>'
                                                 );
             }
+            $('div#just-reply').html('<a onclick="display_post(this)" href="javascript:void(0)"' +
+                                     ' value="' + obj.content[0].post_serial + '"><span></span>' +
+                                     '<span>' + obj.content[0].title + '</span></a>' + '<br><span class="ps">刚刚</span>'
+                                    );
             obj.content.sort(function (x, y) {
                 return Number(y.num_replies) - Number(x.num_replies);
             });
             for (i = 0; i < 5 && i < obj.content.length; i += 1) {
                 $('ul#most-reply-list').append('<a class="list-group-item" onclick="display_post(this)" href="javascript:void(0)"' +
                                                  ' value="' + obj.content[i].post_serial + '">' +
-                                                '<span class="badge">' + obj.content[i].num_replies + '</span>' +
-                                                obj.content[i].title + '</a>'
+                                                '<span class="badge">' + obj.content[i].num_replies + '</span><span>' +
+                                                obj.content[i].title + '</span></a>'
                                                 );
             }
+        }
+    });
+    $.ajax('php/request.php', {
+        dataType: 'json',
+        async: false,
+        data: (function () {
+            var request = {};
+            request.name = 'GET_FORUM_GLOBAL';
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            $('span[name="today_member"]').html(Math.ceil(Number(obj.content.total_member) * Math.random()));
+            $('span[name="yesterday_member"]').html(Math.ceil(Number(obj.content.total_member) * Math.random()));
+            $('span[name="total_post"]').html(obj.content.total_post);
+            $('span[name="total_member"]').html(obj.content.total_member);
         }
     });
 }
@@ -3146,6 +3062,26 @@ function submit_cash() {
     });
 }
 
+function submit_like(a, num) {
+    'use strict';
+    $.ajax('php/request.php', {
+        dataType: 'json',
+        async: false,
+        data: (function () {
+            var request = {}, content = {};
+            content.user_serial = $(a).parents('div.row.forum-row').attr('member');
+            content.like = num;
+            request.name = 'SUBMIT_LIKE';
+            request.content = content;
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            $(a).fadeOut();
+        }
+    });
+}
+
 function submit_file_upload() {
     'use strict';
     load_product_confirm_page();
@@ -3193,6 +3129,25 @@ function submit_post() {
         type: 'POST',
         success: function (obj) {
             alert('发帖成功');
+        }
+    });
+}
+
+function submit_reply(btn) {
+    'use strict';
+    $.ajax('php/request.php', {
+        dataType: 'json',
+        async: false,
+        data: (function () {
+            var request = {};
+            request.name = 'SUBMIT_REPLY';
+            request.content = $('form#reply').serializeObject();
+            request.content.post_serial = $(btn).attr('post_serial');
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            alert('回复成功');
         }
     });
 }

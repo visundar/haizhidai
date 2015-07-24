@@ -20,6 +20,40 @@ try {
     mysql_select_db('haizhidai', $con);
 
     switch ($obj->name) {
+        case 'GET_FORUM_GLOBAL':
+            $query = "SELECT COUNT(*) AS total_member FROM `member`";
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            $response->content = mysql_fetch_object($result);
+            $query = "SELECT COUNT(*) AS total_post FROM `post`";
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            $o = mysql_fetch_object($result);
+            $response->content->total_post = $o->total_post;
+            break;
+        case 'SUBMIT_LIKE':
+            $query = "UPDATE `member` SET `like`=`like`+(" . $obj->content->like . ") WHERE `user_serial`=" . $obj->content->user_serial;
+            mysql_query($query, $con) or throw_exception(mysql_error());
+            break;
+        case 'GET_POST_AND_REPLY':
+            $response->content = array();
+            $query = "SELECT `content`, `time`, `user_serial` FROM `post` WHERE `post_serial`=" . $obj->content->post_serial;
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            array_push($response->content, mysql_fetch_object($result));
+            $query = "SELECT `content`, `time`, `user_serial` FROM `reply` WHERE `post_serial`=" . $obj->content->post_serial;
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            while ($o = mysql_fetch_object($result)) {
+                array_push($response->content, $o);
+            }
+            for ($i = 0; $i < count($response->content); $i += 1) {
+                $query = "SELECT `first_name`, `last_name`, `num_post`, `num_reply`, `like` FROM `member` WHERE `user_serial`=" . $response->content[$i]->user_serial;
+                $result = mysql_query($query, $con) or throw_exception(mysql_error());
+                $o = mysql_fetch_object($result);
+                $response->content[$i]->first_name = $o->first_name;
+                $response->content[$i]->last_name = $o->last_name;
+                $response->content[$i]->num_post = $o->num_post;
+                $response->content[$i]->num_reply = $o->num_reply;
+                $response->content[$i]->like = $o->like;
+            }
+            break;
         case 'GET_POPULAR_POST':
             $query = "SELECT * FROM `post` ORDER BY `latest_reply` DESC LIMIT 50";
             $result = mysql_query($query, $con) or throw_exception(mysql_error());
@@ -37,10 +71,19 @@ try {
                 $response->content[$i]->num_replies = (isset($map[(int) $response->content[$i]->post_serial]) ? $map[(int) $response->content[$i]->post_serial] : 0);
             }
             break;
+        case 'SUBMIT_REPLY':
+            $query = "INSERT INTO `reply` (`user_serial`, `content`, `post_serial`) VALUES (" . $_COOKIE['user_serial'];
+            $query .= ", '" . $obj->content->content . "', " . $obj->content->post_serial . ")";
+            mysql_query($query, $con) or throw_exception(mysql_error());
+            $query = "UPDATE `member` SET `num_reply`=`num_reply`+1 WHERE `user_serial`=" . $_COOKIE['user_serial'];
+            mysql_query($query, $con) or throw_exception(mysql_error());
+            break;
         case 'SUBMIT_POST':
             $query = "INSERT INTO `post` (`title`, `user_serial`, `content`, `latest_reply`) VALUES ('";
             $query .= $obj->content->title . "', " . $_COOKIE['user_serial'] . ", '" . $obj->content->content;
             $query .= "', NOW())";
+            mysql_query($query, $con) or throw_exception(mysql_error());
+            $query = "UPDATE `member` SET `num_post`=`num_post`+1 WHERE `user_serial`=" . $_COOKIE['user_serial'];
             mysql_query($query, $con) or throw_exception(mysql_error());
             break;
         case 'GET_MY_FRIEND':
