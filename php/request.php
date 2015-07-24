@@ -26,7 +26,7 @@ try {
             array_push($response->content, rand(40, 60));
             // 信用評分
             $boundary = array(500000, 250000, 125000, 62500, 31250, 15625);
-            $query = "SELECT `income` FROM `member` WHERE `user_serial`=" . $obj->content->user_serial;
+            $query = "SELECT `income`, `work_status`, `email` FROM `member` WHERE `user_serial`=" . $obj->content->user_serial;
             $result = mysql_query($query, $con) or throw_exception(mysql_error());
             $o = mysql_fetch_object($result);
             for ($i = 0; $i < count($boundary); $i += 1) {
@@ -34,6 +34,8 @@ try {
                     break;
                 }
             }
+            $work_status = (int) $o->work_status;
+            $email = $o->email;
             $score = ceil((7 - $i) * 100 / 7);
             array_push($response->content, $score);
             //徵信資料
@@ -47,7 +49,11 @@ try {
                 } else if (in_array((int) $o->what, $arr)) {
                     $score += 8;
                 } else {
-                    $score += 4;
+                    if ((int) $o->what === 7 && $work_status === 2) {
+                        $score += 16;
+                    } else {
+                        $score += 4;
+                    }
                 }
             }
             array_push($response->content, $score);
@@ -66,8 +72,28 @@ try {
                 $score = 0;
             }
             array_push($response->content, $score);
-            //信用歷史
-            array_push($response->content, rand(40, 60));
+            //交易紀錄
+            $score = 50;
+            $query = "SELECT `authority`, `user_serial` FROM `member` WHERE `email`='" . $email . "'";
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            while ($o = mysql_fetch_object($result)) {
+                if ((int) $o->authority === 0) {
+                    $query = "SELECT COUNT(*) AS num FROM `product` WHERE `borrower`=" . $o->user_serial . " GROUP BY `borrower`";
+                    $result = mysql_query($query, $con) or throw_exception(mysql_error());
+                    $p = mysql_fetch_object($result);
+                    if (is_object($p)) {
+                        $score += 5 * (int) $p->num;
+                    }
+                } else {
+                    $query = "SELECT COUNT(*) AS num FROM `transaction` WHERE `loaner`=" . $o->user_serial . " GROUP BY `loaner`";
+                    $result = mysql_query($query, $con) or throw_exception(mysql_error());
+                    $p = mysql_fetch_object($result);
+                    if (is_object($p)) {
+                        $score += 15 * (int) $p->num;
+                    }
+                }
+            }
+            array_push($response->content, $score);
             break;
         case 'GET_NUM_FOCUS_MY_PRODUCT':
             $query = "SELECT `view` FROM `product` WHERE `borrower`=" . $_COOKIE['user_serial'];

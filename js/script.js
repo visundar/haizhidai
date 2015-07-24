@@ -1973,7 +1973,7 @@ function display_product_modal(a) {
             $('a[href="#member-info"]').on('shown.bs.tab', function () {
                 $('div#member-info > div.panel > div.panel-body').html('<canvas id="radar-chart"></canvas>');
                 new Chart(document.getElementById("radar-chart").getContext("2d")).Radar({
-                    labels: ["身份特质", "信用评分", "徵信资料", "人脉关係", "信用历史"],
+                    labels: ["身份特质", "信用评分", "徵信资料", "人脉关係", "交易纪录"],
                     datasets: [
                         {
                             fillColor: "rgba(220,220,220,0.2)",
@@ -2159,6 +2159,11 @@ function load_borrow_page() {
 function load_borrow_detail_page(btn) {
     'use strict';
     var i;
+    get_member_from_server();
+    if (Number(member.authority) === 1) {
+        alert('投资身份无法借款');
+        return;
+    }
     $('div#content > div:nth-child(1) > a').removeClass('active');
     $('div#content > div:nth-child(1) > a:nth-child(2)').addClass('active');
     $('div#content > div:nth-child(2)').html(PROFILE_STR);
@@ -2323,7 +2328,7 @@ function load_account_page() {
         type: 'POST',
         success: function (obj) {
             new Chart(document.getElementById("radar-chart").getContext("2d")).Radar({
-                labels: ["身份特质", "信用评分", "徵信资料", "人脉关係", "信用历史"],
+                labels: ["身份特质", "信用评分", "徵信资料", "人脉关係", "交易纪录"],
                 datasets: [
                     {
                         fillColor: "rgba(220,220,220,0.2)",
@@ -3408,6 +3413,10 @@ function invest_this(div) {
         tmp_product = get_product_by_serial(serial),
         maximum = Number(tmp_product.amount) - Number(tmp_product.complete);
     get_member_from_server();
+    if (Number(member.authority) === 0) {
+        alert('借款身份无法投资');
+        return;
+    }
     if (isNaN(tmp)) {
         alert('请检查投资金额');
     } else if (tmp === 0) {
