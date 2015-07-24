@@ -20,14 +20,63 @@ try {
     mysql_select_db('haizhidai', $con);
 
     switch ($obj->name) {
+        case 'GET_SCORE':
+            $response->content = array();
+            //身份特質
+            array_push($response->content, rand(40, 60));
+            // 信用評分
+            $boundary = array(500000, 250000, 125000, 62500, 31250, 15625);
+            $query = "SELECT `income` FROM `member` WHERE `user_serial`=" . $obj->content->user_serial;
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            $o = mysql_fetch_object($result);
+            for ($i = 0; $i < count($boundary); $i += 1) {
+                if ((int) $o->income >= $boundary[$i]) {
+                    break;
+                }
+            }
+            $score = ceil((7 - $i) * 100 / 7);
+            array_push($response->content, $score);
+            //徵信資料
+            $query = "SELECT `what` FROM `image` WHERE `user_serial`=" . $obj->content->user_serial . " GROUP BY `what`";
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            $score = 0;
+            $arr = array(1, 4, 5, 6, 11, 12, 13);
+            while ($o = mysql_fetch_object($result)) {
+                if ((int) $o->what === 0) {
+                    $score += 16;
+                } else if (in_array((int) $o->what, $arr)) {
+                    $score += 8;
+                } else {
+                    $score += 4;
+                }
+            }
+            array_push($response->content, $score);
+            //人脈關係
+            $query = "SELECT `friend` FROM `member` WHERE `user_serial`=" . $obj->content->user_serial;
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            $o = mysql_fetch_object($result);
+            $num_friend = count(explode('|', $o->friend)) - 1;
+            if ($num_friend > 2) {
+                $score = 100;
+            } else if ($num_friend === 2) {
+                $score = 80;
+            } else if ($num_friend === 1) {
+                $score = 20;
+            } else {
+                $score = 0;
+            }
+            array_push($response->content, $score);
+            //信用歷史
+            array_push($response->content, rand(40, 60));
+            break;
         case 'GET_NUM_FOCUS_MY_PRODUCT':
-        $query = "SELECT `view` FROM `product` WHERE `borrower`=" . $_COOKIE['user_serial'];
-        $result = mysql_query($query, $con) or throw_exception(mysql_error());
-        $response->content = 0;
-        while ($o = mysql_fetch_object($result)) {
-            $response->content += (int) $o->view;
-        }
-        break;
+            $query = "SELECT `view` FROM `product` WHERE `borrower`=" . $_COOKIE['user_serial'];
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            $response->content = 0;
+            while ($o = mysql_fetch_object($result)) {
+                $response->content += (int) $o->view;
+            }
+            break;
         case 'GET_FORUM_GLOBAL':
             $query = "SELECT COUNT(*) AS total_member FROM `member`";
             $result = mysql_query($query, $con) or throw_exception(mysql_error());

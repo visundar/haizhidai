@@ -591,7 +591,7 @@ var PRODUCT_MODAL_STR = function () {
                     <div role="tabpanel" class="tab-pane" id="member-info">
                         <div class="panel panel-default">
                             <div class="panel-heading">用戶分析</div>
-                            <div class="panel-body"><canvas id="radar-chart">test</canvas></div>
+                            <div class="panel-body"></div>
                         </div>
                         <table class="table table-hover text-right">
                             <thead>
@@ -1958,18 +1958,36 @@ function display_product_modal(a) {
             borrower = obj.content.user_serial;
         }
     });
-    $('a[href="#member-info"]').on('shown.bs.tab', function () {
-        new Chart(document.getElementById("radar-chart").getContext("2d")).Radar({
-            labels: ["身份特质", "信用评分", "徵信资料", "人脉关係", "信用历史"],
-            datasets: [
-                {
-                    fillColor: "rgba(220,220,220,0.2)",
-                    data: [65, 59, 90, 81, 56]
-                }
-            ]
-        }, {
-            responsive: true
-        });
+    $.ajax('php/request.php', {
+        dataType: 'json',
+        async: false,
+        data: (function () {
+            var request = {}, content = {};
+            content.user_serial = borrower;
+            request.name = 'GET_SCORE';
+            request.content = content;
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            $('a[href="#member-info"]').on('shown.bs.tab', function () {
+                $('div#member-info > div.panel > div.panel-body').html('<canvas id="radar-chart"></canvas>');
+                new Chart(document.getElementById("radar-chart").getContext("2d")).Radar({
+                    labels: ["身份特质", "信用评分", "徵信资料", "人脉关係", "信用历史"],
+                    datasets: [
+                        {
+                            fillColor: "rgba(220,220,220,0.2)",
+                            data: obj.content
+                        }
+                    ]
+                }, {
+                    responsive: true
+                });
+            });
+        },
+        complete: function (obj) {
+            //alert(JSON.stringify(obj));
+        }
     });
     $.ajax('php/request.php', {
         dataType: 'json',
@@ -2035,6 +2053,7 @@ function display_product_modal(a) {
         success: function (obj) {
         }
     });
+    $('a[href="#product-info"]').click();
 }
 
 function display_post(a) {
@@ -2066,7 +2085,6 @@ function display_post(a) {
                 $('div#discuss-modal div.modal-body > div.row:last p').html(obj.content[i].content);
             }
             $('button#submit-reply').attr('post_serial', serial);
-            $('#discuss-modal').modal('show');
         },
         complete: function (obj) {
             //alert(JSON.stringify(obj));
@@ -2241,7 +2259,7 @@ function cash() {
 
 function load_account_page() {
     'use strict';
-    var i;
+    var i, score;
     clear_all();
     get_member_from_server();
     $('div#navbar-collapse > ul:first > li:nth-child(3)').addClass('active');
@@ -2292,16 +2310,33 @@ function load_account_page() {
         }
     });
     $('div#content > div:nth-child(2)').html(ACCOUNT_PAGE_STR);
-    new Chart(document.getElementById("radar-chart").getContext("2d")).Radar({
-        labels: ["身份特质", "信用评分", "徵信资料", "人脉关係", "信用历史"],
-        datasets: [
-            {
-                fillColor: "rgba(220,220,220,0.2)",
-                data: [65, 59, 90, 81, 56]
-            }
-        ]
-    }, {
-        responsive: true
+    $.ajax('php/request.php', {
+        dataType: 'json',
+        async: false,
+        data: (function () {
+            var request = {}, content = {};
+            content.user_serial = $.cookie('user_serial');
+            request.name = 'GET_SCORE';
+            request.content = content;
+            return 'request=' + JSON.stringify(request);
+        }()),
+        type: 'POST',
+        success: function (obj) {
+            new Chart(document.getElementById("radar-chart").getContext("2d")).Radar({
+                labels: ["身份特质", "信用评分", "徵信资料", "人脉关係", "信用历史"],
+                datasets: [
+                    {
+                        fillColor: "rgba(220,220,220,0.2)",
+                        data: obj.content
+                    }
+                ]
+            }, {
+                responsive: true
+            });
+        },
+        complete: function (obj) {
+            //alert(JSON.stringify(obj));
+        }
     });
     $('div#content > div:nth-child(2) h2:eq(0) > span').html(member.last_name);
     if (member.gender === '0') {
@@ -2377,6 +2412,7 @@ function load_forum_page() {
             });
             for (i = 0; i < 5 && i < obj.content.length; i += 1) {
                 $('ul#latest-post-list').append('<a class="list-group-item" onclick="display_post(this)" href="javascript:void(0)"' +
+                                                ' data-toggle="modal" data-target="#discuss-modal"' +
                                                  ' value="' + obj.content[i].post_serial + '">' +
                                                 '<span class="badge">' + obj.content[i].num_replies + '</span><span>' +
                                                 obj.content[i].title + '</span></a>'
@@ -2389,12 +2425,14 @@ function load_forum_page() {
             });
             for (i = 0; i < 5 && i < obj.content.length; i += 1) {
                 $('ul#latest-reply-list').append('<a class="list-group-item" onclick="display_post(this)" href="javascript:void(0)"' +
+                                                 ' data-toggle="modal" data-target="#discuss-modal"' +
                                                  ' value="' + obj.content[i].post_serial + '">' +
                                                 '<span class="badge">' + obj.content[i].num_replies + '</span><span>' +
                                                 obj.content[i].title + '</span></a>'
                                                 );
             }
             $('div#just-reply').html('<a onclick="display_post(this)" href="javascript:void(0)"' +
+                                     ' data-toggle="modal" data-target="#discuss-modal"' +
                                      ' value="' + obj.content[0].post_serial + '"><span></span>' +
                                      '<span>' + obj.content[0].title + '</span></a>' + '<br><span class="ps">刚刚</span>'
                                     );
@@ -2403,6 +2441,7 @@ function load_forum_page() {
             });
             for (i = 0; i < 5 && i < obj.content.length; i += 1) {
                 $('ul#most-reply-list').append('<a class="list-group-item" onclick="display_post(this)" href="javascript:void(0)"' +
+                                               ' data-toggle="modal" data-target="#discuss-modal"' +
                                                  ' value="' + obj.content[i].post_serial + '">' +
                                                 '<span class="badge">' + obj.content[i].num_replies + '</span><span>' +
                                                 obj.content[i].title + '</span></a>'
@@ -2519,12 +2558,13 @@ function load_borrow_manage_page() {
                     $('table#borrowing > tbody > tr:last').append('<td>' + obj.content[i].amount + '</td>');
                     $('table#borrowing > tbody > tr:last').append('<td>' + obj.content[i].rate + '%</td>');
                 } else {
-                    var tmp, t1, t2, t3;
+                    var tmp, t1, t2, t3, t4;
                     tmp = Date.parse(obj.content[i].complete_date);
                     t2 = Math.floor(Math.random() * Number(obj.content[i].term) + 1);
                     tmp += Number(t2) * 2592000000;
                     tmp = ((new Date(tmp)).toISOString()).slice(0, 10);
-                    t1 = Number(obj.content[i].amount) * Number(obj.content[i].rate) * 0.01 * Number(obj.content[i].term) / 12;
+                    t4 = Number(obj.content[i].amount) / Number(obj.content[i].term);
+                    t1 = t4 * Number(obj.content[i].rate) * 0.01 / 12;
                     t3 = ((new Date()).getTime() - (new Date(tmp)).getTime());
                     t3 = t3 < 0 ? 0 : (t3 / 86400000);
                     $('table#complete > tbody').append('<tr></tr>');
@@ -2533,8 +2573,8 @@ function load_borrow_manage_page() {
                     $('table#complete > tbody > tr:last').append('<td>' + t2 + '/' + obj.content[i].term + '</td>');
                     $('table#complete > tbody > tr:last').append('<td>' + obj.content[i].complete_date + '</td>');
                     $('table#complete > tbody > tr:last').append('<td>' + tmp + '</td>');
-                    $('table#complete > tbody > tr:last').append('<td>' + (Number(obj.content[i].amount) + t1).toFixed(2) + '</td>');
-                    $('table#complete > tbody > tr:last').append('<td>' + obj.content[i].amount + '</td>');
+                    $('table#complete > tbody > tr:last').append('<td>' + (t4 + t1).toFixed(2) + '</td>');
+                    $('table#complete > tbody > tr:last').append('<td>' + t4.toFixed(2) + '</td>');
                     $('table#complete > tbody > tr:last').append('<td>' + t1.toFixed(2) + '</td>');
                     $('table#complete > tbody > tr:last').append('<td>' + t3 + '</td>');
                     $('table#complete > tbody > tr:last').append('<td>' + ((t2 - 1) * 100 / Number(obj.content[i].term)).toFixed(1) + '%</td>');
@@ -3141,6 +3181,7 @@ function submit_product_detail() {
             $('tr#test > td:eq(2)').html(product.amount + '元');
             $('tr#test > td:eq(3)').html('审核中');
             product = null;
+            $.removeCookie('product_buffer');
         }
     });
 }
@@ -3178,6 +3219,7 @@ function submit_reply(btn) {
         type: 'POST',
         success: function (obj) {
             alert('回复成功');
+            display_post($('a[value="' + $(btn).attr('post_serial') + '"'));
         }
     });
 }
