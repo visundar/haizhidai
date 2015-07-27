@@ -22,24 +22,71 @@ try {
     switch ($obj->name) {
         case 'GET_SCORE':
             $response->content = array();
-            //身份特質
-            array_push($response->content, rand(40, 60));
-            // 信用評分
-            $boundary = array(500000, 250000, 125000, 62500, 31250, 15625);
-            $query = "SELECT `income`, `work_status`, `email` FROM `member` WHERE `user_serial`=" . $obj->content->user_serial;
+            $query = "SELECT `email` FROM `member` WHERE `user_serial`=" . $obj->content->user_serial;
             $result = mysql_query($query, $con) or throw_exception(mysql_error());
             $o = mysql_fetch_object($result);
+            $query = "SELECT * FROM `member` WHERE `email`='" . $o->email . "'";
+            $result = mysql_query($query, $con) or throw_exception(mysql_error());
+            $member1 = mysql_fetch_object($result);
+            $has_accounts = false;
+            if (mysql_num_rows($result) > 1) {
+                $member2 = mysql_fetch_object($result);
+                $has_accounts = true;
+            }
+            //身份特質
+            $score = 0;
+            if ((int) $member1->marriage === 1 || ($has_accounts && (int) $member2->marriage === 1)) {
+                $score += 25;
+            }
+            if ((int) $member1->insurance === 1 || ($has_accounts && (int) $member2->insurance === 1)) {
+                $score += 10;
+            }
+            if (((int) $member1->asset & 8) > 0 || ($has_accounts && ((int) $member2->asset & 8) > 0)) {
+                $score += 14;
+            }
+            if (((int) $member1->asset & 4) > 0 || ($has_accounts && ((int) $member2->asset & 4) > 0)) {
+                $score += 10;
+            }
+            if ((int) $member1->education === 6 || ($has_accounts && (int) $member2->education === 6)) {
+                $score += 20;
+            } else if ((int) $member1->education >= 4 || ($has_accounts && (int) $member2->education >= 4)) {
+                $score += 15;
+            }
+            if ($member1->birth !== null) {
+                $age = (int) ((strtotime('today') - strtotime($member1->birth)) / (365 * 24 * 60 * 60));
+                if ($age >= 26 && $age <= 35) {
+                    $score += 10;
+                } else if ($age >= 36 && $age <= 40) {
+                    $score += 14;
+                } else if ($age >= 41 && $age <= 55) {
+                    $score += 17;
+                } else if ($age >= 56) {
+                    $score += 21;
+                }
+            }
+            array_push($response->content, $score);
+            // 信用評分
+            $boundary = array(500000, 250000, 125000, 62500, 31250, 15625);
             for ($i = 0; $i < count($boundary); $i += 1) {
-                if ((int) $o->income >= $boundary[$i]) {
+                if ((int) $member1->income >= $boundary[$i]) {
                     break;
                 }
             }
-            $work_status = (int) $o->work_status;
-            $email = $o->email;
+            if ($has_accounts && ((int) $member2->income > (int) $member1->income)) {
+                for ($i = 0; $i < count($boundary); $i += 1) {
+                    if ((int) $member2->income >= $boundary[$i]) {
+                        break;
+                    }
+                }
+            }
             $score = ceil((7 - $i) * 100 / 7);
             array_push($response->content, $score);
             //徵信資料
-            $query = "SELECT `what` FROM `image` WHERE `user_serial`=" . $obj->content->user_serial . " GROUP BY `what`";
+            $query = "SELECT `what` FROM `image` WHERE `user_serial`=" . $member1->user_serial;
+            if ($has_accounts) {
+                $query .= " || `user_serial` =" . $member2->user_serial;
+            }
+            $query .= " GROUP BY `what`";
             $result = mysql_query($query, $con) or throw_exception(mysql_error());
             $score = 0;
             $arr = array(1, 4, 5, 6, 11, 12, 13);
@@ -74,7 +121,7 @@ try {
             array_push($response->content, $score);
             //交易紀錄
             $score = 50;
-            $query = "SELECT `authority`, `user_serial` FROM `member` WHERE `email`='" . $email . "'";
+            $query = "SELECT `authority`, `user_serial` FROM `member` WHERE `email`='" . $member1->email . "'";
             $result = mysql_query($query, $con) or throw_exception(mysql_error());
             while ($o = mysql_fetch_object($result)) {
                 if ((int) $o->authority === 0) {
@@ -247,7 +294,7 @@ try {
                 throw_exception('Friend not found');
             }
             $o = mysql_fetch_object($result);
-            $query = "SELECT * FROM `message` WHERE `type`=2 && `receiver`=" . $o->user_serial;
+            $query = "SELECT * FROM `message` WHERE `type`=2 && `receiver`=" . $o->user_serial . " && `sender` =" . $_COOKIE['user_serial'];
             $result = mysql_query($query, $con) or throw_exception(mysql_error());
             if (mysql_num_rows($result) > 0) {
                 throw_exception('Friend has been invited');
